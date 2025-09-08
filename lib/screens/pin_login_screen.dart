@@ -48,11 +48,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
       if (result['success'] == true) {
         print('✅ Navigation vers payment-type');
         if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const PaymentTypeScreen(),
-            ),
-          );
+          Navigator.of(context).pushReplacementNamed('/home');
         }
       } else {
         setState(() {
