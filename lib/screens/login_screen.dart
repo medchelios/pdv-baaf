@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../services/api_service.dart';
+import '../services/auth_service.dart';
 import 'payment_type_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _apiService = ApiService();
+  final _authService = AuthService();
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -33,14 +33,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final result = await _apiService.login(
+      final result = await _authService.loginWithEmail(
         _emailController.text.trim(),
         _passwordController.text,
       );
 
       if (result['success'] == true) {
-        _apiService.setToken(result['data']['token']);
-        
         if (mounted) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(

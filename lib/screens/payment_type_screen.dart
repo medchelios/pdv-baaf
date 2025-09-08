@@ -8,10 +8,10 @@ class PaymentTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: const Color(0xFFf8f9fa),
       appBar: AppBar(
         title: const Text('PDV Baaf'),
-        backgroundColor: Colors.blue[600],
+        backgroundColor: const Color(0xFFe94d29),
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -35,14 +35,14 @@ class PaymentTypeScreen extends StatelessWidget {
                       Icon(
                         Icons.payment,
                         size: 60,
-                        color: Colors.blue[600],
+                        color: const Color(0xFFe94d29),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         'Sélectionnez le type de paiement',
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[800],
+                          color: const Color(0xFF0e4b5b),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -50,7 +50,7 @@ class PaymentTypeScreen extends StatelessWidget {
                       Text(
                         'Choisissez le type de paiement à effectuer',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
+                          color: const Color(0xFF6B7280),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -106,7 +106,7 @@ class PaymentTypeScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.info_outline,
-                        color: Colors.blue[600],
+                        color: const Color(0xFFe94d29),
                         size: 24,
                       ),
                       const SizedBox(width: 12),
@@ -114,7 +114,7 @@ class PaymentTypeScreen extends StatelessWidget {
                         child: Text(
                           'Assurez-vous d\'avoir les informations du client avant de procéder au paiement',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[700],
+                            color: const Color(0xFF374151),
                           ),
                         ),
                       ),
@@ -170,14 +170,14 @@ class PaymentTypeScreen extends StatelessWidget {
                       title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
+                        color: const Color(0xFF374151),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
+                        color: const Color(0xFF6B7280),
                       ),
                     ),
                   ],
