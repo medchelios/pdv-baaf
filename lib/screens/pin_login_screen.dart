@@ -106,7 +106,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       ),
@@ -141,7 +141,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                 const SizedBox(height: 48),
 
                 // Champ PIN
-                Container(
+                SizedBox(
                   width: 200,
                   child: TextFormField(
                     controller: _pinController,
@@ -231,10 +231,10 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFe94d29).withOpacity(0.1),
+                      color: const Color(0xFFe94d29).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: const Color(0xFFe94d29).withOpacity(0.3),
+                        color: const Color(0xFFe94d29).withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(

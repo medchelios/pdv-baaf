@@ -19,8 +19,7 @@ class AppTheme {
         seedColor: brandOrange,
         primary: brandOrange,
         secondary: brandBlue,
-        surface: brandWhite,
-        background: const Color(0xFFf8f9fa),
+        surface: const Color(0xFFf8f9fa),
         error: Colors.red[700]!,
       ),
       appBarTheme: const AppBarTheme(
@@ -45,7 +44,7 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
