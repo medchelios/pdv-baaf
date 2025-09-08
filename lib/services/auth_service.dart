@@ -83,14 +83,11 @@ class AuthService {
   // Connexion avec mot de passe 4 chiffres (agents PDV)
   Future<Map<String, dynamic>> loginWithPin(String pin) async {
     try {
-      // Pour les agents PDV, on utilise l'email comme identifiant
-      // et le PIN comme mot de passe
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/login'),
+        Uri.parse('$baseUrl/auth/login-pdv'),
         headers: _headers,
         body: jsonEncode({
-          'email': 'pdv@baaf.com', // Email générique pour les PDV
-          'password': pin,
+          'pin': pin,
         }),
       );
 

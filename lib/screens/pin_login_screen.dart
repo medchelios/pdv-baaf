@@ -146,6 +146,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                   child: TextFormField(
                     controller: _pinController,
                     keyboardType: TextInputType.number,
+                    obscureText: true,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                       LengthLimitingTextInputFormatter(4),
