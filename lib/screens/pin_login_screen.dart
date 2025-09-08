@@ -124,7 +124,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
                 // Titre
                 Text(
-                  'Connexion Agent PDV',
+                  'Connexion PDV',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF0e4b5b),

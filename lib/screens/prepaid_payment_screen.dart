@@ -165,12 +165,13 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green[50],
+      backgroundColor: const Color(0xFFf8f9fa),
       appBar: AppBar(
         title: const Text('Paiement Prépayé'),
-        backgroundColor: Colors.green[600],
+        backgroundColor: const Color(0xFFe94d29),
         foregroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -190,16 +191,26 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                     padding: const EdgeInsets.all(20.0),
                     child: Row(
                       children: [
+                        // Logo BAAF
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          width: 60,
+                          height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.green[100],
                             borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: Icon(
-                            Icons.electrical_services,
-                            color: Colors.green[600],
-                            size: 32,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              'assets/images/logo.jpeg',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -208,16 +219,16 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Achat de Tokens',
+                                'Paiement Prépayé',
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green[800],
+                                  color: const Color(0xFF0e4b5b),
                                 ),
                               ),
                               Text(
                                 'Achetez des tokens d\'électricité pour vos clients',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey[600],
+                                  color: const Color(0xFF6B7280),
                                 ),
                               ),
                             ],
@@ -234,7 +245,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                   'Informations Client',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: const Color(0xFF0e4b5b),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -321,7 +332,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                   'Montant',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: const Color(0xFF0e4b5b),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -364,7 +375,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                   'Méthode de Paiement',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: const Color(0xFF0e4b5b),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -375,7 +386,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                     borderRadius: BorderRadius.circular(12),
                     side: BorderSide(
                       color: _selectedPaymentMethod == method['value']
-                          ? Colors.green[600]!
+                          ? const Color(0xFFe94d29)
                           : Colors.grey[300]!,
                       width: _selectedPaymentMethod == method['value'] ? 2 : 1,
                     ),
@@ -391,7 +402,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                           });
                         }
                       },
-                      activeColor: Colors.green[600],
+                      activeColor: const Color(0xFFe94d29),
                     ),
                     title: Text(method['label']),
                     trailing: Icon(method['icon']),
@@ -412,7 +423,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _processPayment,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
+                      backgroundColor: const Color(0xFFe94d29),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

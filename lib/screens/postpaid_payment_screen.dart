@@ -235,12 +235,13 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.orange[50],
+      backgroundColor: const Color(0xFFf8f9fa),
       appBar: AppBar(
         title: const Text('Paiement Postpayé'),
-        backgroundColor: Colors.orange[600],
+        backgroundColor: const Color(0xFFe94d29),
         foregroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -260,16 +261,26 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                     padding: const EdgeInsets.all(20.0),
                     child: Row(
                       children: [
+                        // Logo BAAF
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          width: 60,
+                          height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.orange[100],
                             borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: Icon(
-                            Icons.receipt_long,
-                            color: Colors.orange[600],
-                            size: 32,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              'assets/images/logo.jpeg',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -278,16 +289,16 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Paiement de Factures',
+                                'Paiement Postpayé',
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.orange[800],
+                                  color: const Color(0xFF0e4b5b),
                                 ),
                               ),
                               Text(
                                 'Payez les factures d\'électricité de vos clients',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey[600],
+                                  color: const Color(0xFF6B7280),
                                 ),
                               ),
                             ],
@@ -304,7 +315,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                   'Informations Client',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: const Color(0xFF0e4b5b),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -345,7 +356,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                         : const Icon(Icons.search),
                     label: Text(_isSearchingInvoices ? 'Recherche...' : 'Rechercher les Factures'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange[600],
+                      backgroundColor: const Color(0xFFe94d29),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -361,7 +372,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                     'Factures Disponibles',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                      color: const Color(0xFF0e4b5b),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -371,7 +382,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
                         color: _selectedInvoice?['id'] == invoice['id']
-                            ? Colors.orange[600]!
+                            ? const Color(0xFFe94d29)
                             : Colors.grey[300]!,
                         width: _selectedInvoice?['id'] == invoice['id'] ? 2 : 1,
                       ),
@@ -387,7 +398,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                             });
                           }
                         },
-                        activeColor: Colors.orange[600],
+                        activeColor: const Color(0xFFe94d29),
                       ),
                       title: Text('Facture ${invoice['reference'] ?? 'N/A'}'),
                       subtitle: Column(
@@ -415,7 +426,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                     'Informations de Paiement',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                      color: const Color(0xFF0e4b5b),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -480,7 +491,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                     'Méthode de Paiement',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                      color: const Color(0xFF0e4b5b),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -491,7 +502,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
                         color: _selectedPaymentMethod == method['value']
-                            ? Colors.orange[600]!
+                            ? const Color(0xFFe94d29)
                             : Colors.grey[300]!,
                         width: _selectedPaymentMethod == method['value'] ? 2 : 1,
                       ),
@@ -507,7 +518,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                             });
                           }
                         },
-                        activeColor: Colors.orange[600],
+                        activeColor: const Color(0xFFe94d29),
                       ),
                       title: Text(method['label']),
                       trailing: Icon(method['icon']),
@@ -528,7 +539,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _processPayment,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange[600],
+                        backgroundColor: const Color(0xFFe94d29),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

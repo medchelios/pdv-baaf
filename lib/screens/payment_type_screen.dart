@@ -10,7 +10,7 @@ class PaymentTypeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFf8f9fa),
       appBar: AppBar(
-        title: const Text('PDV Baaf'),
+        title: const Text('Type de Paiement'),
         backgroundColor: const Color(0xFFe94d29),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -32,10 +32,27 @@ class PaymentTypeScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.payment,
-                        size: 60,
-                        color: const Color(0xFFe94d29),
+                      // Logo BAAF
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            'assets/images/logo.jpeg',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Text(

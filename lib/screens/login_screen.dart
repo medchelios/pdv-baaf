@@ -76,7 +76,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: const Color(0xFFf8f9fa),
+      appBar: AppBar(
+        title: const Text('Connexion'),
+        backgroundColor: const Color(0xFF0e4b5b),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -93,25 +100,43 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Logo et titre
-                      Icon(
-                        Icons.payment,
-                        size: 80,
-                        color: Colors.blue[600],
+                      // Logo BAAF
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            'assets/images/logo.jpeg',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 32),
+
+                      // Titre
                       Text(
-                        'PDV Baaf',
+                        'Connexion Agent',
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[800],
+                          color: const Color(0xFF0e4b5b),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Point de Vente - Paiement Électricité',
+                        'Entrez vos identifiants de connexion',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[600],
+                          color: const Color(0xFF6B7280),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -126,9 +151,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon: const Icon(Icons.email),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFF0e4b5b), width: 2),
                           ),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: Colors.white,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -161,9 +195,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFF0e4b5b), width: 2),
                           ),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: Colors.white,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -181,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[600],
+                            backgroundColor: const Color(0xFF0e4b5b),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -210,9 +253,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // Message d'aide
                       Text(
-                        'Utilisez vos identifiants PDV pour vous connecter',
+                        'Utilisez vos identifiants pour vous connecter',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: const Color(0xFF9CA3AF),
                         ),
                         textAlign: TextAlign.center,
                       ),
