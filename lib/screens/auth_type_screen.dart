@@ -40,55 +40,12 @@ class AuthTypeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                // Titre
-                Text(
-                  'PDV Baaf',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0e4b5b),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Point de Vente - Paiement Électricité',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF6B7280),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 48),
 
-                // Sélection du type de connexion
-                Text(
-                  'Choisissez votre type de connexion',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFF374151),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-
-                // Bouton Agent Normal
+                // Bouton PDV
                 _buildAuthTypeCard(
                   context: context,
-                  title: 'Agent Standard',
-                  subtitle: 'Connexion avec email et mot de passe',
-                  icon: Icons.person,
-                  color: const Color(0xFF0e4b5b),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Bouton Agent PDV
-                _buildAuthTypeCard(
-                  context: context,
-                  title: 'Agent PDV',
+                  title: 'PDV',
                   subtitle: 'Connexion avec code PIN à 4 chiffres',
                   icon: Icons.store,
                   color: const Color(0xFFe94d29),
@@ -96,6 +53,23 @@ class AuthTypeScreen extends StatelessWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const PinLoginScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Bouton AUTRES
+                _buildAuthTypeCard(
+                  context: context,
+                  title: 'AUTRES',
+                  subtitle: 'Connexion avec email et mot de passe',
+                  icon: Icons.person,
+                  color: const Color(0xFF0e4b5b),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
                       ),
                     );
                   },
