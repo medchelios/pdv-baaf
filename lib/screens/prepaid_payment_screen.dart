@@ -380,19 +380,30 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                       width: _selectedPaymentMethod == method['value'] ? 2 : 1,
                     ),
                   ),
-                  child: RadioListTile<String>(
-                    value: method['value'],
-                    groupValue: _selectedPaymentMethod,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedPaymentMethod = value!;
-                      });
-                    },
+                  child: ListTile(
+                    leading: Radio<String>(
+                      value: method['value'],
+                      groupValue: _selectedPaymentMethod,
+                      onChanged: (value) {
+                        if (mounted) {
+                          setState(() {
+                            _selectedPaymentMethod = value!;
+                          });
+                        }
+                      },
+                      activeColor: Colors.green[600],
+                    ),
                     title: Text(method['label']),
-                    secondary: Icon(method['icon']),
-                    activeColor: Colors.green[600],
+                    trailing: Icon(method['icon']),
+                    onTap: () {
+                      if (mounted) {
+                        setState(() {
+                          _selectedPaymentMethod = method['value'];
+                        });
+                      }
+                    },
                   ),
-                )).toList(),
+                )),
                 const SizedBox(height: 32),
 
                 // Bouton de paiement

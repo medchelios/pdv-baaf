@@ -61,28 +61,34 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
         });
 
         if (_invoices.isEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Aucune facture trouvée pour cette référence'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+        }
+      } else {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Aucune facture trouvée pour cette référence'),
-              backgroundColor: Colors.orange,
+            SnackBar(
+              content: Text(result['message'] ?? 'Erreur lors de la recherche'),
+              backgroundColor: Colors.red,
             ),
           );
         }
-      } else {
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Erreur lors de la recherche'),
+            content: Text('Erreur: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
     } finally {
       setState(() {
         _isSearchingInvoices = false;
@@ -370,14 +376,19 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                         width: _selectedInvoice?['id'] == invoice['id'] ? 2 : 1,
                       ),
                     ),
-                    child: RadioListTile<Map<String, dynamic>>(
-                      value: invoice,
-                      groupValue: _selectedInvoice,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedInvoice = value;
-                        });
-                      },
+                    child: ListTile(
+                      leading: Radio<Map<String, dynamic>>(
+                        value: invoice,
+                        groupValue: _selectedInvoice,
+                        onChanged: (value) {
+                          if (mounted) {
+                            setState(() {
+                              _selectedInvoice = value;
+                            });
+                          }
+                        },
+                        activeColor: Colors.orange[600],
+                      ),
                       title: Text('Facture ${invoice['reference'] ?? 'N/A'}'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,9 +397,15 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                           Text('Période: ${invoice['period'] ?? 'N/A'}'),
                         ],
                       ),
-                      activeColor: Colors.orange[600],
+                      onTap: () {
+                        if (mounted) {
+                          setState(() {
+                            _selectedInvoice = invoice;
+                          });
+                        }
+                      },
                     ),
-                  )).toList(),
+                  )),
                   const SizedBox(height: 24),
                 ],
 
@@ -479,19 +496,30 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                         width: _selectedPaymentMethod == method['value'] ? 2 : 1,
                       ),
                     ),
-                    child: RadioListTile<String>(
-                      value: method['value'],
-                      groupValue: _selectedPaymentMethod,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedPaymentMethod = value!;
-                        });
-                      },
+                    child: ListTile(
+                      leading: Radio<String>(
+                        value: method['value'],
+                        groupValue: _selectedPaymentMethod,
+                        onChanged: (value) {
+                          if (mounted) {
+                            setState(() {
+                              _selectedPaymentMethod = value!;
+                            });
+                          }
+                        },
+                        activeColor: Colors.orange[600],
+                      ),
                       title: Text(method['label']),
-                      secondary: Icon(method['icon']),
-                      activeColor: Colors.orange[600],
+                      trailing: Icon(method['icon']),
+                      onTap: () {
+                        if (mounted) {
+                          setState(() {
+                            _selectedPaymentMethod = method['value'];
+                          });
+                        }
+                      },
                     ),
-                  )).toList(),
+                  )),
                   const SizedBox(height: 32),
 
                   // Bouton de paiement
