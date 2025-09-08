@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://localhost:8000/api/mobile/agent';
+  static const String baseUrl = 'http://127.0.0.1:8000/api/mobile/agent';
   String? _token;
   Map<String, dynamic>? _user;
 
@@ -53,6 +53,9 @@ class AuthService {
   // Connexion avec email/mot de passe (agents normaux)
   Future<Map<String, dynamic>> loginWithEmail(String email, String password) async {
     try {
+      print('🔐 Tentative de connexion avec email: $email');
+      print('🌐 URL: $baseUrl/auth/login');
+      
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
         headers: _headers,
@@ -62,17 +65,25 @@ class AuthService {
         }),
       );
 
+      print('📡 Status Code: ${response.statusCode}');
+      print('📡 Headers: ${response.headers}');
+      print('📡 Body: ${response.body}');
+
       final result = jsonDecode(response.body);
       
       if (result['success'] == true) {
+        print('✅ Connexion réussie');
         await _saveAuthData(
           result['data']['token'],
           result['data']['user'],
         );
+      } else {
+        print('❌ Échec de connexion: ${result['message']}');
       }
       
       return result;
     } catch (e) {
+      print('💥 Erreur lors de la connexion: $e');
       return {
         'success': false,
         'message': 'Erreur de connexion: $e',
@@ -83,6 +94,9 @@ class AuthService {
   // Connexion avec mot de passe 4 chiffres (agents PDV)
   Future<Map<String, dynamic>> loginWithPin(String pin) async {
     try {
+      print('🔐 Tentative de connexion PDV avec PIN: $pin');
+      print('🌐 URL: $baseUrl/auth/login-pdv');
+      
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login-pdv'),
         headers: _headers,
@@ -91,17 +105,25 @@ class AuthService {
         }),
       );
 
+      print('📡 Status Code: ${response.statusCode}');
+      print('📡 Headers: ${response.headers}');
+      print('📡 Body: ${response.body}');
+
       final result = jsonDecode(response.body);
       
       if (result['success'] == true) {
+        print('✅ Connexion PDV réussie');
         await _saveAuthData(
           result['data']['token'],
           result['data']['user'],
         );
+      } else {
+        print('❌ Échec de connexion PDV: ${result['message']}');
       }
       
       return result;
     } catch (e) {
+      print('💥 Erreur lors de la connexion PDV: $e');
       return {
         'success': false,
         'message': 'Erreur de connexion: $e',
