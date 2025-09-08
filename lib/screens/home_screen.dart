@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/bottom_navigation.dart';
+import '../widgets/common/balance_card.dart';
+import '../widgets/common/quick_action_grid.dart';
+import '../widgets/common/custom_card.dart';
+import '../controllers/stats_controller.dart';
+import '../services/auth_service.dart';
+import '../constants/app_constants.dart';
 import 'payment_type_screen.dart';
 import 'prepaid_payment_screen.dart';
 import 'postpaid_payment_screen.dart';
@@ -41,24 +48,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        children: const [
-          _HomePage(),
-          PaymentTypeScreen(),
-          _UvPage(),
-          SettingsScreen(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigation(
-        currentIndex: _currentIndex,
-        onTap: _onNavTap,
+    return ChangeNotifierProvider(
+      create: (context) => StatsController()..loadAllStats(),
+      child: Scaffold(
+        backgroundColor: AppConstants.backgroundColor,
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          children: const [
+            _HomePage(),
+            PaymentTypeScreen(),
+            _UvPage(),
+            SettingsScreen(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigation(
+          currentIndex: _currentIndex,
+          onTap: _onNavTap,
+        ),
       ),
     );
   }
@@ -70,229 +81,160 @@ class _HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Accueil'),
-        backgroundColor: const Color(0xFF0e4b5b),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header avec logo
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0e4b5b), Color(0xFFe94d29)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        'assets/images/logo.jpeg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Bienvenue',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Point de Vente BAAF',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Actions rapides
-            const Text(
-              'Actions Rapides',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0e4b5b),
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickAction(
-                    context,
-                    icon: Icons.payment,
-                    title: 'Prépayé',
-                    subtitle: 'Recharge',
-                    color: const Color(0xFFe94d29),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PrepaidPaymentScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildQuickAction(
-                    context,
-                    icon: Icons.receipt,
-                    title: 'Postpayé',
-                    subtitle: 'Facture',
-                    color: const Color(0xFF0e4b5b),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PostpaidPaymentScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Statistiques
-            const Text(
-              'Aujourd\'hui',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0e4b5b),
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'Paiements',
-                    '12',
-                    Icons.payment,
-                    const Color(0xFFe94d29),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'Montant',
-                    '2.5M',
-                    Icons.attach_money,
-                    const Color(0xFF0e4b5b),
-                  ),
-                ),
-              ],
-            ),
-          ],
+      backgroundColor: AppConstants.backgroundColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppConstants.paddingL),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header avec salutation
+              _buildHeader(context),
+              
+              const SizedBox(height: AppConstants.paddingXL),
+              
+              // Carte de balance
+              _buildBalanceCard(context),
+              
+              const SizedBox(height: AppConstants.paddingXL),
+              
+              // Actions rapides
+              _buildQuickActions(context),
+              
+              const SizedBox(height: AppConstants.paddingXL),
+              
+              // Statistiques
+              _buildStatsSection(context),
+              
+              const SizedBox(height: AppConstants.paddingXL),
+              
+              // Transactions récentes
+              _buildRecentTransactions(context),
+              
+              const SizedBox(height: 100), // Espace pour la navigation
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildQuickAction(
-    BuildContext context, {
-    required IconData icon,
+  Widget _buildHeader(BuildContext context) {
+    final userName = AuthService().user?['name']?.split(' ').first ?? 'Agent';
+    final now = DateTime.now();
+    final dayNames = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+    final monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Bonjour, $userName!',
+                style: AppConstants.heading1,
+              ),
+              const SizedBox(height: AppConstants.paddingXS),
+              Text(
+                '${dayNames[now.weekday - 1]}, ${now.day} ${monthNames[now.month - 1]} ${now.year}',
+                style: AppConstants.bodyMedium,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingM, vertical: AppConstants.paddingS),
+          decoration: BoxDecoration(
+            color: AppConstants.primaryBlue.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppConstants.radiusM),
+          ),
+          child: const Text(
+            'GNF',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppConstants.primaryBlue,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBalanceCard(BuildContext context) {
+    return Consumer<StatsController>(
+      builder: (context, statsController, child) {
+        final amount = statsController.formatAmount(statsController.todayAmount);
+        
+        return BalanceCard(
+          title: 'Solde Disponible',
+          amount: amount,
+          subtitle: 'Aujourd\'hui',
+          primaryColor: AppConstants.primaryBlue,
+          secondaryColor: AppConstants.primaryOrange,
+          actions: [
+            Expanded(
+              child: _buildActionButton(
+                context,
+                title: 'Envoyer',
+                icon: Icons.send_rounded,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrepaidPaymentScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: AppConstants.paddingM),
+            Expanded(
+              child: _buildActionButton(
+                context,
+                title: 'Recevoir',
+                icon: Icons.request_quote_rounded,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PostpaidPaymentScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, {
     required String title,
-    required String subtitle,
-    required Color color,
+    required IconData icon,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: AppConstants.paddingM),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          color: Colors.white.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(AppConstants.radiusM),
         ),
-        child: Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
-            ),
-            const SizedBox(height: 12),
+            Icon(icon, color: Colors.white, size: 20),
+            const SizedBox(width: AppConstants.paddingS),
             Text(
               title,
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0e4b5b),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF6B7280),
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
           ],
@@ -301,46 +243,220 @@ class _HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+  Widget _buildQuickActions(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Actions Rapides',
+          style: AppConstants.heading3,
+        ),
+        const SizedBox(height: AppConstants.paddingM),
+        QuickActionGrid(
+          actions: [
+            QuickAction(
+              title: 'Prépayé',
+              icon: Icons.payment_rounded,
+              color: AppConstants.primaryOrange,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PrepaidPaymentScreen(),
+                  ),
+                );
+              },
+            ),
+            QuickAction(
+              title: 'Postpayé',
+              icon: Icons.receipt_long_rounded,
+              color: AppConstants.primaryBlue,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PostpaidPaymentScreen(),
+                  ),
+                );
+              },
+            ),
+            QuickAction(
+              title: 'Historique',
+              icon: Icons.history_rounded,
+              color: AppConstants.successColor,
+              onTap: () {
+                // TODO: Implémenter l'historique
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatsSection(BuildContext context) {
+    return Consumer<StatsController>(
+      builder: (context, statsController, child) {
+        return CustomCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Aujourd\'hui',
+                style: AppConstants.heading3,
+              ),
+              const SizedBox(height: AppConstants.paddingM),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatItem(
+                      'Paiements',
+                      '${statsController.todayPayments}',
+                      Icons.payment_rounded,
+                      AppConstants.primaryOrange,
+                    ),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 40,
+                    color: AppConstants.textLight.withValues(alpha: 0.3),
+                  ),
+                  Expanded(
+                    child: _buildStatItem(
+                      'Montant',
+                      statsController.formatAmount(statsController.todayAmount),
+                      Icons.attach_money_rounded,
+                      AppConstants.primaryBlue,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
+        );
+      },
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 20),
+        const SizedBox(height: AppConstants.paddingS),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
             color: color,
-            size: 24,
           ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: color,
+        ),
+        const SizedBox(height: AppConstants.paddingXS),
+        Text(
+          label,
+          style: AppConstants.bodySmall,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecentTransactions(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Transactions Récentes',
+              style: AppConstants.heading3,
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF6B7280),
+            TextButton(
+              onPressed: () {
+                // TODO: Implémenter la page d'historique
+              },
+              child: const Text(
+                'Voir tout',
+                style: TextStyle(
+                  color: AppConstants.primaryBlue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
+          ],
+        ),
+        const SizedBox(height: AppConstants.paddingM),
+        CustomCard(
+          child: Column(
+            children: [
+              _buildTransactionItem(
+                'Paiement Électricité',
+                'Aujourd\'hui 10h',
+                '+2,847.50 GNF',
+                Icons.receipt_long_rounded,
+                AppConstants.successColor,
+              ),
+              const Divider(height: AppConstants.paddingXL),
+              _buildTransactionItem(
+                'Recharge Prépayé',
+                'Hier 15h',
+                '+1,500.00 GNF',
+                Icons.payment_rounded,
+                AppConstants.primaryOrange,
+              ),
+              const Divider(height: AppConstants.paddingXL),
+              _buildTransactionItem(
+                'Paiement Facture',
+                '12 Juillet',
+                '+3,200.00 GNF',
+                Icons.receipt_rounded,
+                AppConstants.primaryBlue,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionItem(String title, String time, String amount, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppConstants.radiusM),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: AppConstants.paddingM),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppConstants.bodyLarge,
+              ),
+              const SizedBox(height: AppConstants.paddingXS),
+              Text(
+                time,
+                style: AppConstants.bodySmall,
+              ),
+            ],
+          ),
+        ),
+        Text(
+          amount,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -351,40 +467,44 @@ class _UvPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('UV'),
-        backgroundColor: const Color(0xFF0e4b5b),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.receipt_long,
-              size: 64,
-              color: Color(0xFF6B7280),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Fonctionnalité UV',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0e4b5b),
+      backgroundColor: AppConstants.backgroundColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppConstants.paddingL),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CustomCard(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: AppConstants.primaryOrange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(AppConstants.radiusXL),
+                      ),
+                      child: const Icon(
+                        Icons.receipt_long_rounded,
+                        size: 40,
+                        color: AppConstants.primaryOrange,
+                      ),
+                    ),
+                    const SizedBox(height: AppConstants.paddingXL),
+                    Text(
+                      'Fonctionnalité UV',
+                      style: AppConstants.heading2,
+                    ),
+                    const SizedBox(height: AppConstants.paddingS),
+                    Text(
+                      'Bientôt disponible',
+                      style: AppConstants.bodyMedium,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Bientôt disponible',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xFF6B7280),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

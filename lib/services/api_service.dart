@@ -145,4 +145,53 @@ class ApiService {
       };
     }
   }
+
+  // Statistiques
+  Future<Map<String, dynamic>> getDailyStats() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/stats/daily'),
+        headers: _headers,
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Erreur lors de la récupération des stats quotidiennes: $e',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getMonthlyStats() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/stats/monthly'),
+        headers: _headers,
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Erreur lors de la récupération des stats mensuelles: $e',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getPaymentStats() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/stats/payments'),
+        headers: _headers,
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Erreur lors de la récupération des stats de paiement: $e',
+      };
+    }
+  }
 }

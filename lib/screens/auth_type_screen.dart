@@ -8,142 +8,203 @@ class AuthTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFf8f9fa),
+      backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo BAAF
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      'assets/images/logo.jpeg',
-                      fit: BoxFit.cover,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const SizedBox(height: 60),
+              
+              // Logo BAAF
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
                     ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'assets/images/logo.jpeg',
+                    fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(height: 32),
-
-                const SizedBox(height: 48),
-
-                // Bouton PDV
-                _buildAuthTypeCard(
-                  context: context,
-                  title: 'PDV',
-                  subtitle: 'Connexion avec code PIN à 4 chiffres',
-                  icon: Icons.store,
-                  color: const Color(0xFFe94d29),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const PinLoginScreen(),
-                      ),
-                    );
-                  },
+              ),
+              
+              const SizedBox(height: 40),
+              
+              const Text(
+                'Bienvenue',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F2937),
                 ),
-                const SizedBox(height: 16),
-
-                // Bouton AUTRES
-                _buildAuthTypeCard(
-                  context: context,
-                  title: 'AUTRES',
-                  subtitle: 'Connexion avec email et mot de passe',
-                  icon: Icons.person,
-                  color: const Color(0xFF0e4b5b),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
+              ),
+              
+              const SizedBox(height: 8),
+              
+              const Text(
+                'Choisissez votre type de connexion',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF6B7280),
                 ),
-                const SizedBox(height: 32),
-              ],
-            ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 60),
+              
+              // Boutons de connexion
+              Column(
+                children: [
+                  // Connexion PDV
+                  _buildAuthButton(
+                    context,
+                    icon: Icons.payment_rounded,
+                    title: 'PDV',
+                    subtitle: 'Connexion avec code PIN',
+                    color: const Color(0xFFe94d29),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PinLoginScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Connexion Standard
+                  _buildAuthButton(
+                    context,
+                    icon: Icons.person_rounded,
+                    title: 'AUTRES',
+                    subtitle: 'Connexion avec email',
+                    color: const Color(0xFF0e4b5b),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              
+              const Spacer(),
+              
+              // Footer
+              const Text(
+                'BAAF - Point de Vente',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF9CA3AF),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildAuthTypeCard({
-    required BuildContext context,
+  Widget _buildAuthButton(
+    BuildContext context, {
+    required IconData icon,
     required String title,
     required String subtitle,
-    required IconData icon,
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color: color,
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
               ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF374151),
-                      ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 28,
+              ),
+            ),
+            
+            const SizedBox(width: 16),
+            
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1F2937),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF6B7280),
-                      ),
+                  ),
+                  
+                  const SizedBox(height: 4),
+                  
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF6B7280),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey[400],
-                size: 20,
+            ),
+            
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
-            ],
-          ),
+              child: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: color,
+                size: 16,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/common/action_button.dart';
+import '../constants/app_constants.dart';
 import 'prepaid_payment_screen.dart';
 import 'postpaid_payment_screen.dart';
 
@@ -8,58 +10,55 @@ class PaymentTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFf8f9fa),
+      backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
-        title: const Text('Paiements'),
-        backgroundColor: const Color(0xFF0e4b5b),
+        title: const Text(
+          'Paiements',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: AppConstants.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppConstants.paddingL),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: AppConstants.paddingL),
               
               // Titre
-              const Text(
+              Text(
                 'Choisissez le type de paiement',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0e4b5b),
-                ),
-                textAlign: TextAlign.center,
+                style: AppConstants.heading2,
               ),
               
-              const SizedBox(height: 8),
+              const SizedBox(height: AppConstants.paddingS),
               
-              const Text(
+              Text(
                 'Sélectionnez le type de paiement à effectuer',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF6B7280),
-                ),
-                textAlign: TextAlign.center,
+                style: AppConstants.bodyMedium,
               ),
               
-              const SizedBox(height: 40),
+              const SizedBox(height: AppConstants.paddingXXL),
               
               // Options de paiement
               Expanded(
                 child: Column(
                   children: [
                     // Paiement prépayé
-                    _buildPaymentOption(
-                      context,
-                      icon: Icons.payment,
+                    ActionButton(
                       title: 'Prépayé',
                       subtitle: 'Recharge de crédit',
-                      description: 'Achetez des tokens de crédit',
-                      color: const Color(0xFFe94d29),
+                      icon: Icons.payment_rounded,
+                      color: AppConstants.primaryOrange,
+                      isFullWidth: true,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -70,16 +69,15 @@ class PaymentTypeScreen extends StatelessWidget {
                       },
                     ),
                     
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppConstants.paddingM),
                     
                     // Paiement postpayé
-                    _buildPaymentOption(
-                      context,
-                      icon: Icons.receipt,
+                    ActionButton(
                       title: 'Postpayé',
                       subtitle: 'Paiement de facture',
-                      description: 'Payez vos factures EDG',
-                      color: const Color(0xFF0e4b5b),
+                      icon: Icons.receipt_long_rounded,
+                      color: AppConstants.primaryBlue,
+                      isFullWidth: true,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -94,96 +92,6 @@ class PaymentTypeScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPaymentOption(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String description,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 30,
-              ),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0e4b5b),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: color,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            Icon(
-              Icons.chevron_right,
-              color: color,
-              size: 24,
-            ),
-          ],
         ),
       ),
     );
