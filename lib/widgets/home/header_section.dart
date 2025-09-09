@@ -22,8 +22,8 @@ class HeaderSection extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppConstants.primaryBlue,
-            AppConstants.primaryBlue.withValues(alpha: 0.8),
+            AppConstants.brandBlue,
+            AppConstants.brandBlue.withValues(alpha: 0.8),
           ],
         ),
       ),

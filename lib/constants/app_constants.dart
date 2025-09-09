@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
-  // Couleurs
-  static const Color primaryOrange = Color(0xFFe94d29);
-  static const Color primaryBlue = Color(0xFF0e4b5b);
+  // Couleurs brand (exactement comme tailwind.config.js)
+  static const Color brandOrange = Color(0xFFe94d29);
+  static const Color brandBlue = Color(0xFF0e4b5b);
+  static const Color brandWhite = Color(0xFFFFFFFF);
+  
+  // Couleurs système (grises uniquement)
   static const Color backgroundColor = Color(0xFFF8F9FA);
   static const Color cardColor = Color(0xFFFFFFFF);
   static const Color textPrimary = Color(0xFF1F2937);
@@ -44,44 +47,55 @@ class AppConstants {
     ),
   ];
 
+  // Police (Futura/Figtree comme dans le projet Laravel)
+  static const String fontFamily = 'Futura';
+  static const String fontFamilyFallback = 'Figtree';
+
   // Typographie
   static const TextStyle heading1 = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 28,
     fontWeight: FontWeight.bold,
     color: textPrimary,
   );
 
   static const TextStyle heading2 = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: textPrimary,
   );
 
   static const TextStyle heading3 = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 18,
     fontWeight: FontWeight.bold,
     color: textPrimary,
   );
 
   static const TextStyle bodyLarge = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: textPrimary,
   );
 
   static const TextStyle bodyMedium = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: textSecondary,
   );
 
   static const TextStyle bodySmall = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w400,
     color: textLight,
   );
 
   static const TextStyle caption = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 11,
     fontWeight: FontWeight.w400,
     color: textLight,

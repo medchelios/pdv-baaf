@@ -32,7 +32,7 @@ class StatsSection extends StatelessWidget {
                 child: Text(
                   'Voir tout',
                   style: TextStyle(
-                    color: AppConstants.primaryBlue,
+                    color: AppConstants.brandBlue,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -48,7 +48,7 @@ class StatsSection extends StatelessWidget {
                   'Commandes UV',
                   '${uvStats?['total_orders'] ?? 0}',
                   '${uvStats?['pending_orders'] ?? 0} en attente',
-                  AppConstants.primaryOrange,
+                  AppConstants.brandOrange,
                   Icons.shopping_cart_rounded,
                 ),
               ),
@@ -58,7 +58,7 @@ class StatsSection extends StatelessWidget {
                   'Paiements',
                   '${paymentStats?['total_payments'] ?? 0}',
                   '${paymentStats?['successful_payments'] ?? 0} réussis',
-                  AppConstants.primaryBlue,
+                  AppConstants.brandBlue,
                   Icons.payment_rounded,
                 ),
               ),

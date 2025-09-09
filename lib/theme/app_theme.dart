@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
+import '../constants/app_constants.dart';
 
 class AppTheme {
-  // Couleurs BAAF selon tailwind.config.js
-  static const Color brandOrange = Color(0xFFe94d29);
-  static const Color brandBlue = Color(0xFF0e4b5b);
-  static const Color brandWhite = Color(0xFFffffff);
-
-  // Couleurs dérivées
-  static const Color brandOrangeLight = Color(0xFFf5a896);
-  static const Color brandOrangeDark = Color(0xFFc73d1a);
-  static const Color brandBlueLight = Color(0xFF2d6b7a);
-  static const Color brandBlueDark = Color(0xFF0a3a42);
+  // Utilise les couleurs d'AppConstants
+  static const Color brandOrange = AppConstants.brandOrange;
+  static const Color brandBlue = AppConstants.brandBlue;
+  static const Color brandWhite = AppConstants.brandWhite;
 
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      fontFamily: AppConstants.fontFamily,
       colorScheme: ColorScheme.fromSeed(
         seedColor: brandOrange,
         primary: brandOrange,
         secondary: brandBlue,
-        surface: const Color(0xFFf8f9fa),
-        error: Colors.red[700]!,
+        surface: AppConstants.backgroundColor,
+        error: AppConstants.errorColor,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: brandOrange,
@@ -76,49 +72,16 @@ class AppTheme {
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: brandBlue,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: brandBlue,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: brandBlue,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: brandBlue,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: brandBlue,
-        ),
-        titleSmall: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: brandBlue,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: Color(0xFF374151),
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Color(0xFF6B7280),
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: Color(0xFF9CA3AF),
-        ),
+      textTheme: TextTheme(
+        headlineLarge: AppConstants.heading1.copyWith(fontSize: 32),
+        headlineMedium: AppConstants.heading1.copyWith(fontSize: 28),
+        headlineSmall: AppConstants.heading2.copyWith(fontSize: 24),
+        titleLarge: AppConstants.heading2.copyWith(fontSize: 20),
+        titleMedium: AppConstants.heading3.copyWith(fontSize: 18),
+        titleSmall: AppConstants.heading3.copyWith(fontSize: 16),
+        bodyLarge: AppConstants.bodyLarge,
+        bodyMedium: AppConstants.bodyMedium,
+        bodySmall: AppConstants.bodySmall,
       ),
     );
   }

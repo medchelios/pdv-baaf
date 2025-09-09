@@ -46,7 +46,7 @@ class BalanceSection extends StatelessWidget {
                 child: Text(
                   'Voir détails',
                   style: TextStyle(
-                    color: AppConstants.primaryBlue,
+                    color: AppConstants.brandBlue,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -61,7 +61,7 @@ class BalanceSection extends StatelessWidget {
                 child: _buildBalanceCard(
                   'Principal',
                   principalBalance,
-                  AppConstants.primaryBlue,
+                  AppConstants.brandBlue,
                   Icons.account_balance_wallet_rounded,
                 ),
               ),
@@ -70,7 +70,7 @@ class BalanceSection extends StatelessWidget {
                 child: _buildBalanceCard(
                   'Commission',
                   commissionBalance,
-                  AppConstants.primaryOrange,
+                  AppConstants.brandOrange,
                   Icons.trending_up_rounded,
                 ),
               ),

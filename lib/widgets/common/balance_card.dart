@@ -14,8 +14,8 @@ class BalanceCard extends StatelessWidget {
     required this.title,
     required this.amount,
     this.subtitle,
-    this.primaryColor = AppConstants.primaryBlue,
-    this.secondaryColor = AppConstants.primaryOrange,
+    this.primaryColor = AppConstants.brandBlue,
+    this.secondaryColor = AppConstants.brandOrange,
     this.actions,
   });
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
-import 'payment_type_screen.dart';
 
 class PinLoginScreen extends StatefulWidget {
   const PinLoginScreen({super.key});

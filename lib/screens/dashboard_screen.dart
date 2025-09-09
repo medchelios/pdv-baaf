@@ -32,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: AppConstants.primaryBlue,
+        backgroundColor: AppConstants.brandBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -83,7 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _buildSection(
                   'Commandes UV',
                   [
-                    _buildStatItem('Total', '25', AppConstants.primaryBlue),
+                    _buildStatItem('Total', '25', AppConstants.brandBlue),
                     _buildStatItem('En attente', '5', AppConstants.warningColor),
                     _buildStatItem('Validées', '18', AppConstants.successColor),
                     _buildStatItem('Rejetées', '2', AppConstants.errorColor),
@@ -96,10 +96,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _buildSection(
                   'Paiements',
                   [
-                    _buildStatItem('Total', '4', AppConstants.primaryBlue),
+                    _buildStatItem('Total', '4', AppConstants.brandBlue),
                     _buildStatItem('Réussis', '4', AppConstants.successColor),
                     _buildStatItem('Échoués', '0', AppConstants.errorColor),
-                    _buildStatItem('Montant', '425K GNF', AppConstants.primaryOrange),
+                    _buildStatItem('Montant', '425K GNF', AppConstants.brandOrange),
                   ],
                 ),
                 
@@ -200,12 +200,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppConstants.primaryBlue.withValues(alpha: 0.1),
+              color: AppConstants.brandBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Icon(
               Icons.payment_rounded,
-              color: AppConstants.primaryBlue,
+              color: AppConstants.brandBlue,
               size: 20,
             ),
           ),

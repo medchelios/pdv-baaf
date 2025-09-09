@@ -37,7 +37,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: AppConstants.primaryBlue,
+        backgroundColor: AppConstants.brandBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -73,11 +73,11 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppConstants.primaryOrange,
+        color: AppConstants.brandOrange,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppConstants.primaryOrange.withValues(alpha: 0.3),
+            color: AppConstants.brandOrange.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -276,7 +276,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, color: AppConstants.primaryBlue),
+            prefixIcon: Icon(icon, color: AppConstants.brandBlue),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
@@ -287,7 +287,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppConstants.primaryBlue),
+              borderSide: const BorderSide(color: AppConstants.brandBlue),
             ),
             filled: true,
             fillColor: Colors.grey.withValues(alpha: 0.05),
@@ -313,12 +313,12 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: _selectedMethod == value 
-              ? AppConstants.primaryBlue.withValues(alpha: 0.1)
+              ? AppConstants.brandBlue.withValues(alpha: 0.1)
               : Colors.grey.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _selectedMethod == value 
-                ? AppConstants.primaryBlue
+                ? AppConstants.brandBlue
                 : Colors.grey.withValues(alpha: 0.3),
           ),
         ),
@@ -327,7 +327,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
             Icon(
               icon,
               color: _selectedMethod == value 
-                  ? AppConstants.primaryBlue
+                  ? AppConstants.brandBlue
                   : AppConstants.textSecondary,
               size: 20,
             ),
@@ -342,7 +342,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: _selectedMethod == value 
-                          ? AppConstants.primaryBlue
+                          ? AppConstants.brandBlue
                           : AppConstants.textPrimary,
                     ),
                   ),
@@ -360,7 +360,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
             if (_selectedMethod == value)
               const Icon(
                 Icons.check_circle_rounded,
-                color: AppConstants.primaryBlue,
+                color: AppConstants.brandBlue,
                 size: 20,
               ),
           ],
@@ -379,7 +379,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppConstants.primaryOrange,
+          backgroundColor: AppConstants.brandOrange,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(

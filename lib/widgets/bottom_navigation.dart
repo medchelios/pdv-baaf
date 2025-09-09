@@ -74,7 +74,7 @@ class BottomNavigation extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingM, vertical: AppConstants.paddingS),
         decoration: BoxDecoration(
-          color: isActive ? AppConstants.primaryOrange.withValues(alpha: 0.1) : Colors.transparent,
+          color: isActive ? AppConstants.brandOrange.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(AppConstants.radiusM),
         ),
         child: Column(
@@ -82,14 +82,14 @@ class BottomNavigation extends StatelessWidget {
           children: [
             Icon(
               isActive ? activeIcon : icon,
-              color: isActive ? AppConstants.primaryOrange : AppConstants.textLight,
+              color: isActive ? AppConstants.brandOrange : AppConstants.textLight,
               size: 22,
             ),
             const SizedBox(height: AppConstants.paddingXS),
             Text(
               label,
               style: TextStyle(
-                color: isActive ? AppConstants.primaryOrange : AppConstants.textLight,
+                color: isActive ? AppConstants.brandOrange : AppConstants.textLight,
                 fontSize: 11,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               ),

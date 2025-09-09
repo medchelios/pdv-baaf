@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppConstants.primaryBlue,
+            AppConstants.brandBlue,
             Color(0xFF0e4b5b),
           ],
         ),
@@ -166,11 +166,11 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppConstants.primaryOrange,
+        color: AppConstants.brandOrange,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppConstants.primaryOrange.withValues(alpha: 0.3),
+            color: AppConstants.brandOrange.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -196,15 +196,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 20,
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '1 GNF = 0.0001 USD',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
-            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -291,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -306,23 +297,23 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Container(
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: AppConstants.primaryBlue.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(25),
+                color: AppConstants.brandBlue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
                 icon,
-                color: AppConstants.primaryBlue,
-                size: 24,
+                color: AppConstants.brandBlue,
+                size: 20,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               label,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: AppConstants.textPrimary,
               ),
@@ -362,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Text(
                   'Voir tout',
                   style: TextStyle(
-                    color: AppConstants.primaryBlue,
+                    color: AppConstants.brandBlue,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -425,12 +416,12 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppConstants.primaryBlue.withValues(alpha: 0.1),
+              color: AppConstants.brandBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
               icon,
-              color: AppConstants.primaryBlue,
+              color: AppConstants.brandBlue,
               size: 20,
             ),
           ),

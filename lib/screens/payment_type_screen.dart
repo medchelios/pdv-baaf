@@ -19,7 +19,7 @@ class PaymentTypeScreen extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: AppConstants.primaryBlue,
+        backgroundColor: AppConstants.brandBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -34,7 +34,7 @@ class PaymentTypeScreen extends StatelessWidget {
               title: 'Prépayé',
               subtitle: 'Achat de crédit électrique',
               icon: Icons.flash_on_rounded,
-              color: AppConstants.primaryOrange,
+              color: AppConstants.brandOrange,
               onTap: () {
                 Navigator.push(
                   context,
@@ -53,7 +53,7 @@ class PaymentTypeScreen extends StatelessWidget {
               title: 'Postpayé',
               subtitle: 'Paiement de factures',
               icon: Icons.receipt_long_rounded,
-              color: AppConstants.primaryBlue,
+              color: AppConstants.brandBlue,
               onTap: () {
                 Navigator.push(
                   context,
