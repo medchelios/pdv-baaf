@@ -168,13 +168,13 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         Icon(
           icon,
           color: color,
-          size: 18,
+          size: 20,
         ),
         const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 18,
             color: color,
             fontWeight: FontWeight.bold,
           ),
@@ -182,7 +182,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 10,
+            fontSize: 12,
             color: AppConstants.textSecondary,
           ),
         ),
@@ -192,7 +192,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
 
   Widget _buildVerticalDivider() {
     return Container(
-      height: 30,
+      height: 35,
       width: 1,
       decoration: BoxDecoration(
         color: AppConstants.textSecondary.withValues(alpha: 0.3),
@@ -382,7 +382,6 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
-  String _selectedType = 'order';
   bool _isLoading = false;
 
   @override
@@ -395,33 +394,19 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nouvelle Commande UV'),
-      content: Form(
+      backgroundColor: Colors.white,
+      title: const Text(
+        'Nouvelle Commande UV',
+        style: TextStyle(fontSize: 18),
+      ),
+      contentPadding: const EdgeInsets.all(24),
+      content: SizedBox(
+        width: 350,
+        child: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            DropdownButtonFormField<String>(
-              value: _selectedType,
-              decoration: const InputDecoration(
-                labelText: 'Type de commande',
-                border: OutlineInputBorder(),
-              ),
-              items: UVOrderService.orderTypes.entries.map((entry) {
-                return DropdownMenuItem(
-                  value: entry.key,
-                  child: Text(entry.value),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedType = value!;
-                });
-              },
-            ),
-            
-            const SizedBox(height: AppConstants.paddingM),
-            
             TextFormField(
               controller: _amountController,
               decoration: const InputDecoration(
@@ -460,6 +445,7 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
             ),
           ],
         ),
+        ),
       ),
       actions: [
         TextButton(
@@ -491,7 +477,7 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
       final result = await UVOrderService().createOrder(
         amount: double.parse(_amountController.text),
         description: _descriptionController.text,
-        type: _selectedType,
+        type: 'order_uv',
       );
 
       if (result != null) {
