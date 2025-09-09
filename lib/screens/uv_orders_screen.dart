@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../constants/app_constants.dart';
 import '../services/uv_order_service.dart';
+import '../services/logger_service.dart';
 import '../widgets/common/custom_card.dart';
 
 class UVOrdersScreen extends StatefulWidget {
@@ -40,7 +42,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Erreur lors du chargement des données: $e');
+      LoggerService.error('Erreur lors du chargement des données', e);
       setState(() {
         _isLoading = false;
       });
@@ -137,45 +139,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     );
   }
 
-  Widget _buildStatItem(String label, String value, Color color, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(AppConstants.paddingM),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(AppConstants.radiusM),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
-          const SizedBox(height: AppConstants.paddingS),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: AppConstants.paddingXS),
-          Text(
-            label,
-            style: AppConstants.bodySmall.copyWith(
-              color: AppConstants.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSmallStatItem(String label, String value, Color color, IconData icon) {
     return Column(
@@ -256,23 +219,50 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   }
 
   Widget _buildBalanceItem(String label, String amount, IconData icon, Color color) {
-    return Column(
+    return Row(
       children: [
-        Text(
-          amount,
-          style: AppConstants.heading3.copyWith(
-            color: color,
-            fontWeight: FontWeight.bold,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _formatAmountWithSpaces(amount),
+                style: AppConstants.heading3.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                label,
+                style: AppConstants.bodySmall.copyWith(
+                  color: AppConstants.textSecondary,
+                ),
+              ),
+            ],
           ),
         ),
-        Text(
-          label,
-          style: AppConstants.bodySmall.copyWith(
-            color: AppConstants.textSecondary,
-          ),
+        Icon(
+          icon,
+          color: color,
+          size: 24,
         ),
       ],
     );
+  }
+
+  String _formatAmountWithSpaces(String amount) {
+    // Supprimer "GNF" et espaces existants
+    String cleanAmount = amount.replaceAll(' GNF', '').replaceAll(' ', '');
+    
+    // Supprimer les décimales
+    if (cleanAmount.contains('.')) {
+      cleanAmount = cleanAmount.split('.')[0];
+    }
+    
+    // Utiliser NumberFormat pour formater avec des espaces
+    final numberFormat = NumberFormat('#,###', 'fr_FR');
+    final numericValue = int.tryParse(cleanAmount) ?? 0;
+    return numberFormat.format(numericValue);
   }
 
   Widget _buildRecentOrdersSection() {
@@ -398,9 +388,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   }
 
   Widget _buildTableRow(Map<String, dynamic> order, bool isLast) {
-    final status = order['status'] as String;
-    final statusColor = _getStatusColor(status);
-    
     return InkWell(
       onTap: () => _showOrderDetails(order),
       child: Padding(
@@ -523,7 +510,11 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     if (cleanAmount.contains('.')) {
       cleanAmount = cleanAmount.split('.')[0];
     }
-    return cleanAmount;
+    
+    // Utiliser NumberFormat pour formater avec des espaces
+    final numberFormat = NumberFormat('#,###', 'fr_FR');
+    final numericValue = int.tryParse(cleanAmount) ?? 0;
+    return numberFormat.format(numericValue);
   }
 
   String _formatDate(String date) {
