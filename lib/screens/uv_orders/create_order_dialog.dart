@@ -110,7 +110,7 @@ class _CreateOrderDialogState extends State<CreateOrderDialog> {
       final result = await UVOrderService().createOrder(
         amount: double.parse(_amountController.text),
         description: _descriptionController.text,
-        type: 'order_uv',
+        type: 'order',
       );
 
       if (result != null) {
