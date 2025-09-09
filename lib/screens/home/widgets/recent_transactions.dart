@@ -3,12 +3,35 @@ import '../../../constants/app_constants.dart';
 import '../../../services/user_data_service.dart';
 import '../../dashboard_screen.dart';
 
-class RecentTransactions extends StatelessWidget {
+class RecentTransactions extends StatefulWidget {
   const RecentTransactions({super.key});
 
   @override
+  State<RecentTransactions> createState() => _RecentTransactionsState();
+}
+
+class _RecentTransactionsState extends State<RecentTransactions> {
+  @override
+  void initState() {
+    super.initState();
+    // Forcer un rebuild périodique pour voir les changements
+    _startPeriodicRefresh();
+  }
+
+  void _startPeriodicRefresh() {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {});
+        _startPeriodicRefresh(); // Continue le refresh
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final transactions = UserDataService().recentTransactions ?? _getDefaultTransactions();
+    final transactions = UserDataService().recentTransactions ?? [];
+    print('RecentTransactions - Build appelé avec ${transactions.length} transactions');
+    print('RecentTransactions - Données: $transactions');
     
     return Container(
       margin: const EdgeInsets.all(20),
@@ -47,198 +70,155 @@ class RecentTransactions extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-                  ...transactions.take(5).map((transaction) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _buildTransactionItem(
-                      icon: _getTransactionIcon(transaction['type'] ?? ''),
-                      title: transaction['title'] ?? 'Paiement',
-                      subtitle: transaction['subtitle'] ?? 'Récent',
-                      amount: transaction['amount'] ?? '0 GNF',
-                      isPositive: transaction['isPositive'] ?? true,
-                      reference: transaction['reference'],
-                      period: transaction['period'],
-                    ),
-                  )),
+          if (transactions.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Colors.grey.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: const Center(
+                child: Text(
+                  'Aucun paiement récent disponible',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppConstants.textSecondary,
+                  ),
+                ),
+              ),
+            )
+          else
+                    ...transactions.take(5).map((transaction) {
+                      print('RecentTransactions - Traitement transaction: $transaction');
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: _buildTransactionItem(
+                          title: transaction['title'] ?? 'Paiement',
+                          subtitle: transaction['subtitle'] ?? 'Récent',
+                          amount: transaction['amount'] ?? '0 GNF',
+                          reference: transaction['reference'],
+                          period: transaction['period'],
+                          subscriberName: transaction['subscriber_name'],
+                          status: transaction['status'],
+                          statusLabel: transaction['status_label'],
+                        ),
+                      );
+                    }),
         ],
       ),
     );
   }
 
-  List<Map<String, dynamic>> _getDefaultTransactions() {
-    return [
-      {
-        'type': 'prepaid',
-        'title': 'Prépayé',
-        'subtitle': 'Il y a 2 min',
-        'amount': '+15,000 GNF',
-        'isPositive': true,
-      },
-      {
-        'type': 'postpaid',
-        'title': 'Postpayé',
-        'subtitle': 'Il y a 5 min',
-        'amount': '+25,000 GNF',
-        'isPositive': true,
-      },
-      {
-        'type': 'uv_order',
-        'title': 'Commande UV',
-        'subtitle': 'Il y a 10 min',
-        'amount': '+10,000 GNF',
-        'isPositive': true,
-      },
-    ];
-  }
 
-  IconData _getTransactionIcon(String type) {
-    switch (type) {
-      case 'prepaid':
-        return Icons.flash_on_rounded;
-      case 'postpaid':
-        return Icons.receipt_long_rounded;
-      case 'uv_order':
-        return Icons.shopping_cart_rounded;
-      default:
-        return Icons.payment_rounded;
-    }
-  }
 
-  Widget _buildTransactionItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String amount,
-    required bool isPositive,
-    String? reference,
-    String? period,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        // TODO: Afficher les détails du paiement
-      },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppConstants.brandBlue.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(
-                icon,
-                color: AppConstants.brandBlue,
-                size: 16,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppConstants.textPrimary,
-                    ),
-                  ),
-                  if (reference != null && reference.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      'Ref: $reference',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: AppConstants.textSecondary,
-                      ),
-                    ),
-                  ],
-                  if (period != null && period.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      'Période: $period',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: AppConstants.textSecondary,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: AppConstants.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  amount,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppConstants.textPrimary,
+          Widget _buildTransactionItem({
+            required String title,
+            required String subtitle,
+            required String amount,
+            String? reference,
+            String? period,
+            String? subscriberName,
+            String? status,
+            String? statusLabel,
+          }) {
+            return GestureDetector(
+              onTap: () {
+                // TODO: Afficher les détails du paiement
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: Colors.grey.withValues(alpha: 0.2),
+                    width: 1,
                   ),
                 ),
-                if (isPositive) ...[
-                  const SizedBox(height: 2),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppConstants.successColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'Crédit',
-                      style: TextStyle(
-                        fontSize: 8,
-                        color: AppConstants.successColor,
-                        fontWeight: FontWeight.w500,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            subscriberName ?? title,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppConstants.textPrimary,
+                            ),
+                          ),
+                          if (reference != null && reference.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              'Ref: $reference',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppConstants.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                  ),
-                ] else ...[
-                  const SizedBox(height: 2),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppConstants.errorColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'Débit',
-                      style: TextStyle(
-                        fontSize: 8,
-                        color: AppConstants.errorColor,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            amount,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: AppConstants.textPrimary,
+                            ),
+                          ),
+                          if (period != null && period.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              period,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppConstants.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            statusLabel ?? subtitle,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppConstants.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            subtitle,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppConstants.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
 }

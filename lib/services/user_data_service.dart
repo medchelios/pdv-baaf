@@ -74,6 +74,7 @@ class UserDataService {
     _lastTransactionsUpdate = DateTime.now();
     _saveTransactionsToCache();
     LoggerService.info('Transactions récentes mises à jour');
+    print('UserDataService - Transactions mises à jour: ${transactions.length} transactions');
   }
 
   /// Sauvegarder le solde en cache

@@ -16,19 +16,26 @@ class HomeDataLoader {
     
     _isLoading = true;
     LoggerService.info('Chargement des données de la page d\'accueil');
+    print('HomeDataLoader - Début du chargement des données');
 
     try {
+      print('HomeDataLoader - Vérification du cache des soldes: ${UserDataService().hasValidBalanceCache}');
       if (!UserDataService().hasValidBalanceCache) {
+        print('HomeDataLoader - Chargement du solde des comptes');
         await _loadAccountBalance();
       }
 
+      print('HomeDataLoader - Vérification du cache des transactions: ${UserDataService().hasValidTransactionsCache}');
       if (!UserDataService().hasValidTransactionsCache) {
+        print('HomeDataLoader - Chargement des transactions récentes');
         await _loadRecentTransactions();
       }
 
       LoggerService.info('Données de la page d\'accueil chargées avec succès');
+      print('HomeDataLoader - Données chargées avec succès');
     } catch (e) {
       LoggerService.error('Erreur lors du chargement des données de la page d\'accueil', e);
+      print('HomeDataLoader - Erreur: $e');
     } finally {
       _isLoading = false;
     }
@@ -86,6 +93,7 @@ class HomeDataLoader {
       'period': payment['formatted_period'] ?? '',
       'status': status,
       'status_label': payment['status_label'] ?? '',
+      'subscriber_name': payment['subscriber_name'] ?? '',
     };
   }
 
