@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
+import 'logger_service.dart';
 
 class AuthService {
   static String get baseUrl => ApiConfig.fullApiUrl;
@@ -46,6 +47,7 @@ class AuthService {
 
   Future<Map<String, dynamic>> loginWithEmail(String email, String password) async {
     try {
+      LoggerService.info('Tentative de connexion avec email: $email');
       
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
@@ -56,17 +58,22 @@ class AuthService {
         }),
       );
 
+      LoggerService.debug('Response: ${response.statusCode} - ${response.body}');
       final result = jsonDecode(response.body);
       
       if (result['success'] == true) {
+        LoggerService.info('Connexion réussie');
         await _saveAuthData(
           result['data']['token'],
           result['data']['user'],
         );
+      } else {
+        LoggerService.warning('Échec de connexion: ${result['message']}');
       }
       
       return result;
     } catch (e) {
+      LoggerService.error('Erreur lors de la connexion', e);
       return {
         'success': false,
         'message': 'Erreur de connexion: $e',
@@ -76,6 +83,7 @@ class AuthService {
 
   Future<Map<String, dynamic>> loginWithPin(String pin) async {
     try {
+      LoggerService.info('Tentative de connexion PDV avec PIN: $pin');
       
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login-pdv'),
@@ -85,17 +93,22 @@ class AuthService {
         }),
       );
 
+      LoggerService.debug('Response: ${response.statusCode} - ${response.body}');
       final result = jsonDecode(response.body);
       
       if (result['success'] == true) {
+        LoggerService.info('Connexion PDV réussie');
         await _saveAuthData(
           result['data']['token'],
           result['data']['user'],
         );
+      } else {
+        LoggerService.warning('Échec de connexion PDV: ${result['message']}');
       }
       
       return result;
     } catch (e) {
+      LoggerService.error('Erreur lors de la connexion PDV', e);
       return {
         'success': false,
         'message': 'Erreur de connexion: $e',

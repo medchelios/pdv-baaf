@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import 'auth_service.dart';
+import 'logger_service.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -16,37 +17,43 @@ class ApiService {
   }
   Future<Map<String, dynamic>?> get(String endpoint) async {
     try {
+      LoggerService.debug('GET $endpoint');
       final response = await http.get(
         Uri.parse('${ApiConfig.fullApiUrl}/$endpoint'),
         headers: _headers,
       );
 
-
+      LoggerService.debug('GET Response: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
+        LoggerService.warning('GET Error: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
+      LoggerService.error('GET Exception: $endpoint', e);
       return null;
     }
   }
 
   Future<Map<String, dynamic>?> post(String endpoint, Map<String, dynamic> data) async {
     try {
+      LoggerService.debug('POST $endpoint with data: $data');
       final response = await http.post(
         Uri.parse('${ApiConfig.fullApiUrl}/$endpoint'),
         headers: _headers,
         body: json.encode(data),
       );
 
-
+      LoggerService.debug('POST Response: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
+        LoggerService.warning('POST Error: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
+      LoggerService.error('POST Exception: $endpoint', e);
       return null;
     }
   }
