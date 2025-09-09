@@ -27,11 +27,9 @@ class _RecentTransactionsState extends State<RecentTransactions> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final transactions = UserDataService().recentTransactions ?? [];
-    print('RecentTransactions - Build appelé avec ${transactions.length} transactions');
-    print('RecentTransactions - Données: $transactions');
+          @override
+          Widget build(BuildContext context) {
+            final transactions = UserDataService().recentTransactions ?? [];
     
     return Container(
       margin: const EdgeInsets.all(20),
@@ -93,7 +91,6 @@ class _RecentTransactionsState extends State<RecentTransactions> {
             )
           else
                     ...transactions.take(5).map((transaction) {
-                      print('RecentTransactions - Traitement transaction: $transaction');
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: _buildTransactionItem(
