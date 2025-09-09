@@ -1,5 +1,6 @@
 import 'logger_service.dart';
 import 'uv_order_service.dart';
+import 'payment_service.dart';
 import 'user_data_service.dart';
 
 class HomeDataLoader {
@@ -10,7 +11,6 @@ class HomeDataLoader {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  /// Charger toutes les données nécessaires pour la page d'accueil
   Future<void> loadHomeData() async {
     if (_isLoading) return;
     
@@ -18,12 +18,10 @@ class HomeDataLoader {
     LoggerService.info('Chargement des données de la page d\'accueil');
 
     try {
-      // Charger le solde des comptes si pas en cache
       if (!UserDataService().hasValidBalanceCache) {
         await _loadAccountBalance();
       }
 
-      // Charger les transactions récentes si pas en cache
       if (!UserDataService().hasValidTransactionsCache) {
         await _loadRecentTransactions();
       }
@@ -36,7 +34,6 @@ class HomeDataLoader {
     }
   }
 
-  /// Charger le solde des comptes
   Future<void> _loadAccountBalance() async {
     try {
       LoggerService.info('Chargement du solde des comptes');
@@ -53,44 +50,99 @@ class HomeDataLoader {
     }
   }
 
-  /// Charger les transactions récentes
   Future<void> _loadRecentTransactions() async {
     try {
-      LoggerService.info('Chargement des transactions récentes');
-      // TODO: Implémenter l'API des transactions récentes
-      // Pour l'instant, on utilise les données par défaut
-      final defaultTransactions = [
-        {
-          'type': 'prepaid',
-          'title': 'Prépayé',
-          'subtitle': 'Il y a 2 min',
-          'amount': '+15,000 GNF',
-          'isPositive': true,
-        },
-        {
-          'type': 'postpaid',
-          'title': 'Postpayé',
-          'subtitle': 'Il y a 5 min',
-          'amount': '+25,000 GNF',
-          'isPositive': true,
-        },
-        {
-          'type': 'uv_order',
-          'title': 'Commande UV',
-          'subtitle': 'Il y a 10 min',
-          'amount': '+10,000 GNF',
-          'isPositive': true,
-        },
-      ];
+      LoggerService.info('Chargement des paiements récents');
+      final payments = await PaymentService().getRecentPayments(limit: 5);
       
-      UserDataService().updateRecentTransactions(defaultTransactions);
-      LoggerService.info('Transactions récentes chargées et mises en cache');
+      if (payments != null && payments.isNotEmpty) {
+        final transactions = payments.map((payment) => _convertPaymentToTransaction(payment)).toList();
+        UserDataService().updateRecentTransactions(transactions);
+        LoggerService.info('${transactions.length} paiements récents chargés et mis en cache');
+      } else {
+        LoggerService.warning('Aucun paiement récent disponible');
+        UserDataService().updateRecentTransactions([]);
+      }
     } catch (e) {
-      LoggerService.error('Erreur lors du chargement des transactions récentes', e);
+      LoggerService.error('Erreur lors du chargement des paiements récents', e);
+      UserDataService().updateRecentTransactions([]);
     }
   }
 
-  /// Forcer le rechargement des données
+  Map<String, dynamic> _convertPaymentToTransaction(Map<String, dynamic> payment) {
+    final amount = payment['amount'] ?? 0;
+    final formattedAmount = payment['formatted_amount'] ?? _formatAmount(amount);
+    final status = payment['status'] ?? 'completed';
+    final isPositive = status == 'completed';
+    
+    return {
+      'id': payment['id'],
+      'type': _getPaymentType(payment['payment_method'] ?? ''),
+      'title': _getPaymentTitle(payment['payment_method'] ?? ''),
+      'subtitle': _formatTimeAgo(payment['created_at'] ?? ''),
+      'amount': formattedAmount,
+      'isPositive': isPositive,
+      'reference': payment['reference'] ?? '',
+      'period': payment['formatted_period'] ?? '',
+      'status': status,
+      'status_label': payment['status_label'] ?? '',
+    };
+  }
+
+  String _getPaymentType(String paymentMethod) {
+    switch (paymentMethod.toLowerCase()) {
+      case 'mobile_money':
+        return 'mobile_money';
+      case 'cash':
+        return 'cash';
+      case 'bank':
+        return 'bank';
+      default:
+        return 'payment';
+    }
+  }
+
+  String _getPaymentTitle(String paymentMethod) {
+    switch (paymentMethod.toLowerCase()) {
+      case 'mobile_money':
+        return 'Mobile Money';
+      case 'cash':
+        return 'Espèces';
+      case 'bank':
+        return 'Banque';
+      default:
+        return 'Paiement';
+    }
+  }
+
+  String _formatAmount(dynamic amount) {
+    if (amount is num) {
+      return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]} ')} GNF';
+    }
+    return '0 GNF';
+  }
+
+  String _formatTimeAgo(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      final now = DateTime.now();
+      final difference = now.difference(date);
+      
+      if (difference.inMinutes < 1) {
+        return 'À l\'instant';
+      } else if (difference.inMinutes < 60) {
+        return 'Il y a ${difference.inMinutes} min';
+      } else if (difference.inHours < 24) {
+        return 'Il y a ${difference.inHours}h';
+      } else {
+        return 'Il y a ${difference.inDays} jour${difference.inDays > 1 ? 's' : ''}';
+      }
+    } catch (e) {
+      return 'Récent';
+    }
+  }
+
+
   Future<void> refreshData() async {
     LoggerService.info('Rechargement forcé des données');
     await UserDataService().clearCache();

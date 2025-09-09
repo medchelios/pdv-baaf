@@ -47,16 +47,18 @@ class RecentTransactions extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ...transactions.take(3).map((transaction) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildTransactionItem(
-              icon: _getTransactionIcon(transaction['type'] ?? ''),
-              title: transaction['title'] ?? 'Transaction',
-              subtitle: transaction['subtitle'] ?? 'Récent',
-              amount: transaction['amount'] ?? '+0 GNF',
-              isPositive: transaction['isPositive'] ?? true,
-            ),
-          )),
+                  ...transactions.take(5).map((transaction) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _buildTransactionItem(
+                      icon: _getTransactionIcon(transaction['type'] ?? ''),
+                      title: transaction['title'] ?? 'Paiement',
+                      subtitle: transaction['subtitle'] ?? 'Récent',
+                      amount: transaction['amount'] ?? '0 GNF',
+                      isPositive: transaction['isPositive'] ?? true,
+                      reference: transaction['reference'],
+                      period: transaction['period'],
+                    ),
+                  )),
         ],
       ),
     );
@@ -107,68 +109,135 @@ class RecentTransactions extends StatelessWidget {
     required String subtitle,
     required String amount,
     required bool isPositive,
+    String? reference,
+    String? period,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppConstants.brandBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
+    return GestureDetector(
+      onTap: () {
+        // TODO: Afficher les détails du paiement
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
             ),
-            child: Icon(
-              icon,
-              color: AppConstants.brandBlue,
-              size: 20,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppConstants.brandBlue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                icon,
+                color: AppConstants.brandBlue,
+                size: 16,
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppConstants.textPrimary,
+                    ),
+                  ),
+                  if (reference != null && reference.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      'Ref: $reference',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: AppConstants.textSecondary,
+                      ),
+                    ),
+                  ],
+                  if (period != null && period.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      'Période: $period',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: AppConstants.textSecondary,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppConstants.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  title,
+                  amount,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                     color: AppConstants.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppConstants.textSecondary,
+                if (isPositive) ...[
+                  const SizedBox(height: 2),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppConstants.successColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'Crédit',
+                      style: TextStyle(
+                        fontSize: 8,
+                        color: AppConstants.successColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                ),
+                ] else ...[
+                  const SizedBox(height: 2),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppConstants.errorColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'Débit',
+                      style: TextStyle(
+                        fontSize: 8,
+                        color: AppConstants.errorColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
-          ),
-          Text(
-            amount,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isPositive ? AppConstants.successColor : AppConstants.errorColor,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
