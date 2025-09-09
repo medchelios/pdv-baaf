@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../services/user_data_service.dart';
 import '../../dashboard_screen.dart';
+import 'payment_details_dialog.dart';
+import '../../payments/payments_screen.dart';
 
 class RecentTransactions extends StatefulWidget {
   const RecentTransactions({super.key});
@@ -47,15 +49,15 @@ class _RecentTransactionsState extends State<RecentTransactions> {
                   color: AppConstants.textPrimary,
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DashboardScreen(),
-                    ),
-                  );
-                },
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PaymentsScreen(),
+                            ),
+                          );
+                        },
                 child: const Text(
                   'Voir tout',
                   style: TextStyle(
@@ -102,6 +104,7 @@ class _RecentTransactionsState extends State<RecentTransactions> {
                           subscriberName: transaction['subscriber_name'],
                           status: transaction['status'],
                           statusLabel: transaction['status_label'],
+                          transactionData: transaction,
                         ),
                       );
                     }),
@@ -121,10 +124,16 @@ class _RecentTransactionsState extends State<RecentTransactions> {
             String? subscriberName,
             String? status,
             String? statusLabel,
+            Map<String, dynamic>? transactionData,
           }) {
             return GestureDetector(
               onTap: () {
-                // TODO: Afficher les détails du paiement
+                if (transactionData != null) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => PaymentDetailsDialog(paymentData: transactionData!),
+                  );
+                }
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -218,4 +227,5 @@ class _RecentTransactionsState extends State<RecentTransactions> {
               ),
             );
           }
+
 }

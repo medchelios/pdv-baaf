@@ -30,6 +30,34 @@ class PaymentService {
     }
   }
 
+  Future<Map<String, dynamic>?> getPayments({
+    int page = 1,
+    int limit = 10,
+    String search = '',
+  }) async {
+    try {
+      LoggerService.info('Récupération des paiements (page: $page, limit: $limit, search: $search)');
+      
+      String url = 'payments?page=$page&limit=$limit';
+      if (search.isNotEmpty) {
+        url += '&search=${Uri.encodeComponent(search)}';
+      }
+      
+      final response = await _apiService.get(url);
+      
+      if (response?['data'] != null) {
+        LoggerService.info('Paiements récupérés avec succès');
+        return response!['data'];
+      } else {
+        LoggerService.warning('Aucune donnée de paiements reçue');
+        return null;
+      }
+    } catch (e) {
+      LoggerService.error('Erreur lors de la récupération des paiements', e);
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>?> getPaymentDetails(String paymentId) async {
     try {
       LoggerService.info('Récupération des détails du paiement: $paymentId');
