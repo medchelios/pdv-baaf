@@ -15,43 +15,48 @@ class RecentOrdersSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Commandes Récentes',
+              style: AppConstants.heading2.copyWith(
+                color: AppConstants.brandBlue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            IconButton(
+              onPressed: onRefresh,
+              icon: Icon(
+                Icons.refresh,
+                color: AppConstants.brandBlue,
+              ),
+              tooltip: 'Actualiser',
+            ),
+          ],
+        ),
+        const SizedBox(height: AppConstants.paddingM),
+        
+        CustomCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Commandes Récentes',
-                style: AppConstants.heading2.copyWith(
-                  color: AppConstants.brandBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                onPressed: onRefresh,
-                icon: Icon(
-                  Icons.refresh,
-                  color: AppConstants.brandBlue,
-                ),
-                tooltip: 'Actualiser',
-              ),
+              if (recentOrders == null || recentOrders!.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(AppConstants.paddingXL),
+                    child: Text('Aucune commande récente'),
+                  ),
+                )
+              else
+                _buildOrdersTable(context),
             ],
           ),
-          const SizedBox(height: AppConstants.paddingM),
-          
-          if (recentOrders == null || recentOrders!.isEmpty)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(AppConstants.paddingXL),
-                child: Text('Aucune commande récente'),
-              ),
-            )
-          else
-            _buildOrdersTable(context),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

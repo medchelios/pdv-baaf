@@ -77,14 +77,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_stats != null) ...[
-                      Text(
-                        'Statistiques UV',
-                        style: AppConstants.heading1.copyWith(
-                          color: AppConstants.brandBlue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppConstants.paddingM),
                       StatsSection(stats: _stats!),
                       const SizedBox(height: AppConstants.paddingXL),
                     ],

@@ -9,42 +9,55 @@ class StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomCard(
-      child: Padding(
-        padding: const EdgeInsets.all(AppConstants.paddingM),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildSmallStatItem(
-              'Total',
-              '${stats['total_orders'] ?? 0}',
-              AppConstants.brandBlue,
-              Icons.shopping_cart_rounded,
-            ),
-            _buildVerticalDivider(),
-            _buildSmallStatItem(
-              'En attente',
-              '${stats['pending_orders'] ?? 0}',
-              AppConstants.warningColor,
-              Icons.pending_rounded,
-            ),
-            _buildVerticalDivider(),
-            _buildSmallStatItem(
-              'Validées',
-              '${stats['validated_orders'] ?? 0}',
-              AppConstants.successColor,
-              Icons.check_circle_rounded,
-            ),
-            _buildVerticalDivider(),
-            _buildSmallStatItem(
-              'Rejetées',
-              '${stats['rejected_orders'] ?? 0}',
-              AppConstants.errorColor,
-              Icons.cancel_rounded,
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Statistiques UV',
+          style: AppConstants.heading2.copyWith(
+            color: AppConstants.brandBlue,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-      ),
+        const SizedBox(height: AppConstants.paddingM),
+        CustomCard(
+          child: Padding(
+            padding: const EdgeInsets.all(AppConstants.paddingM),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildSmallStatItem(
+                  'Total',
+                  '${stats['total_orders'] ?? 0}',
+                  AppConstants.brandBlue,
+                  Icons.shopping_cart_rounded,
+                ),
+                _buildVerticalDivider(),
+                _buildSmallStatItem(
+                  'En attente',
+                  '${stats['pending_orders'] ?? 0}',
+                  AppConstants.warningColor,
+                  Icons.pending_rounded,
+                ),
+                _buildVerticalDivider(),
+                _buildSmallStatItem(
+                  'Validées',
+                  '${stats['validated_orders'] ?? 0}',
+                  AppConstants.successColor,
+                  Icons.check_circle_rounded,
+                ),
+                _buildVerticalDivider(),
+                _buildSmallStatItem(
+                  'Rejetées',
+                  '${stats['rejected_orders'] ?? 0}',
+                  AppConstants.errorColor,
+                  Icons.cancel_rounded,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 

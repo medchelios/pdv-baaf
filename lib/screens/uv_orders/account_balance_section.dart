@@ -9,11 +9,19 @@ class AccountBalanceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Mes comptes',
+          style: AppConstants.heading2.copyWith(
+            color: AppConstants.brandBlue,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppConstants.paddingM),
+        CustomCard(
+          child: Row(
             children: [
               Expanded(
                 child: _buildBalanceItem(
@@ -36,8 +44,8 @@ class AccountBalanceSection extends StatelessWidget {
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
