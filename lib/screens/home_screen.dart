@@ -5,7 +5,7 @@ import '../services/auth_service.dart';
 import 'payment_type_screen.dart';
 import 'settings_screen.dart';
 import 'dashboard_screen.dart';
-import 'uv_orders_screen.dart';
+import 'uv_orders/uv_orders_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

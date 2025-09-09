@@ -8,7 +8,7 @@ import 'screens/payment_type_screen.dart';
 import 'screens/prepaid_payment_screen.dart';
 import 'screens/postpaid_payment_screen.dart';
 import 'screens/dashboard_screen.dart';
-import 'screens/uv_orders_screen.dart';
+import 'screens/uv_orders/uv_orders_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'controllers/dashboard_controller.dart';
