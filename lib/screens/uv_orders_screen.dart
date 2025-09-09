@@ -67,15 +67,17 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                     
                     const SizedBox(height: AppConstants.paddingL),
                     
-                    _buildQuickActionsSection(),
-                    
-                    const SizedBox(height: AppConstants.paddingL),
-                    
                     _buildRecentOrdersSection(),
                   ],
                 ),
               ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateOrderDialog,
+        backgroundColor: AppConstants.brandOrange,
+        foregroundColor: AppConstants.brandWhite,
+        child: const Icon(Icons.add_rounded),
+      ),
     );
   }
 
@@ -199,30 +201,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     );
   }
 
-  Widget _buildQuickActionsSection() {
-    return CustomCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Actions Rapides',
-            style: AppConstants.heading2.copyWith(
-              color: AppConstants.brandBlue,
-            ),
-          ),
-          const SizedBox(height: AppConstants.paddingM),
-          
-          ActionButton(
-            title: 'Nouvelle Commande UV',
-            icon: Icons.add_rounded,
-            onTap: _showCreateOrderDialog,
-            color: AppConstants.brandOrange,
-            isFullWidth: true,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildRecentOrdersSection() {
     return CustomCard(
