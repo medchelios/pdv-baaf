@@ -3,7 +3,7 @@ import '../../constants/app_constants.dart';
 import '../../widgets/common/custom_card.dart';
 import '../../utils/format_utils.dart';
 
-class RecentOrdersSection extends StatelessWidget {
+class RecentOrdersSection extends StatefulWidget {
   final List<Map<String, dynamic>>? recentOrders;
   final VoidCallback onRefresh;
 
@@ -14,7 +14,21 @@ class RecentOrdersSection extends StatelessWidget {
   });
 
   @override
+  State<RecentOrdersSection> createState() => _RecentOrdersSectionState();
+}
+
+class _RecentOrdersSectionState extends State<RecentOrdersSection> {
+  int _currentPage = 0;
+  static const int _itemsPerPage = 3;
+
+  @override
   Widget build(BuildContext context) {
+    final orders = widget.recentOrders ?? [];
+    final totalPages = (orders.length / _itemsPerPage).ceil();
+    final startIndex = _currentPage * _itemsPerPage;
+    final endIndex = (startIndex + _itemsPerPage).clamp(0, orders.length);
+    final currentOrders = orders.sublist(startIndex, endIndex);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -29,7 +43,7 @@ class RecentOrdersSection extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: onRefresh,
+              onPressed: widget.onRefresh,
               icon: Icon(
                 Icons.refresh,
                 color: AppConstants.brandBlue,
@@ -44,15 +58,20 @@ class RecentOrdersSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (recentOrders == null || recentOrders!.isEmpty)
+              if (orders.isEmpty)
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(AppConstants.paddingXL),
                     child: Text('Aucune commande récente'),
                   ),
                 )
-              else
-                _buildOrdersTable(context),
+              else ...[
+                _buildOrdersTable(context, currentOrders),
+                if (totalPages > 1) ...[
+                  const SizedBox(height: AppConstants.paddingM),
+                  _buildPagination(totalPages),
+                ],
+              ],
             ],
           ),
         ),
@@ -60,7 +79,7 @@ class RecentOrdersSection extends StatelessWidget {
     );
   }
 
-  Widget _buildOrdersTable(BuildContext context) {
+  Widget _buildOrdersTable(BuildContext context, List<Map<String, dynamic>> orders) {
     return Container(
       decoration: BoxDecoration(
         color: AppConstants.brandWhite,
@@ -119,10 +138,10 @@ class RecentOrdersSection extends StatelessWidget {
           ),
           
           // Lignes du tableau
-          ...recentOrders!.asMap().entries.map((entry) {
+          ...orders.asMap().entries.map((entry) {
             final index = entry.key;
             final order = entry.value;
-            final isLast = index == recentOrders!.length - 1;
+            final isLast = index == orders.length - 1;
             
             return Container(
               decoration: BoxDecoration(
@@ -183,6 +202,37 @@ class RecentOrdersSection extends StatelessWidget {
     );
   }
 
+  Widget _buildPagination(int totalPages) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: _currentPage > 0 ? () {
+            setState(() {
+              _currentPage--;
+            });
+          } : null,
+          icon: const Icon(Icons.chevron_left),
+        ),
+        Text(
+          '${_currentPage + 1} / $totalPages',
+          style: AppConstants.bodyMedium.copyWith(
+            color: AppConstants.brandBlue,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        IconButton(
+          onPressed: _currentPage < totalPages - 1 ? () {
+            setState(() {
+              _currentPage++;
+            });
+          } : null,
+          icon: const Icon(Icons.chevron_right),
+        ),
+      ],
+    );
+  }
+
   void _showOrderDetails(BuildContext context, Map<String, dynamic> order) {
     showDialog(
       context: context,
@@ -200,7 +250,9 @@ class RecentOrdersSection extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildDetailRow('Type', order['type_label'] ?? 'Commande UV'),
-              _buildDetailRow('Montant', order['formatted_total_amount'] ?? '0 GNF'),
+              _buildDetailRow('Montant', order['formatted_amount'] ?? '0 GNF'),
+              _buildDetailRow('Commission', order['bonus_amount'] != null ? '${order['bonus_amount']} GNF' : '0 GNF'),
+              _buildDetailRow('Total avec commission', order['formatted_total_amount'] ?? '0 GNF'),
               _buildDetailRow('Statut', order['status_label'] ?? 'Inconnu'),
               _buildDetailRow('Description', order['description'] ?? 'Aucune description'),
               _buildDetailRow('Demandé par', order['requester_name'] ?? 'N/A'),
