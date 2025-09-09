@@ -166,98 +166,126 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppConstants.brandOrange,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: AppConstants.cardShadowLarge,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Statistiques',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppConstants.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 20),
-          
-          // Statistiques UV
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatItem(
-                  'Total des commandes UV',
-                  '2',
-                  AppConstants.brandBlue,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildStatItem(
-                  'Total Paiements',
-                  '4',
-                  AppConstants.brandOrange,
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Paiements échoués
-          _buildStatItem(
-            'Échoués',
-            '0',
-            AppConstants.errorColor,
-            fullWidth: true,
-          ),
-          
-          const SizedBox(height: 8),
-          
-          _buildStatItem(
-            'Paiements échoués',
-            '0',
-            AppConstants.errorColor,
-            fullWidth: true,
+        boxShadow: [
+          BoxShadow(
+            color: AppConstants.brandOrange.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, Color color, {bool fullWidth = false}) {
-    return Container(
-      width: fullWidth ? double.infinity : null,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: color,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'GNF',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Icon(
+                Icons.visibility_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Center(
+            child: Text(
+              '1,500,000',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppConstants.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(
+                Icons.trending_up_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                '+25,000',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 20),
+              const Icon(
+                Icons.shopping_cart_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                '2',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 20),
+              const Icon(
+                Icons.payment_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                '4',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 20),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                '3',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 20),
+              const Icon(
+                Icons.cancel_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                '0',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
         ],
       ),
