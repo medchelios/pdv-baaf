@@ -22,7 +22,7 @@ class StatsSection extends StatelessWidget {
         const SizedBox(height: AppConstants.paddingM),
         CustomCard(
           child: Padding(
-            padding: const EdgeInsets.all(AppConstants.paddingM),
+            padding: const EdgeInsets.all(AppConstants.paddingL),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -65,25 +65,21 @@ class StatsSection extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          color: color,
-          size: 20,
-        ),
-        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 32,
             color: color,
             fontWeight: FontWeight.bold,
           ),
         ),
+        const SizedBox(height: 4),
         Text(
           label,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 16,
             color: AppConstants.textSecondary,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -92,7 +88,7 @@ class StatsSection extends StatelessWidget {
 
   Widget _buildVerticalDivider() {
     return Container(
-      height: 35,
+      height: 50,
       width: 1,
       decoration: BoxDecoration(
         color: AppConstants.textSecondary.withValues(alpha: 0.3),
