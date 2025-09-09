@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../services/uv_order_service.dart';
 import '../widgets/common/custom_card.dart';
-import '../widgets/common/action_button.dart';
 
 class UVOrdersScreen extends StatefulWidget {
   const UVOrdersScreen({super.key});
@@ -41,6 +40,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      print('Erreur lors du chargement des données: $e');
       setState(() {
         _isLoading = false;
       });
@@ -66,13 +66,22 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (_stats != null) _buildStatsSection(),
-                    
-                    const SizedBox(height: AppConstants.paddingL),
+                    if (_stats != null) ...[
+                      Text(
+                        'Statistiques UV',
+                        style: AppConstants.heading1.copyWith(
+                          color: AppConstants.brandBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: AppConstants.paddingM),
+                      _buildStatsSection(),
+                      const SizedBox(height: AppConstants.paddingXL),
+                    ],
                     
                     _buildAccountBalanceSection(),
                     
-                    const SizedBox(height: AppConstants.paddingL),
+                    const SizedBox(height: AppConstants.paddingXL),
                     
                     _buildRecentOrdersSection(),
                   ],
@@ -218,13 +227,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Solde des Comptes',
-            style: AppConstants.heading2.copyWith(
-              color: AppConstants.brandBlue,
-            ),
-          ),
-          const SizedBox(height: AppConstants.paddingM),
           
           Row(
             children: [
@@ -248,34 +250,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
             ],
           ),
           
-          if (_accountBalance!['can_view_edg_balance'] == true && 
-              _accountBalance!['edg_available'] == true) ...[
-            const SizedBox(height: AppConstants.paddingM),
-            Container(
-              padding: const EdgeInsets.all(AppConstants.paddingM),
-              decoration: BoxDecoration(
-                color: AppConstants.brandBlue.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppConstants.radiusM),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.account_balance,
-                    color: AppConstants.brandBlue,
-                    size: 20,
-                  ),
-                  const SizedBox(width: AppConstants.paddingS),
-                  Text(
-                    'Solde EDG: ${_accountBalance!['edg_balance']?.toString() ?? '0'} GNF',
-                    style: AppConstants.bodyMedium.copyWith(
-                      color: AppConstants.brandBlue,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -284,8 +258,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   Widget _buildBalanceItem(String label, String amount, IconData icon, Color color) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: AppConstants.paddingS),
         Text(
           amount,
           style: AppConstants.heading3.copyWith(
@@ -315,11 +287,16 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                 'Commandes Récentes',
                 style: AppConstants.heading2.copyWith(
                   color: AppConstants.brandBlue,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              TextButton(
+              IconButton(
                 onPressed: _loadData,
-                child: const Text('Actualiser'),
+                icon: Icon(
+                  Icons.refresh,
+                  color: AppConstants.brandBlue,
+                ),
+                tooltip: 'Actualiser',
               ),
             ],
           ),
@@ -333,129 +310,243 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
               ),
             )
           else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _recentOrders!.length,
-              separatorBuilder: (context, index) => const SizedBox(height: AppConstants.paddingS),
-              itemBuilder: (context, index) {
-                final order = _recentOrders![index];
-                return _buildOrderItem(order);
-              },
-            ),
+            _buildOrdersTable(),
         ],
       ),
     );
   }
 
-  Widget _buildOrderItem(Map<String, dynamic> order) {
-    final status = order['status'] as String;
-    final statusColor = _getStatusColor(status);
-    
+  Widget _buildOrdersTable() {
     return Container(
-      padding: const EdgeInsets.all(AppConstants.paddingM),
       decoration: BoxDecoration(
-        color: AppConstants.cardColor,
+        color: AppConstants.brandWhite,
         borderRadius: BorderRadius.circular(AppConstants.radiusM),
         border: Border.all(
-          color: AppConstants.textLight.withValues(alpha: 0.2),
+          color: AppConstants.brandBlue.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                order['type_label'] ?? 'Commande UV',
-                style: AppConstants.bodyLarge.copyWith(
-                  color: AppConstants.brandBlue,
-                ),
+          // En-tête du tableau
+          Container(
+            padding: const EdgeInsets.all(AppConstants.paddingM),
+            decoration: BoxDecoration(
+              color: AppConstants.brandBlue.withValues(alpha: 0.1),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(AppConstants.radiusM),
+                topRight: Radius.circular(AppConstants.radiusM),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppConstants.paddingS,
-                  vertical: AppConstants.paddingXS,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Montant',
+                    style: AppConstants.bodyMedium.copyWith(
+                      color: AppConstants.brandBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppConstants.radiusS),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Date',
+                    style: AppConstants.bodyMedium.copyWith(
+                      color: AppConstants.brandBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-                child: Text(
-                  order['status_label'] ?? 'Inconnu',
-                  style: AppConstants.caption.copyWith(
-                    color: statusColor,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Statut',
+                    style: AppConstants.bodyMedium.copyWith(
+                      color: AppConstants.brandBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Lignes du tableau
+          ..._recentOrders!.asMap().entries.map((entry) {
+            final index = entry.key;
+            final order = entry.value;
+            final isLast = index == _recentOrders!.length - 1;
+            
+            return Container(
+              decoration: BoxDecoration(
+                border: isLast ? null : Border(
+                  bottom: BorderSide(
+                    color: AppConstants.brandBlue.withValues(alpha: 0.1),
+                    width: 1,
                   ),
                 ),
               ),
-            ],
-          ),
-          
-          const SizedBox(height: AppConstants.paddingS),
-          
-          Text(
-            order['formatted_total_amount'] ?? '0 GNF',
-            style: AppConstants.heading3.copyWith(
-              color: AppConstants.textPrimary,
-            ),
-          ),
-          
-          if (order['description'] != null && order['description'].isNotEmpty) ...[
-            const SizedBox(height: AppConstants.paddingXS),
-            Text(
-              order['description'],
-              style: AppConstants.bodySmall.copyWith(
-                color: AppConstants.textSecondary,
+              child: _buildTableRow(order, isLast),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTableRow(Map<String, dynamic> order, bool isLast) {
+    final status = order['status'] as String;
+    final statusColor = _getStatusColor(status);
+    
+    return InkWell(
+      onTap: () => _showOrderDetails(order),
+      child: Padding(
+        padding: const EdgeInsets.all(AppConstants.paddingM),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Text(
+                _formatAmount(order['formatted_total_amount'] ?? '0 GNF'),
+                style: AppConstants.bodyMedium.copyWith(
+                  color: AppConstants.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                _formatDate(order['requested_at'] ?? ''),
+                style: AppConstants.bodySmall.copyWith(
+                  color: AppConstants.textPrimary,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                order['status_label'] ?? 'Inconnu',
+                style: AppConstants.bodySmall.copyWith(
+                  color: _getStatusColor(order['status'] as String),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
-          
-          const SizedBox(height: AppConstants.paddingS),
-          
-          Row(
+        ),
+      ),
+    );
+  }
+
+  void _showOrderDetails(Map<String, dynamic> order) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppConstants.brandWhite,
+        title: Text(
+          'Détails de la commande',
+          style: AppConstants.heading2.copyWith(
+            color: AppConstants.brandBlue,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.person_rounded,
-                size: 14,
-                color: AppConstants.textLight,
-              ),
-              const SizedBox(width: AppConstants.paddingXS),
-              Text(
-                order['requester_name'] ?? 'N/A',
-                style: AppConstants.caption.copyWith(
-                  color: AppConstants.textLight,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                order['requested_at'] ?? '',
-                style: AppConstants.caption.copyWith(
-                  color: AppConstants.textLight,
-                ),
-              ),
+              _buildDetailRow('Type', order['type_label'] ?? 'Commande UV'),
+              _buildDetailRow('Montant', order['formatted_total_amount'] ?? '0 GNF'),
+              _buildDetailRow('Statut', order['status_label'] ?? 'Inconnu'),
+              _buildDetailRow('Description', order['description'] ?? 'Aucune description'),
+              _buildDetailRow('Demandé par', order['requester_name'] ?? 'N/A'),
+              _buildDetailRow('Date de demande', order['requested_at'] ?? ''),
+              if (order['validated_at'] != null)
+                _buildDetailRow('Date de validation', order['validated_at']),
+              if (order['rejected_at'] != null)
+                _buildDetailRow('Date de rejet', order['rejected_at']),
+              _buildDetailRow('Validateur', order['validator_name'] ?? 'Non assigné'),
             ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Fermer',
+              style: AppConstants.bodyMedium.copyWith(
+                color: AppConstants.brandBlue,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppConstants.paddingS),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: AppConstants.bodyMedium.copyWith(
+                color: AppConstants.brandBlue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: AppConstants.bodyMedium.copyWith(
+                color: AppConstants.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatAmount(String amount) {
+    // Supprimer "GNF", espaces et décimales
+    String cleanAmount = amount.replaceAll(' GNF', '').replaceAll(' ', '');
+    // Supprimer les décimales (.00)
+    if (cleanAmount.contains('.')) {
+      cleanAmount = cleanAmount.split('.')[0];
+    }
+    return cleanAmount;
+  }
+
+  String _formatDate(String date) {
+    if (date.isEmpty) return '';
+    
+    try {
+      // Convertir la date du format "DD/MM/YYYY HH:MM" vers "DD/MM/YYYY"
+      final parts = date.split(' ');
+      return parts.isNotEmpty ? parts[0] : date;
+    } catch (e) {
+      return date;
+    }
+  }
+
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'pending_validation':
-        return AppConstants.warningColor;
       case 'validated':
-        return AppConstants.successColor;
+        return AppConstants.brandOrange;
+      case 'pending_validation':
       case 'rejected_by_validator':
       case 'rejected_by_admin':
-        return AppConstants.errorColor;
       default:
-        return AppConstants.textLight;
+        return AppConstants.brandBlue;
     }
   }
 
