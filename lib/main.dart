@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'screens/auth_type_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/pin_login_screen.dart';
-import 'screens/home_screen.dart';
+import 'screens/home/home_screen.dart';
 import 'screens/payment_type_screen.dart';
 import 'screens/prepaid_payment_screen.dart';
 import 'screens/postpaid_payment_screen.dart';
