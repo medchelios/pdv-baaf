@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../constants/app_constants.dart';
+import '../services/auth_service.dart';
 import 'payment_type_screen.dart';
 import 'settings_screen.dart';
 import 'dashboard_screen.dart';
@@ -15,11 +16,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   late PageController _pageController;
+  String _userName = 'Agent PDV'; // TODO: Récupérer depuis AuthService
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
+    _loadUserName();
+  }
+
+  void _loadUserName() async {
+    // TODO: Récupérer le nom depuis AuthService
+    // Pour l'instant, on garde la valeur par défaut
+    setState(() {
+      _userName = 'Agent PDV';
+    });
   }
 
   @override
@@ -105,20 +116,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Hi, Agent PDV!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   Text(
-                    'Bienvenue sur votre PDV',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withValues(alpha: 0.8),
+                    'Bonjour $_userName',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
                     ),
                   ),
                 ],
