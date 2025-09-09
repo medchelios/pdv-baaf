@@ -81,63 +81,40 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
 
   Widget _buildStatsSection() {
     return CustomCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Statistiques UV',
-            style: AppConstants.heading2.copyWith(
-              color: AppConstants.brandBlue,
+      child: Padding(
+        padding: const EdgeInsets.all(AppConstants.paddingM),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildSmallStatItem(
+              'Total',
+              '${_stats!['total_orders'] ?? 0}',
+              AppConstants.brandBlue,
+              Icons.shopping_cart_rounded,
             ),
-          ),
-          const SizedBox(height: AppConstants.paddingM),
-          
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatItem(
-                  'Total',
-                  '${_stats!['total_orders'] ?? 0}',
-                  AppConstants.brandBlue,
-                  Icons.shopping_cart_rounded,
-                ),
-              ),
-              const SizedBox(width: AppConstants.paddingM),
-              Expanded(
-                child: _buildStatItem(
-                  'En attente',
-                  '${_stats!['pending_orders'] ?? 0}',
-                  AppConstants.warningColor,
-                  Icons.pending_rounded,
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: AppConstants.paddingM),
-          
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatItem(
-                  'Validées',
-                  '${_stats!['validated_orders'] ?? 0}',
-                  AppConstants.successColor,
-                  Icons.check_circle_rounded,
-                ),
-              ),
-              const SizedBox(width: AppConstants.paddingM),
-              Expanded(
-                child: _buildStatItem(
-                  'Rejetées',
-                  '${_stats!['rejected_orders'] ?? 0}',
-                  AppConstants.errorColor,
-                  Icons.cancel_rounded,
-                ),
-              ),
-            ],
-          ),
-        ],
+            _buildVerticalDivider(),
+            _buildSmallStatItem(
+              'En attente',
+              '${_stats!['pending_orders'] ?? 0}',
+              AppConstants.warningColor,
+              Icons.pending_rounded,
+            ),
+            _buildVerticalDivider(),
+            _buildSmallStatItem(
+              'Validées',
+              '${_stats!['validated_orders'] ?? 0}',
+              AppConstants.successColor,
+              Icons.check_circle_rounded,
+            ),
+            _buildVerticalDivider(),
+            _buildSmallStatItem(
+              'Rejetées',
+              '${_stats!['rejected_orders'] ?? 0}',
+              AppConstants.errorColor,
+              Icons.cancel_rounded,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -178,6 +155,46 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSmallStatItem(String label, String value, Color color, IconData icon) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: color,
+          size: 18,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            color: AppConstants.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerticalDivider() {
+    return Container(
+      height: 30,
+      width: 1,
+      decoration: BoxDecoration(
+        color: AppConstants.textSecondary.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(0.5),
       ),
     );
   }
