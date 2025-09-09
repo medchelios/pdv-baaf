@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
-import '../../../services/user_data_service.dart';
-import '../../dashboard_screen.dart';
-import 'payment_details_dialog.dart';
+import '../../../services/payment_service.dart';
+import '../../../shared/widgets/payment_details_dialog.dart';
 import '../../payments/payments_screen.dart';
 
 class RecentTransactions extends StatefulWidget {
@@ -13,25 +12,51 @@ class RecentTransactions extends StatefulWidget {
 }
 
 class _RecentTransactionsState extends State<RecentTransactions> {
+  List<Map<String, dynamic>> _transactions = [];
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    // Forcer un rebuild périodique pour voir les changements
-    _startPeriodicRefresh();
+    _loadTransactions();
   }
 
-  void _startPeriodicRefresh() {
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {});
-        _startPeriodicRefresh(); // Continue le refresh
-      }
+  Future<void> _loadTransactions() async {
+    setState(() {
+      _isLoading = true;
     });
+
+    try {
+      final result = await PaymentService().getPayments(
+        page: 1,
+        limit: 5,
+        search: '',
+      );
+
+      if (result != null && result['payments'] != null) {
+        setState(() {
+          _transactions = List<Map<String, dynamic>>.from(result['payments']);
+        });
+      }
+    } catch (e) {
+      // Erreur silencieuse
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
-          @override
-          Widget build(BuildContext context) {
-            final transactions = UserDataService().recentTransactions ?? [];
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Container(
+        margin: const EdgeInsets.all(20),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     
     return Container(
       margin: const EdgeInsets.all(20),
@@ -70,7 +95,7 @@ class _RecentTransactionsState extends State<RecentTransactions> {
             ],
           ),
           const SizedBox(height: 16),
-          if (transactions.isEmpty)
+          if (_transactions.isEmpty)
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -92,15 +117,15 @@ class _RecentTransactionsState extends State<RecentTransactions> {
               ),
             )
           else
-                    ...transactions.take(5).map((transaction) {
+                    ..._transactions.map((transaction) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: _buildTransactionItem(
-                          title: transaction['title'] ?? 'Paiement',
-                          subtitle: transaction['subtitle'] ?? 'Récent',
-                          amount: transaction['amount'] ?? '0 GNF',
+                          title: transaction['subscriber_name'] ?? 'Paiement',
+                          subtitle: transaction['formatted_created_at'] ?? 'Récent',
+                          amount: transaction['formatted_amount'] ?? '0 GNF',
                           reference: transaction['reference'],
-                          period: transaction['period'],
+                          period: transaction['formatted_created_at']?.split(' ')[0] ?? 'N/A',
                           subscriberName: transaction['subscriber_name'],
                           status: transaction['status'],
                           statusLabel: transaction['status_label'],

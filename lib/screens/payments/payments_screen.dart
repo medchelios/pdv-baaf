@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
+import '../../services/payment_service.dart';
+import 'widgets/payments_search_bar.dart';
 import 'widgets/payments_list.dart';
-import 'widgets/payments_search.dart';
-import '../payment_type_screen.dart';
+import 'widgets/payment_floating_button.dart';
 
 class PaymentsScreen extends StatefulWidget {
   const PaymentsScreen({super.key});
@@ -12,100 +13,212 @@ class PaymentsScreen extends StatefulWidget {
 }
 
 class _PaymentsScreenState extends State<PaymentsScreen> {
+  List<Map<String, dynamic>> _payments = [];
+  bool _isLoading = false;
   String _searchQuery = '';
-  int _currentPage = 1;
-  final int _itemsPerPage = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPayments();
+  }
+
+  Future<void> _loadPayments() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await PaymentService().getPayments(
+        page: 1,
+        limit: 20,
+        search: _searchQuery,
+      );
+
+      if (result != null && result['payments'] != null) {
+        setState(() {
+          _payments = List<Map<String, dynamic>>.from(result['payments']);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showPaymentOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const PaymentOptionsModal(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppConstants.backgroundColor,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text(
-          'Historique des Paiements',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
+        title: const Text('Paiements'),
         backgroundColor: AppConstants.brandBlue,
+        foregroundColor: AppConstants.brandWhite,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Column(
-        children: [
-          // Boutons d'action
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PaymentTypeScreen(),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadPayments,
+              child: Column(
+                children: [
+                  // Header avec titre, recherche et filtre
+                  Container(
+                    margin: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.add, size: 20),
-                    label: const Text('Nouveau Paiement'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppConstants.brandBlue,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Titre
+                        const Text(
+                          'Paiements',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppConstants.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Barre de recherche et filtre
+                        Row(
+                          children: [
+                            // Barre de recherche
+                            Expanded(
+                              child: Container(
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8F9FA),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFFE9ECEF),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: TextField(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _searchQuery = value;
+                                    });
+                                    _loadPayments();
+                                  },
+                                  decoration: const InputDecoration(
+                                    hintText: 'Rechercher par référence, nom client...',
+                                    hintStyle: TextStyle(
+                                      color: Color(0xFF6C757D),
+                                      fontSize: 14,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color: Color(0xFF6C757D),
+                                      size: 20,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Bouton filtre
+                            Container(
+                              height: 40,
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  // TODO: Implémenter les filtres
+                                },
+                                icon: const Icon(
+                                  Icons.filter_list,
+                                  size: 18,
+                                  color: AppConstants.brandBlue,
+                                ),
+                                label: const Text(
+                                  'Filtrer',
+                                  style: TextStyle(
+                                    color: AppConstants.brandBlue,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: AppConstants.brandBlue,
+                                    width: 1,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Tableau des paiements
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: PaymentsList(
+                        payments: _payments,
+                        isLoading: false,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: Implémenter la recherche avancée
-                    },
-                    icon: const Icon(Icons.search, size: 20),
-                    label: const Text('Recherche Avancée'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppConstants.brandBlue,
-                      side: const BorderSide(color: AppConstants.brandBlue),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          // Barre de recherche
-          PaymentsSearch(
-            onSearchChanged: (query) {
-              setState(() {
-                _searchQuery = query;
-                _currentPage = 1; // Reset to first page when searching
-              });
-            },
-          ),
-          // Liste des paiements
-          Expanded(
-            child: PaymentsList(
-              searchQuery: _searchQuery,
-              currentPage: _currentPage,
-              itemsPerPage: _itemsPerPage,
-              onPageChanged: (page) {
-                setState(() {
-                  _currentPage = page;
-                });
-              },
-            ),
-          ),
-        ],
+      floatingActionButton: PaymentFloatingButton(
+        onPressed: _showPaymentOptions,
       ),
     );
   }
