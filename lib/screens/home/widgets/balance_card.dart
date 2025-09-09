@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
+import '../../../services/user_data_service.dart';
 
 class BalanceCard extends StatelessWidget {
   const BalanceCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final balanceData = UserDataService().accountBalance;
+    final principalBalance = balanceData?['formatted_principal_balance'] ?? '0 GNF';
+    final commissionBalance = balanceData?['formatted_commission_balance'] ?? '0 GNF';
+    
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(24),
@@ -27,7 +32,7 @@ class BalanceCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'GNF',
+                'Mes comptes',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -41,16 +46,31 @@ class BalanceCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          const Text(
-            '1,500,000',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: _buildBalanceItem(
+                  'Principal',
+                  principalBalance,
+                  Icons.account_balance_wallet,
+                  Colors.white,
+                  CrossAxisAlignment.start,
+                ),
+              ),
+              _buildVerticalDivider(),
+              Expanded(
+                child: _buildBalanceItem(
+                  'Commission',
+                  commissionBalance,
+                  Icons.trending_up,
+                  Colors.white,
+                  CrossAxisAlignment.end,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           Container(
             height: 1,
             color: Colors.white.withValues(alpha: 0.3),
@@ -59,8 +79,6 @@ class BalanceCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildStatItem(Icons.trending_up_rounded, '+25,000'),
-              _buildVerticalDivider(),
               _buildStatItem(Icons.shopping_cart_rounded, '2'),
               _buildVerticalDivider(),
               _buildStatItem(Icons.payment_rounded, '4'),
@@ -72,6 +90,30 @@ class BalanceCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBalanceItem(String label, String amount, IconData icon, Color color, CrossAxisAlignment alignment) {
+    return Column(
+      crossAxisAlignment: alignment,
+      children: [
+        Text(
+          amount,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.white70,
+          ),
+        ),
+      ],
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
+import '../../../services/user_data_service.dart';
 import '../../dashboard_screen.dart';
 
 class RecentTransactions extends StatelessWidget {
@@ -7,6 +8,8 @@ class RecentTransactions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final transactions = UserDataService().recentTransactions ?? _getDefaultTransactions();
+    
     return Container(
       margin: const EdgeInsets.all(20),
       child: Column(
@@ -44,32 +47,58 @@ class RecentTransactions extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _buildTransactionItem(
-            icon: Icons.flash_on_rounded,
-            title: 'Prépayé',
-            subtitle: 'Il y a 2 min',
-            amount: '+15,000 GNF',
-            isPositive: true,
-          ),
-          const SizedBox(height: 12),
-          _buildTransactionItem(
-            icon: Icons.receipt_long_rounded,
-            title: 'Postpayé',
-            subtitle: 'Il y a 5 min',
-            amount: '+25,000 GNF',
-            isPositive: true,
-          ),
-          const SizedBox(height: 12),
-          _buildTransactionItem(
-            icon: Icons.shopping_cart_rounded,
-            title: 'Commande UV',
-            subtitle: 'Il y a 10 min',
-            amount: '+10,000 GNF',
-            isPositive: true,
-          ),
+          ...transactions.take(3).map((transaction) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildTransactionItem(
+              icon: _getTransactionIcon(transaction['type'] ?? ''),
+              title: transaction['title'] ?? 'Transaction',
+              subtitle: transaction['subtitle'] ?? 'Récent',
+              amount: transaction['amount'] ?? '+0 GNF',
+              isPositive: transaction['isPositive'] ?? true,
+            ),
+          )),
         ],
       ),
     );
+  }
+
+  List<Map<String, dynamic>> _getDefaultTransactions() {
+    return [
+      {
+        'type': 'prepaid',
+        'title': 'Prépayé',
+        'subtitle': 'Il y a 2 min',
+        'amount': '+15,000 GNF',
+        'isPositive': true,
+      },
+      {
+        'type': 'postpaid',
+        'title': 'Postpayé',
+        'subtitle': 'Il y a 5 min',
+        'amount': '+25,000 GNF',
+        'isPositive': true,
+      },
+      {
+        'type': 'uv_order',
+        'title': 'Commande UV',
+        'subtitle': 'Il y a 10 min',
+        'amount': '+10,000 GNF',
+        'isPositive': true,
+      },
+    ];
+  }
+
+  IconData _getTransactionIcon(String type) {
+    switch (type) {
+      case 'prepaid':
+        return Icons.flash_on_rounded;
+      case 'postpaid':
+        return Icons.receipt_long_rounded;
+      case 'uv_order':
+        return Icons.shopping_cart_rounded;
+      default:
+        return Icons.payment_rounded;
+    }
   }
 
   Widget _buildTransactionItem({

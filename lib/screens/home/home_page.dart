@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/home_data_loader.dart';
 import 'widgets/header_section.dart';
 import 'widgets/balance_card.dart';
 import 'widgets/quick_actions.dart';
@@ -12,30 +13,35 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _userName = 'Agent PDV';
+  final HomeDataLoader _dataLoader = HomeDataLoader();
 
   @override
   void initState() {
     super.initState();
-    _loadUserName();
+    _loadData();
   }
 
-  void _loadUserName() async {
-    setState(() {
-      _userName = 'Agent PDV';
-    });
+  Future<void> _loadData() async {
+    await _dataLoader.loadHomeData();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          HeaderSection(userName: _userName),
-          BalanceCard(),
-          QuickActions(),
-          RecentTransactions(),
-        ],
+    return RefreshIndicator(
+      onRefresh: _loadData,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            const HeaderSection(),
+            const BalanceCard(),
+            const QuickActions(),
+            const RecentTransactions(),
+          ],
+        ),
       ),
     );
   }

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
+import '../../../services/auth_service.dart';
 
 class HeaderSection extends StatelessWidget {
-  final String userName;
-
-  const HeaderSection({
-    super.key,
-    required this.userName,
-  });
+  const HeaderSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = AuthService().user;
+    final userName = user?['name'] ?? 'Agent PDV';
+    
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
@@ -34,7 +33,7 @@ class HeaderSection extends StatelessWidget {
                   Text(
                     'Bonjour $userName',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
@@ -66,7 +65,7 @@ class HeaderSection extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Icon(
-                    Icons.person_rounded,
+                    Icons.analytics_rounded,
                     color: Colors.white,
                     size: 20,
                   ),
