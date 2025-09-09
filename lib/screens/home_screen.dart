@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import 'payment_type_screen.dart';
 import 'settings_screen.dart';
 import 'dashboard_screen.dart';
+import 'uv_orders_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -201,96 +202,68 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          const Center(
-            child: Text(
-              '1,500,000',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+          const Text(
+            '1,500,000',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
+          Container(
+            height: 1,
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
+          const SizedBox(height: 12),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const Icon(
-                Icons.trending_up_rounded,
-                color: Colors.white,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '+25,000',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 20),
-              const Icon(
-                Icons.shopping_cart_rounded,
-                color: Colors.white,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '2',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 20),
-              const Icon(
-                Icons.payment_rounded,
-                color: Colors.white,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '4',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 20),
-              const Icon(
-                Icons.check_circle_rounded,
-                color: Colors.white,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '3',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 20),
-              const Icon(
-                Icons.cancel_rounded,
-                color: Colors.white,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '0',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              _buildStatItem(Icons.trending_up_rounded, '+25,000'),
+              _buildVerticalDivider(),
+              _buildStatItem(Icons.shopping_cart_rounded, '2'),
+              _buildVerticalDivider(),
+              _buildStatItem(Icons.payment_rounded, '4'),
+              _buildVerticalDivider(),
+              _buildStatItem(Icons.check_circle_rounded, '3'),
+              _buildVerticalDivider(),
+              _buildStatItem(Icons.cancel_rounded, '0'),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String value) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: Colors.white,
+          size: 16,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerticalDivider() {
+    return Container(
+      height: 30,
+      width: 1,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(0.5),
       ),
     );
   }
@@ -330,7 +303,12 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.shopping_cart_rounded,
               label: 'UV',
               onTap: () {
-                // TODO: Aller aux commandes UV
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UVOrdersScreen(),
+                  ),
+                );
               },
             ),
           ),
@@ -532,13 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildUvPage() {
-    return const Center(
-      child: Text(
-        'Page UV\n(À implémenter)',
-        textAlign: TextAlign.center,
-        style: AppConstants.heading3,
-      ),
-    );
+    return const UVOrdersScreen();
   }
 
   Widget _buildSettingsPage() {
