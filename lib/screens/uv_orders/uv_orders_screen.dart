@@ -33,9 +33,15 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     });
 
     try {
+      LoggerService.info('Début du chargement des données UV');
       final stats = await _uvOrderService.getStats();
+      LoggerService.info('Stats chargées: $stats');
+      
       final balance = await _uvOrderService.getAccountBalance();
+      LoggerService.info('Balance chargée: $balance');
+      
       final orders = await _uvOrderService.getRecentOrders();
+      LoggerService.info('Commandes chargées: ${orders?.length} éléments');
 
       setState(() {
         _stats = stats;

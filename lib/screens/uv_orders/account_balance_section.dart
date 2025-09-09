@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../widgets/common/custom_card.dart';
-import '../../utils/format_utils.dart';
 
 class AccountBalanceSection extends StatelessWidget {
   final Map<String, dynamic> accountBalance;
@@ -19,18 +18,20 @@ class AccountBalanceSection extends StatelessWidget {
               Expanded(
                 child: _buildBalanceItem(
                   'Principal',
-                  accountBalance['principal_balance']?.toString() ?? '0',
+                  accountBalance['formatted_principal_balance'] ?? '0 GNF',
                   Icons.account_balance_wallet,
                   AppConstants.brandBlue,
+                  CrossAxisAlignment.start,
                 ),
               ),
               _buildVerticalDivider(),
               Expanded(
                 child: _buildBalanceItem(
                   'Commission',
-                  accountBalance['commission_balance']?.toString() ?? '0',
+                  accountBalance['formatted_commission_balance'] ?? '0 GNF',
                   Icons.trending_up,
                   AppConstants.brandOrange,
+                  CrossAxisAlignment.end,
                 ),
               ),
             ],
@@ -40,33 +41,28 @@ class AccountBalanceSection extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceItem(String label, String amount, IconData icon, Color color) {
-    return Row(
+  Widget _buildBalanceItem(String label, String amount, IconData icon, Color color, CrossAxisAlignment alignment) {
+    return Column(
+      crossAxisAlignment: alignment,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                FormatUtils.formatAmountWithSpaces(amount.replaceAll(' GNF', '').replaceAll(' ', '')),
-                style: AppConstants.heading3.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                label,
-                style: AppConstants.bodySmall.copyWith(
-                  color: AppConstants.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
         Icon(
           icon,
           color: color,
           size: 24,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          amount,
+          style: AppConstants.heading3.copyWith(
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: AppConstants.bodySmall.copyWith(
+            color: AppConstants.textSecondary,
+          ),
         ),
       ],
     );

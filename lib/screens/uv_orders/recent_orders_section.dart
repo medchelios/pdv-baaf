@@ -146,7 +146,7 @@ class RecentOrdersSection extends StatelessWidget {
             Expanded(
               flex: 3,
               child: Text(
-                FormatUtils.formatAmount((order['formatted_total_amount'] ?? '0 GNF').replaceAll(' GNF', '').replaceAll(' ', '')),
+                order['formatted_total_amount'] ?? '0 GNF',
                 style: AppConstants.bodyMedium.copyWith(
                   color: AppConstants.textPrimary,
                   fontWeight: FontWeight.bold,
