@@ -14,6 +14,7 @@ class UVOrdersScreen extends StatefulWidget {
 class _UVOrdersScreenState extends State<UVOrdersScreen> {
   final UVOrderService _uvOrderService = UVOrderService();
   Map<String, dynamic>? _stats;
+  Map<String, dynamic>? _accountBalance;
   List<Map<String, dynamic>>? _recentOrders;
   bool _isLoading = true;
 
@@ -30,10 +31,12 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
 
     try {
       final stats = await _uvOrderService.getStats();
+      final balance = await _uvOrderService.getAccountBalance();
       final orders = await _uvOrderService.getRecentOrders();
 
       setState(() {
         _stats = stats;
+        _accountBalance = balance;
         _recentOrders = orders;
         _isLoading = false;
       });
@@ -64,6 +67,10 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_stats != null) _buildStatsSection(),
+                    
+                    const SizedBox(height: AppConstants.paddingL),
+                    
+                    _buildAccountBalanceSection(),
                     
                     const SizedBox(height: AppConstants.paddingL),
                     
@@ -201,6 +208,100 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     );
   }
 
+
+  Widget _buildAccountBalanceSection() {
+    if (_accountBalance == null) {
+      return const SizedBox.shrink();
+    }
+
+    return CustomCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Solde des Comptes',
+            style: AppConstants.heading2.copyWith(
+              color: AppConstants.brandBlue,
+            ),
+          ),
+          const SizedBox(height: AppConstants.paddingM),
+          
+          Row(
+            children: [
+              Expanded(
+                child: _buildBalanceItem(
+                  'Principal',
+                  _accountBalance!['principal_balance']?.toString() ?? '0',
+                  Icons.account_balance_wallet,
+                  AppConstants.brandBlue,
+                ),
+              ),
+              _buildVerticalDivider(),
+              Expanded(
+                child: _buildBalanceItem(
+                  'Commission',
+                  _accountBalance!['commission_balance']?.toString() ?? '0',
+                  Icons.trending_up,
+                  AppConstants.brandOrange,
+                ),
+              ),
+            ],
+          ),
+          
+          if (_accountBalance!['can_view_edg_balance'] == true && 
+              _accountBalance!['edg_available'] == true) ...[
+            const SizedBox(height: AppConstants.paddingM),
+            Container(
+              padding: const EdgeInsets.all(AppConstants.paddingM),
+              decoration: BoxDecoration(
+                color: AppConstants.brandBlue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppConstants.radiusM),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.account_balance,
+                    color: AppConstants.brandBlue,
+                    size: 20,
+                  ),
+                  const SizedBox(width: AppConstants.paddingS),
+                  Text(
+                    'Solde EDG: ${_accountBalance!['edg_balance']?.toString() ?? '0'} GNF',
+                    style: AppConstants.bodyMedium.copyWith(
+                      color: AppConstants.brandBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBalanceItem(String label, String amount, IconData icon, Color color) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 24),
+        const SizedBox(height: AppConstants.paddingS),
+        Text(
+          amount,
+          style: AppConstants.heading3.copyWith(
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: AppConstants.bodySmall.copyWith(
+            color: AppConstants.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildRecentOrdersSection() {
     return CustomCard(

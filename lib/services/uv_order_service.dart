@@ -69,4 +69,37 @@ class UVOrderService {
     'rejected_by_validator': 'Refusé',
     'rejected_by_admin': 'Refusé BAAF',
   };
+
+  Future<Map<String, dynamic>?> getAccountBalance() async {
+    LoggerService.info('Récupération du solde des comptes');
+    final response = await _apiService.get('accounts/balance');
+    LoggerService.debug('Response complète: $response');
+    if (response?['data'] != null) {
+      LoggerService.info('Solde des comptes récupéré avec succès');
+    } else {
+      LoggerService.warning('Aucune donnée de solde disponible - Response: $response');
+    }
+    return response?['data'];
+  }
+
+  Future<Map<String, dynamic>?> transferBetweenAccounts({
+    required double amount,
+    required String fromType,
+    required String toType,
+    String? description,
+  }) async {
+    LoggerService.info('Transfert entre comptes: $amount de $fromType vers $toType');
+    final response = await _apiService.post('accounts/transfer', {
+      'amount': amount,
+      'from_type': fromType,
+      'to_type': toType,
+      'description': description,
+    });
+    if (response?['data'] != null) {
+      LoggerService.info('Transfert effectué avec succès');
+    } else {
+      LoggerService.warning('Échec du transfert entre comptes');
+    }
+    return response?['data'];
+  }
 }
