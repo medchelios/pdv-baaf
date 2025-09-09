@@ -8,9 +8,11 @@ import 'screens/payment_type_screen.dart';
 import 'screens/prepaid_payment_screen.dart';
 import 'screens/postpaid_payment_screen.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/uv_orders_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'controllers/dashboard_controller.dart';
+import 'controllers/uv_order_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,7 @@ class PdvBaafApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => DashboardController()),
+        ChangeNotifierProvider(create: (_) => UvOrderController()),
       ],
       child: MaterialApp(
         title: 'PDV Baaf',
@@ -37,6 +40,7 @@ class PdvBaafApp extends StatelessWidget {
           '/pin-login': (context) => const PinLoginScreen(),
           '/home': (context) => const HomeScreen(),
           '/dashboard': (context) => const DashboardScreen(),
+          '/uv-orders': (context) => const UVOrdersScreen(),
           '/payment-type': (context) => const PaymentTypeScreen(),
           '/prepaid-payment': (context) => const PrepaidPaymentScreen(),
           '/postpaid-payment': (context) => const PostpaidPaymentScreen(),

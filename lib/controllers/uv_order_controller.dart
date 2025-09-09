@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../services/uv_order_service.dart';
 
 /// Contrôleur pour la gestion des commandes UV
-/// TODO: Intégrer les vraies APIs du backend
 class UvOrderController extends ChangeNotifier {
+  final UVOrderService _uvOrderService = UVOrderService();
   // État de chargement
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -20,26 +21,11 @@ class UvOrderController extends ChangeNotifier {
   String? get error => _error;
 
   /// Charger la liste des commandes UV
-  /// TODO: Appeler l'API GET /api/mobile/agent/uv-orders
   Future<void> loadUvOrders() async {
     _setLoading(true);
     try {
-      // TODO: Remplacer par l'appel API réel
-      await Future.delayed(const Duration(seconds: 1)); // Simulation
-      
-      // Données fictives pour le design
-      _uvOrders = [
-        {
-          'id': 1,
-          'reference': 'UV-001',
-          'status': 'pending',
-          'amount': 50000,
-          'created_at': '2024-01-15 10:30:00',
-          'customer_name': 'Client Test',
-        },
-        // TODO: Ajouter plus de données de test
-      ];
-      
+      final orders = await _uvOrderService.getRecentOrders();
+      _uvOrders = orders ?? [];
       _error = null;
     } catch (e) {
       _error = 'Erreur lors du chargement des commandes UV: $e';
@@ -50,23 +36,23 @@ class UvOrderController extends ChangeNotifier {
   }
 
   /// Créer une nouvelle commande UV
-  /// TODO: Appeler l'API POST /api/mobile/agent/uv-orders
   Future<bool> createUvOrder(Map<String, dynamic> orderData) async {
     _setLoading(true);
     try {
-      // TODO: Appeler l'API de création
-      await Future.delayed(const Duration(seconds: 1)); // Simulation
+      final result = await _uvOrderService.createOrder(
+        amount: orderData['amount']?.toDouble() ?? 0.0,
+        description: orderData['description'] ?? '',
+        type: orderData['type'] ?? 'order',
+      );
       
-      // TODO: Ajouter la nouvelle commande à la liste
-      _uvOrders.insert(0, {
-        'id': _uvOrders.length + 1,
-        'reference': 'UV-${_uvOrders.length + 1}',
-        'status': 'pending',
-        ...orderData,
-      });
-      
-      _error = null;
-      return true;
+      if (result != null) {
+        // Recharger les données après création
+        await loadUvOrders();
+        await loadUvStats();
+        _error = null;
+        return true;
+      }
+      return false;
     } catch (e) {
       _error = 'Erreur lors de la création de la commande: $e';
       return false;
@@ -77,21 +63,22 @@ class UvOrderController extends ChangeNotifier {
   }
 
   /// Valider une commande UV
-  /// TODO: Appeler l'API PUT /api/mobile/agent/uv-orders/{id}/validate
-  Future<bool> validateUvOrder(int orderId) async {
+  Future<bool> validateUvOrder(int orderId, {String? comment}) async {
     _setLoading(true);
     try {
-      // TODO: Appeler l'API de validation
-      await Future.delayed(const Duration(seconds: 1)); // Simulation
+      final success = await _uvOrderService.validateOrder(
+        orderId: orderId,
+        comment: comment,
+      );
       
-      // TODO: Mettre à jour le statut de la commande
-      final index = _uvOrders.indexWhere((order) => order['id'] == orderId);
-      if (index != -1) {
-        _uvOrders[index]['status'] = 'validated';
+      if (success) {
+        // Recharger les données après validation
+        await loadUvOrders();
+        await loadUvStats();
+        _error = null;
       }
       
-      _error = null;
-      return true;
+      return success;
     } catch (e) {
       _error = 'Erreur lors de la validation: $e';
       return false;
@@ -127,22 +114,11 @@ class UvOrderController extends ChangeNotifier {
   }
 
   /// Charger les statistiques UV
-  /// TODO: Appeler l'API GET /api/mobile/agent/stats/uv-orders
   Future<void> loadUvStats() async {
     _setLoading(true);
     try {
-      // TODO: Appeler l'API des statistiques UV
-      await Future.delayed(const Duration(seconds: 1)); // Simulation
-      
-      // Données fictives pour le design
-      _uvStats = {
-        'total_orders': 25,
-        'pending_orders': 5,
-        'validated_orders': 18,
-        'rejected_orders': 2,
-        'total_amount': 1250000,
-      };
-      
+      final stats = await _uvOrderService.getStats();
+      _uvStats = stats;
       _error = null;
     } catch (e) {
       _error = 'Erreur lors du chargement des stats UV: $e';

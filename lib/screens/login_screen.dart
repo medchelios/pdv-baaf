@@ -26,8 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    print('🚀 Début de la connexion...');
-    print('📧 Email: ${_emailController.text.trim()}');
 
     setState(() {
       _isLoading = true;
@@ -39,15 +37,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
 
-      print('📋 Résultat de la connexion: $result');
-
       if (result['success'] == true) {
-        print('✅ Navigation vers payment-type');
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/home');
         }
       } else {
-        print('❌ Affichage de l\'erreur: ${result['message']}');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

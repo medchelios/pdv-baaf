@@ -32,8 +32,6 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
       return;
     }
 
-    print('🚀 Début de la connexion PDV...');
-    print('🔢 PIN: ${_pinController.text}');
 
     setState(() {
       _isLoading = true;
@@ -42,10 +40,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
     try {
       final result = await _authService.loginWithPin(_pinController.text);
 
-      print('📋 Résultat de la connexion PDV: $result');
-
       if (result['success'] == true) {
-        print('✅ Navigation vers payment-type');
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/home');
         }

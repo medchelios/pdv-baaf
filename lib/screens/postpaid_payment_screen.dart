@@ -52,11 +52,11 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
     });
 
     try {
-      final result = await _apiService.searchInvoices(_customerReferenceController.text.trim());
+      final result = await _apiService.get('invoices/search?q=${_customerReferenceController.text.trim()}');
 
-      if (result['success'] == true) {
+      if (result?['success'] == true) {
         setState(() {
-          _invoices = List<Map<String, dynamic>>.from(result['data']['invoices'] ?? []);
+          _invoices = List<Map<String, dynamic>>.from(result?['data']['invoices'] ?? []);
           _selectedInvoice = null;
         });
 
@@ -74,7 +74,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message'] ?? 'Erreur lors de la recherche'),
+              content: Text(result?['message'] ?? 'Erreur lors de la recherche'),
               backgroundColor: Colors.red,
             ),
           );
@@ -114,20 +114,19 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
     });
 
     try {
-      final result = await _apiService.payInvoiceForCustomer(
-        _selectedInvoice!['id'].toString(),
-        customerPhone: _customerPhoneController.text.trim(),
-        customerName: _customerNameController.text.trim(),
-        paymentMethod: _selectedPaymentMethod,
-      );
+      final result = await _apiService.post('invoices/${_selectedInvoice!['id']}/pay-for-customer', {
+        'customerPhone': _customerPhoneController.text.trim(),
+        'customerName': _customerNameController.text.trim(),
+        'paymentMethod': _selectedPaymentMethod,
+      });
 
-      if (result['success'] == true) {
+      if (result?['success'] == true) {
         if (mounted) {
-          _showSuccessDialog(result);
+          _showSuccessDialog(result!);
         }
       } else {
         if (mounted) {
-          _showErrorDialog(result['message'] ?? 'Erreur lors du paiement');
+          _showErrorDialog(result?['message'] ?? 'Erreur lors du paiement');
         }
       }
     } catch (e) {

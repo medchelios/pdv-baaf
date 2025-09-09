@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/api_config.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/mobile/agent';
+  static String get baseUrl => ApiConfig.fullApiUrl;
   String? _token;
   Map<String, dynamic>? _user;
 
-  // Singleton
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
   AuthService._internal();
@@ -16,13 +16,9 @@ class AuthService {
   Map<String, dynamic>? get user => _user;
   bool get isAuthenticated => _token != null;
 
-  Map<String, String> get _headers => {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    if (_token != null) 'Authorization': 'Bearer $_token',
-  };
-
-  // Initialiser le service au démarrage de l'app
+  Map<String, String> get _headers => _token != null 
+    ? ApiConfig.getAuthHeaders(_token!)
+    : ApiConfig.defaultHeaders;
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('auth_token');
@@ -32,7 +28,6 @@ class AuthService {
     }
   }
 
-  // Sauvegarder les données d'authentification
   Future<void> _saveAuthData(String token, Map<String, dynamic> user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
@@ -41,7 +36,6 @@ class AuthService {
     _user = user;
   }
 
-  // Effacer les données d'authentification
   Future<void> _clearAuthData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
@@ -50,11 +44,8 @@ class AuthService {
     _user = null;
   }
 
-  // Connexion avec email/mot de passe (agents normaux)
   Future<Map<String, dynamic>> loginWithEmail(String email, String password) async {
     try {
-      print('🔐 Tentative de connexion avec email: $email');
-      print('🌐 URL: $baseUrl/auth/login');
       
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
@@ -65,25 +56,17 @@ class AuthService {
         }),
       );
 
-      print('📡 Status Code: ${response.statusCode}');
-      print('📡 Headers: ${response.headers}');
-      print('📡 Body: ${response.body}');
-
       final result = jsonDecode(response.body);
       
       if (result['success'] == true) {
-        print('✅ Connexion réussie');
         await _saveAuthData(
           result['data']['token'],
           result['data']['user'],
         );
-      } else {
-        print('❌ Échec de connexion: ${result['message']}');
       }
       
       return result;
     } catch (e) {
-      print('💥 Erreur lors de la connexion: $e');
       return {
         'success': false,
         'message': 'Erreur de connexion: $e',
@@ -91,11 +74,8 @@ class AuthService {
     }
   }
 
-  // Connexion avec mot de passe 4 chiffres (agents PDV)
   Future<Map<String, dynamic>> loginWithPin(String pin) async {
     try {
-      print('🔐 Tentative de connexion PDV avec PIN: $pin');
-      print('🌐 URL: $baseUrl/auth/login-pdv');
       
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login-pdv'),
@@ -105,25 +85,17 @@ class AuthService {
         }),
       );
 
-      print('📡 Status Code: ${response.statusCode}');
-      print('📡 Headers: ${response.headers}');
-      print('📡 Body: ${response.body}');
-
       final result = jsonDecode(response.body);
       
       if (result['success'] == true) {
-        print('✅ Connexion PDV réussie');
         await _saveAuthData(
           result['data']['token'],
           result['data']['user'],
         );
-      } else {
-        print('❌ Échec de connexion PDV: ${result['message']}');
       }
       
       return result;
     } catch (e) {
-      print('💥 Erreur lors de la connexion PDV: $e');
       return {
         'success': false,
         'message': 'Erreur de connexion: $e',
@@ -131,7 +103,6 @@ class AuthService {
     }
   }
 
-  // Déconnexion
   Future<Map<String, dynamic>> logout() async {
     try {
       if (_token != null) {
@@ -152,12 +123,10 @@ class AuthService {
     }
   }
 
-  // Vérifier si l'utilisateur est un agent PDV
   bool get isPdvAgent {
     return _user?['role'] == 'point_vente' || _user?['role'] == 'pdv';
   }
 
-  // Vérifier si l'utilisateur est un agent normal
   bool get isNormalAgent {
     return !isPdvAgent && _user != null;
   }

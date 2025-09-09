@@ -25,12 +25,12 @@ class StatsController extends ChangeNotifier {
   Future<void> loadDailyStats() async {
     _setLoading(true);
     try {
-      final result = await _apiService.getDailyStats();
-      if (result['success'] == true) {
-        _dailyStats = result['data'];
+      final result = await _apiService.get('stats/daily');
+      if (result?['success'] == true) {
+        _dailyStats = result?['data'];
         _error = null;
       } else {
-        _error = result['message'] ?? 'Erreur lors du chargement des stats';
+        _error = result?['message'] ?? 'Erreur lors du chargement des stats';
       }
     } catch (e) {
       _error = 'Erreur de connexion: $e';
@@ -43,12 +43,12 @@ class StatsController extends ChangeNotifier {
   Future<void> loadMonthlyStats() async {
     _setLoading(true);
     try {
-      final result = await _apiService.getMonthlyStats();
-      if (result['success'] == true) {
-        _monthlyStats = result['data'];
+      final result = await _apiService.get('stats/monthly');
+      if (result?['success'] == true) {
+        _monthlyStats = result?['data'];
         _error = null;
       } else {
-        _error = result['message'] ?? 'Erreur lors du chargement des stats';
+        _error = result?['message'] ?? 'Erreur lors du chargement des stats';
       }
     } catch (e) {
       _error = 'Erreur de connexion: $e';
