@@ -39,13 +39,13 @@ class AuthTypeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 28),
 
               const Text(
                 'Se connecter',
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF1F2937),
                 ),
               ),
@@ -54,11 +54,11 @@ class AuthTypeScreen extends StatelessWidget {
 
               const Text(
                 'Choisissez une méthode de connexion',
-                style: TextStyle(fontSize: 16, color: Color(0xFF6B7280)),
+                style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 60),
+              const SizedBox(height: 36),
 
               // Boutons de connexion
               Column(
@@ -81,7 +81,7 @@ class AuthTypeScreen extends StatelessWidget {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
 
                   // Connexion Standard
                   _buildAuthButton(
@@ -167,8 +167,8 @@ class AuthTypeScreen extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                         color: Color(0xFF1F2937),
                       ),
                     ),
@@ -176,7 +176,7 @@ class AuthTypeScreen extends StatelessWidget {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Color(0xFF6B7280),
                       ),
                     ),

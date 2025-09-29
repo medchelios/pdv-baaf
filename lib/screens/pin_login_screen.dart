@@ -14,6 +14,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
   final _authService = AuthService();
   bool _isLoading = false;
   int _attemptsCount = 0;
+  bool _obscurePin = true;
 
   @override
   void dispose() {
@@ -25,7 +26,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
     if (_pinController.text.length != 8) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Veuillez entrer votre code PDV de 8 chiffres'),
+          content: Text('Veuillez entrer votre code PDV de 8 caractères.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -116,9 +117,10 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
                 // Sous-titre descriptif uniquement (le titre est dans l'AppBar)
                 Text(
-                  'Entrez votre code PDV à 8 chiffres',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  'Entrez votre code PDV à 8 caractères.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFF6B7280),
+                    fontSize: 13,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -126,48 +128,58 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
                 // Champ PIN
                 SizedBox(
-                  width: 200,
+                  width: double.infinity,
                   child: TextFormField(
                     controller: _pinController,
-                    keyboardType: TextInputType.number,
-                    obscureText: true,
+                    keyboardType: TextInputType.text,
+                    obscureText: _obscurePin,
                     inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
+                      FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
                       LengthLimitingTextInputFormatter(8),
                     ],
-                    textAlign: TextAlign.center,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    textAlign: TextAlign.start,
                     style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 6,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                     decoration: InputDecoration(
                       hintText: '••••••••',
                       hintStyle: TextStyle(
-                        fontSize: 28,
+                        fontSize: 16,
                         color: Colors.grey[400],
-                        letterSpacing: 6,
+                      ),
+                      prefixIcon: const Icon(Icons.vpn_key),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePin ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePin = !_obscurePin;
+                          });
+                        },
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.grey[300]!),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.grey[300]!),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(
                           color: Color(0xFFe94d29),
-                          width: 3,
+                          width: 2,
                         ),
                       ),
-                      filled: true,
-                      fillColor: Colors.white,
+                      filled: false,
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
+                        horizontal: 12,
+                        vertical: 10,
                       ),
                     ),
                     onChanged: (value) {
@@ -250,7 +262,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
                 // Message d'aide
                 Text(
-                  'Utilisez votre Code PDV personnel (8 chiffres)',
+                  'Utilisez votre Code PDV personnel (8 caractères)',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: const Color(0xFF9CA3AF),
                   ),
