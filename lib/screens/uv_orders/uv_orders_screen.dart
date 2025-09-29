@@ -115,23 +115,87 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
 
   Widget? _buildFloatingActionButton() {
     if (_availableActions == null) return null;
-    
-    // Chercher l'action "create_order" en priorité
-    final createOrderAction = _availableActions!.firstWhere(
-      (action) => action['type'] == 'create_order',
-      orElse: () => _availableActions!.firstWhere(
-        (action) => action['type'] != 'refresh',
-        orElse: () => {},
-      ),
+
+    final nonRefreshActions = _availableActions!
+        .where((action) => action['type'] != 'refresh')
+        .toList();
+
+    if (nonRefreshActions.isEmpty) return null;
+
+    return FloatingActionButton.small(
+      onPressed: _showActionMenu,
+      backgroundColor: AppConstants.brandOrange,
+      foregroundColor: AppConstants.brandWhite,
+      child: const Icon(Icons.add),
     );
+  }
 
-    if (createOrderAction.isEmpty) return null;
+  void _showActionMenu() {
+    if (_availableActions == null) return;
 
-    return FloatingActionButton(
-      onPressed: () => _handleAction(createOrderAction['type']),
-      child: Icon(_getIcon(createOrderAction['icon'])),
-      backgroundColor: _getActionColor(createOrderAction['color']),
-      foregroundColor: Colors.white,
+    final nonRefreshActions = _availableActions!
+        .where((action) => action['type'] != 'refresh')
+        .toList();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Title
+            const Text(
+              'Actions UV',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Action options
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: nonRefreshActions
+                    .map(
+                      (action) => _buildActionOption(
+                        context,
+                        icon: _getIcon(action['icon']),
+                        title: action['label'],
+                        subtitle: _getActionSubtitle(action['type']),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _handleAction(action['type']);
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
     );
   }
 
@@ -145,19 +209,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         return Icons.refresh;
       default:
         return Icons.help;
-    }
-  }
-
-  Color _getActionColor(String colorName) {
-    switch (colorName) {
-      case 'orange':
-        return AppConstants.brandOrange;
-      case 'blue':
-        return AppConstants.brandBlue;
-      case 'gray':
-        return Colors.grey;
-      default:
-        return AppConstants.brandBlue;
     }
   }
 
@@ -205,5 +256,81 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
       context: context,
       builder: (context) => CreateOrderDialog(onOrderCreated: _loadData),
     );
+  }
+
+  Widget _buildActionOption(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F9FA),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE9ECEF), width: 1),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppConstants.brandOrange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: AppConstants.brandOrange, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF6C757D),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Color(0xFF6C757D),
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getActionSubtitle(String actionType) {
+    switch (actionType) {
+      case 'create_order':
+        return 'Créer une nouvelle commande UV';
+      case 'recharge_account':
+        return 'Demander une recharge de compte';
+      default:
+        return 'Action UV';
+    }
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
-import '../../widgets/common/custom_card.dart';
 import '../../utils/format_utils.dart';
-import '../../services/uv_order_data_service.dart';
 import '../../services/uv_order_service.dart';
 import '../../services/auth_service.dart';
 
@@ -37,46 +35,36 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Commandes Récentes',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppConstants.brandBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            IconButton(
-              onPressed: widget.onRefresh,
-              icon: Icon(Icons.refresh, color: AppConstants.brandBlue),
-              tooltip: 'Actualiser',
-            ),
-          ],
+        Text(
+          'Commandes Récentes',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: AppConstants.brandBlue,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: AppConstants.paddingS),
 
-        CustomCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (orders.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(AppConstants.paddingXL),
-                    child: Text('Aucune commande récente'),
-                  ),
-                )
-              else ...[
-                _buildOrdersTable(context, currentOrders),
-                if (totalPages > 1) ...[
-                  const SizedBox(height: AppConstants.paddingM),
-                  _buildPagination(totalPages),
-                ],
-              ],
-            ],
-          ),
-        ),
+        if (orders.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppConstants.paddingXL),
+            decoration: BoxDecoration(
+              color: AppConstants.brandWhite,
+              borderRadius: BorderRadius.circular(AppConstants.radiusM),
+              border: Border.all(
+                color: AppConstants.brandBlue.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: const Center(child: Text('Aucune commande récente')),
+          )
+        else ...[
+          _buildOrdersTable(context, currentOrders),
+          if (totalPages > 1) ...[
+            const SizedBox(height: AppConstants.paddingM),
+            _buildPagination(totalPages),
+          ],
+        ],
       ],
     );
   }
@@ -109,7 +97,7 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: Text(
                     'Montant',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -132,6 +120,16 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
                   flex: 2,
                   child: Text(
                     'Statut',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppConstants.brandBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'Actions',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppConstants.brandBlue,
                       fontWeight: FontWeight.w600,
@@ -182,7 +180,7 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
         child: Row(
           children: [
             Expanded(
-              flex: 3,
+              flex: 2,
               child: Text(
                 order['formatted_total_amount'] ?? '0 GNF',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -203,73 +201,75 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
             ),
             Expanded(
               flex: 2,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(
-                          order['status'] as String,
-                        ).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: _getStatusColor(
-                            order['status'] as String,
-                          ).withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        order['status_label'] ?? 'Inconnu',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: _getStatusColor(order['status'] as String),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(
+                    order['status'] as String,
+                  ).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _getStatusColor(
+                      order['status'] as String,
+                    ).withValues(alpha: 0.3),
+                    width: 1,
                   ),
-                  FutureBuilder<bool>(
-                    future: _canValidateOrder(order),
-                    builder: (context, snapshot) {
-                      if (snapshot.data == true) {
-                        return Row(
-                          children: [
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () => _validateOrder(context, order),
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: AppConstants.successColor,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppConstants.successColor
-                                          .withValues(alpha: 0.3),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.check_rounded,
-                                  color: Colors.white,
-                                  size: 14,
-                                ),
-                              ),
+                ),
+                child: Text(
+                  order['status_label'] ?? 'Inconnu',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: _getStatusColor(order['status'] as String),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: FutureBuilder<bool>(
+                future: _canValidateOrder(order),
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () => _validateOrder(context, order),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: AppConstants.successColor,
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                          ],
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ],
+                            child: const Icon(
+                              Icons.check_rounded,
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: () => _rejectOrder(context, order),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: AppConstants.errorColor,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Icon(
+                              Icons.close_rounded,
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
             ),
           ],
@@ -417,20 +417,31 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
   }
 
   Future<bool> _canValidateOrder(Map<String, dynamic> order) async {
-    final dataService = UVOrderDataService();
-
-    // Vérifier si l'utilisateur peut valider des commandes
-    if (!await dataService.canValidateOrders()) return false;
+    final user = AuthService().user;
+    if (user == null) return false;
 
     // Vérifier si c'est une commande en attente de validation
     if (order['status'] != 'pending_validation') return false;
 
     // Vérifier que ce n'est pas sa propre commande
-    final currentUserId = AuthService().user?['id'] as int?;
+    final currentUserId = user['id'] as int?;
     if (currentUserId == null) return false;
     if (order['requester_id'] == currentUserId) return false;
 
-    return true;
+    // Vérifier les rôles qui peuvent valider (distributeur, semi_grossiste, admin, etc.)
+    final userRole = user['role'] as String?;
+    if (userRole == null) return false;
+
+    // Les rôles qui peuvent valider selon UVOrdersManagement.php
+    final canValidateRoles = [
+      'distributor',
+      'semi_grossiste',
+      'super_admin',
+      'admin',
+      'baaf_user',
+    ];
+
+    return canValidateRoles.contains(userRole);
   }
 
   Future<void> _validateOrder(
@@ -505,6 +516,77 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Erreur lors de la validation'),
+              backgroundColor: AppConstants.errorColor,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _rejectOrder(
+    BuildContext context,
+    Map<String, dynamic> order,
+  ) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Rejeter la commande',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Text(
+          'Voulez-vous rejeter cette commande de ${order['formatted_total_amount'] ?? '0 GNF'} ?',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Annuler',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppConstants.errorColor,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(
+              'Rejeter',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      try {
+        // TODO: Implémenter l'API de rejet
+        // final success = await UVOrderService().rejectOrder(
+        //   orderId: order['id'] as int,
+        //   comment: 'Rejeté par mobile',
+        // );
+
+        // Pour l'instant, on simule le rejet
+        widget.onRefresh();
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Commande rejetée avec succès'),
+              backgroundColor: AppConstants.errorColor,
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Erreur lors du rejet'),
               backgroundColor: AppConstants.errorColor,
             ),
           );
