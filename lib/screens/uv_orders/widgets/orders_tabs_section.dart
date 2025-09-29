@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../services/uv_order_service.dart';
 import '../../../services/logger_service.dart';
+import '../../../services/auth_service.dart';
 import 'orders_table.dart';
 import '../order_details_screen.dart';
 
@@ -18,16 +19,20 @@ class _OrdersTabsSectionState extends State<OrdersTabsSection>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final UVOrderService _uvOrderService = UVOrderService();
+  final AuthService _authService = AuthService();
 
   List<Map<String, dynamic>>? _recentOrders;
   List<Map<String, dynamic>>? _rechargeRequests;
   bool _isLoadingRecent = true;
   bool _isLoadingRecharge = true;
 
+  bool get _isPdvAgent => _authService.isPdvAgent;
+  int get _tabCount => _isPdvAgent ? 1 : 2;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: _tabCount, vsync: this);
     _loadData();
   }
 
@@ -38,7 +43,11 @@ class _OrdersTabsSectionState extends State<OrdersTabsSection>
   }
 
   Future<void> _loadData() async {
-    await Future.wait([_loadRecentOrders(), _loadRechargeRequests()]);
+    if (_isPdvAgent) {
+      await _loadRecentOrders();
+    } else {
+      await Future.wait([_loadRecentOrders(), _loadRechargeRequests()]);
+    }
   }
 
   Future<void> _loadRecentOrders() async {
@@ -47,16 +56,16 @@ class _OrdersTabsSectionState extends State<OrdersTabsSection>
     });
 
     try {
-      final orders = await _uvOrderService.getRecentOrders(limit: 10);
+      final orders = _isPdvAgent
+          ? await _uvOrderService.getHistory(limit: 20)
+          : await _uvOrderService.getRecentOrders(limit: 10);
+
       setState(() {
         _recentOrders = orders;
         _isLoadingRecent = false;
       });
     } catch (e) {
-      LoggerService.error(
-        'Erreur lors du chargement des commandes récentes',
-        e,
-      );
+      LoggerService.error('Erreur lors du chargement des commandes', e);
       setState(() {
         _isLoadingRecent = false;
       });
@@ -102,23 +111,48 @@ class _OrdersTabsSectionState extends State<OrdersTabsSection>
       ),
       child: Column(
         children: [
-          TabBar(
-            controller: _tabController,
-            labelColor: AppConstants.brandBlue,
-            unselectedLabelColor: Colors.grey[600],
-            indicatorColor: AppConstants.brandBlue,
-            tabs: const [
-              Tab(text: 'Commandes'),
-              Tab(text: 'Demandes'),
-            ],
-          ),
-          SizedBox(
-            height: 400,
-            child: TabBarView(
+          if (!_isPdvAgent) ...[
+            TabBar(
               controller: _tabController,
-              children: [_buildRecentOrdersTab(), _buildRechargeRequestsTab()],
+              labelColor: AppConstants.brandBlue,
+              unselectedLabelColor: Colors.grey[600],
+              indicatorColor: AppConstants.brandBlue,
+              tabs: const [
+                Tab(text: 'Commandes'),
+                Tab(text: 'Demandes'),
+              ],
             ),
-          ),
+            SizedBox(
+              height: 400,
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildRecentOrdersTab(),
+                  _buildRechargeRequestsTab(),
+                ],
+              ),
+            ),
+          ] else ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppConstants.paddingM),
+              decoration: BoxDecoration(
+                color: AppConstants.brandBlue.withValues(alpha: 0.1),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(AppConstants.radiusM),
+                  topRight: Radius.circular(AppConstants.radiusM),
+                ),
+              ),
+              child: Text(
+                'Commandes UV',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppConstants.brandBlue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            SizedBox(height: 400, child: _buildRecentOrdersTab()),
+          ],
         ],
       ),
     );
@@ -132,7 +166,7 @@ class _OrdersTabsSectionState extends State<OrdersTabsSection>
     if (_recentOrders == null || _recentOrders!.isEmpty) {
       return Center(
         child: Text(
-          'Aucune commande récente',
+          _isPdvAgent ? 'Aucune commande' : 'Aucune commande récente',
           style: Theme.of(
             context,
           ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
