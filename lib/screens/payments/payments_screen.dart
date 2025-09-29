@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../services/payment_service.dart';
-import 'widgets/payments_search_bar.dart';
 import 'widgets/payments_list.dart';
 
 class PaymentsScreen extends StatefulWidget {
@@ -42,10 +41,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -146,10 +142,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFFF8F9FA),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color(0xFFE9ECEF),
-              width: 1,
-            ),
+            border: Border.all(color: const Color(0xFFE9ECEF), width: 1),
           ),
           child: Row(
             children: [
@@ -159,11 +152,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   color: AppConstants.brandBlue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  icon,
-                  color: AppConstants.brandBlue,
-                  size: 24,
-                ),
+                child: Icon(icon, color: AppConstants.brandBlue, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -268,7 +257,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                                     _loadPayments();
                                   },
                                   decoration: const InputDecoration(
-                                    hintText: 'Rechercher par référence, nom client...',
+                                    hintText:
+                                        'Rechercher par référence, nom client...',
                                     hintStyle: TextStyle(
                                       color: Color(0xFF6C757D),
                                       fontSize: 14,

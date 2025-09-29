@@ -42,9 +42,7 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: brandWhite,
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -70,7 +68,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.red[600]!, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
       textTheme: TextTheme(
         headlineLarge: AppConstants.heading1.copyWith(fontSize: 32),
@@ -82,6 +83,111 @@ class AppTheme {
         bodyLarge: AppConstants.bodyLarge,
         bodyMedium: AppConstants.bodyMedium,
         bodySmall: AppConstants.bodySmall,
+      ),
+    );
+  }
+
+  static ThemeData get darkTheme {
+    final ColorScheme darkScheme = ColorScheme.fromSeed(
+      seedColor: brandOrange,
+      brightness: Brightness.dark,
+      primary: brandOrange,
+      secondary: brandBlue,
+      surface: const Color(0xFF111315),
+      error: AppConstants.errorColor,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      fontFamily: AppConstants.fontFamily,
+      colorScheme: darkScheme,
+      scaffoldBackgroundColor: const Color(0xFF0B0D0F),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: brandOrange,
+        foregroundColor: brandWhite,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: brandWhite,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: brandOrange,
+          foregroundColor: brandWhite,
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: const Color(0xFF15181B),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF15181B),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[800]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[800]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: brandOrange, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.red[400]!),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.red[600]!, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+      ),
+      textTheme: TextTheme(
+        headlineLarge: AppConstants.heading1.copyWith(
+          fontSize: 32,
+          color: AppConstants.brandWhite,
+        ),
+        headlineMedium: AppConstants.heading1.copyWith(
+          fontSize: 28,
+          color: AppConstants.brandWhite,
+        ),
+        headlineSmall: AppConstants.heading2.copyWith(
+          fontSize: 24,
+          color: AppConstants.brandWhite,
+        ),
+        titleLarge: AppConstants.heading2.copyWith(
+          fontSize: 20,
+          color: AppConstants.brandWhite,
+        ),
+        titleMedium: AppConstants.heading3.copyWith(
+          fontSize: 18,
+          color: AppConstants.brandWhite,
+        ),
+        titleSmall: AppConstants.heading3.copyWith(
+          fontSize: 16,
+          color: AppConstants.brandWhite,
+        ),
+        bodyLarge: AppConstants.bodyLarge.copyWith(
+          color: AppConstants.brandWhite,
+        ),
+        bodyMedium: AppConstants.bodyMedium.copyWith(color: Colors.grey[300]),
+        bodySmall: AppConstants.bodySmall.copyWith(color: Colors.grey[500]),
       ),
     );
   }

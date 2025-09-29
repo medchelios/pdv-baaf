@@ -35,6 +35,8 @@ class PdvBaafApp extends StatelessWidget {
       child: MaterialApp(
         title: 'PDV Baaf',
         theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
         home: const AuthTypeScreen(),
         routes: {
           '/auth-type': (context) => const AuthTypeScreen(),
