@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../services/uv_order_service.dart';
 import '../../services/logger_service.dart';
-import '../../services/auth_service.dart';
 import 'create_order_dialog.dart';
 import 'stats_section.dart';
 import 'account_balance_section.dart';
@@ -93,7 +92,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                     RecentOrdersSection(
                       recentOrders: _recentOrders,
                       onRefresh: _loadData,
-                      currentUserId: AuthService().user?['id'] ?? 0,
                     ),
                   ],
                 ),
