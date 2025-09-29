@@ -28,38 +28,6 @@ class UVOrderService {
     return null;
   }
 
-  Future<List<Map<String, dynamic>>?> getAvailableActions() async {
-    LoggerService.info('Récupération des actions disponibles UV');
-    final response = await _apiService.get('uv-orders/actions');
-    if (response?['data'] != null) {
-      LoggerService.info('${response!['data'].length} actions UV récupérées');
-      return List<Map<String, dynamic>>.from(response['data']);
-    }
-    LoggerService.warning('Aucune action UV disponible');
-    return null;
-  }
-
-  Future<Map<String, dynamic>?> createOrder({
-    required double amount,
-    required String description,
-    required String type, // 'order', 'transfer', 'credit_request'
-  }) async {
-    LoggerService.info(
-      'Création d\'une nouvelle commande UV: $amount GNF - $type',
-    );
-    final response = await _apiService.post('uv-orders/create', {
-      'amount': amount,
-      'description': description,
-      'type': type,
-    });
-    if (response?['data'] != null) {
-      LoggerService.info('Commande UV créée avec succès');
-    } else {
-      LoggerService.warning('Échec de création de la commande UV');
-    }
-    return response?['data'];
-  }
-
   Future<bool> validateOrder({required int orderId, String? comment}) async {
     final response = await _apiService.post('uv-orders/$orderId/validate', {
       'validator_comment': comment,
@@ -67,11 +35,15 @@ class UVOrderService {
     return response != null;
   }
 
-  static const Map<String, String> orderTypes = {
-    'order': 'Commande UV',
-    'transfer': 'Transfert',
-    'credit_request': 'Demande de crédit',
-  };
+  Future<bool> rejectOrder({
+    required int orderId,
+    required String comment,
+  }) async {
+    final response = await _apiService.post('uv-orders/$orderId/reject', {
+      'reject_comment': comment,
+    });
+    return response != null;
+  }
 
   static const Map<String, String> orderStatuses = {
     'pending_validation': 'En attente',
@@ -90,6 +62,64 @@ class UVOrderService {
       LoggerService.warning(
         'Aucune donnée de solde disponible - Response: $response',
       );
+    }
+    return response?['data'];
+  }
+
+  Future<List<Map<String, dynamic>>?> getNetworkMembers() async {
+    LoggerService.info('Récupération des membres du réseau');
+    final response = await _apiService.get('uv-orders/network-members');
+    if (response?['data'] != null) {
+      LoggerService.info(
+        '${response!['data'].length} membres du réseau récupérés',
+      );
+      return List<Map<String, dynamic>>.from(response['data']);
+    }
+    LoggerService.warning('Aucun membre du réseau');
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> getTransactionBalance() async {
+    LoggerService.info('Récupération du solde transactionnel');
+    final response = await _apiService.get('uv-orders/transaction-balance');
+    if (response?['data'] != null) {
+      LoggerService.info('Solde transactionnel récupéré avec succès');
+    } else {
+      LoggerService.warning('Aucun solde transactionnel disponible');
+    }
+    return response?['data'];
+  }
+
+  Future<Map<String, dynamic>?> createOrder({
+    required double amount,
+    required String description,
+  }) async {
+    LoggerService.info('Création d\'une nouvelle commande UV: $amount GNF');
+    final response = await _apiService.post('uv-orders/create', {
+      'amount': amount,
+      'description': description,
+    });
+    if (response?['data'] != null) {
+      LoggerService.info('Commande UV créée avec succès');
+    } else {
+      LoggerService.warning('Échec de création de la commande UV');
+    }
+    return response?['data'];
+  }
+
+  Future<Map<String, dynamic>?> createRechargeRequest({
+    required double amount,
+    required String description,
+  }) async {
+    LoggerService.info('Création d\'une demande de recharge: $amount GNF');
+    final response = await _apiService.post('uv-orders/recharge', {
+      'amount': amount,
+      'description': description,
+    });
+    if (response?['data'] != null) {
+      LoggerService.info('Demande de recharge créée avec succès');
+    } else {
+      LoggerService.warning('Échec de création de la demande de recharge');
     }
     return response?['data'];
   }

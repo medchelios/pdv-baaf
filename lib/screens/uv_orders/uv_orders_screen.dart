@@ -19,7 +19,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   Map<String, dynamic>? _stats;
   Map<String, dynamic>? _accountBalance;
   List<Map<String, dynamic>>? _recentOrders;
-  List<Map<String, dynamic>>? _availableActions;
   bool _isLoading = true;
 
   @override
@@ -37,13 +36,11 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
       final stats = await _uvOrderService.getStats();
       final recent = await _uvOrderService.getRecentOrders(limit: 10);
       final balance = await _uvOrderService.getAccountBalance();
-      final actions = await _uvOrderService.getAvailableActions();
 
       setState(() {
         _stats = Map<String, dynamic>.from(stats ?? {});
         _accountBalance = balance;
         _recentOrders = List<Map<String, dynamic>>.from(recent ?? []);
-        _availableActions = List<Map<String, dynamic>>.from(actions ?? []);
         _isLoading = false;
       });
     } catch (e) {
@@ -112,14 +109,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   }
 
   Widget? _buildFloatingActionButton() {
-    if (_availableActions == null) return null;
-
-    final nonRefreshActions = _availableActions!
-        .where((action) => action['type'] != 'refresh')
-        .toList();
-
-    if (nonRefreshActions.isEmpty) return null;
-
     return FloatingActionButton.small(
       onPressed: _showActionMenu,
       backgroundColor: AppConstants.brandOrange,
@@ -129,12 +118,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   }
 
   void _showActionMenu() {
-    if (_availableActions == null) return;
-
-    final nonRefreshActions = _availableActions!
-        .where((action) => action['type'] != 'refresh')
-        .toList();
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -149,7 +132,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               margin: const EdgeInsets.only(top: 12),
               width: 40,
@@ -170,24 +152,31 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            // Action options
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                children: nonRefreshActions
-                    .map(
-                      (action) => _buildActionOption(
-                        context,
-                        icon: _getIcon(action['icon']),
-                        title: action['label'],
-                        subtitle: _getActionSubtitle(action['type']),
-                        onTap: () {
-                          Navigator.pop(context);
-                          _handleAction(action['type']);
-                        },
-                      ),
-                    )
-                    .toList(),
+                children: [
+                  _buildActionOption(
+                    context,
+                    icon: Icons.add_rounded,
+                    title: 'Créer une commande',
+                    subtitle: 'Nouvelle commande UV',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showCreateOrderDialog();
+                    },
+                  ),
+                  _buildActionOption(
+                    context,
+                    icon: Icons.account_balance_wallet,
+                    title: 'Recharger le compte',
+                    subtitle: 'Demande de recharge',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showRechargeAccountDialog();
+                    },
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
@@ -195,33 +184,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         ),
       ),
     );
-  }
-
-  IconData _getIcon(String iconName) {
-    switch (iconName) {
-      case 'add_rounded':
-        return Icons.add_rounded;
-      case 'account_balance_wallet':
-        return Icons.account_balance_wallet;
-      case 'refresh':
-        return Icons.refresh;
-      default:
-        return Icons.help;
-    }
-  }
-
-  void _handleAction(String actionType) {
-    switch (actionType) {
-      case 'create_order':
-        _showCreateOrderDialog();
-        break;
-      case 'recharge_account':
-        _showRechargeAccountDialog();
-        break;
-      case 'refresh':
-        _loadData();
-        break;
-    }
   }
 
   void _showRechargeAccountDialog() {
@@ -319,16 +281,5 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         ),
       ),
     );
-  }
-
-  String _getActionSubtitle(String actionType) {
-    switch (actionType) {
-      case 'create_order':
-        return 'Créer une nouvelle commande UV';
-      case 'recharge_account':
-        return 'Demander une recharge de compte';
-      default:
-        return 'Action UV';
-    }
   }
 }

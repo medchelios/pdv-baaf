@@ -105,27 +105,7 @@ class _OrderActionsSectionState extends State<OrderActionsSection> {
   }
 
   Future<bool> _canValidateOrder() async {
-    final user = AuthService().user;
-    if (user == null) return false;
-
-    if (widget.order['status'] != 'pending_validation') return false;
-
-    final currentUserId = user['id'] as int?;
-    if (currentUserId == null) return false;
-    if (widget.order['requester_id'] == currentUserId) return false;
-
-    final userRole = user['role'] as String?;
-    if (userRole == null) return false;
-
-    final canValidateRoles = [
-      'distributor',
-      'semi_grossiste',
-      'super_admin',
-      'admin',
-      'baaf_user',
-    ];
-
-    return canValidateRoles.contains(userRole);
+    return widget.order['status'] == 'pending_validation';
   }
 
   Future<void> _validateOrder() async {
@@ -185,11 +165,23 @@ class _OrderActionsSectionState extends State<OrderActionsSection> {
     setState(() => _isLoading = true);
 
     try {
-      if (mounted) {
+      final success = await UVOrderService().rejectOrder(
+        orderId: widget.order['id'],
+        comment: result['comment'] ?? '',
+      );
+
+      if (success && mounted) {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Commande rejetée avec succès'),
+            backgroundColor: AppConstants.successColor,
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur lors du rejet'),
             backgroundColor: AppConstants.errorColor,
           ),
         );
