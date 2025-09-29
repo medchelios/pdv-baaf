@@ -13,7 +13,6 @@ import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/user_data_service.dart';
 import 'controllers/dashboard_controller.dart';
-import 'controllers/uv_order_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +27,7 @@ class PdvBaafApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DashboardController()),
-        ChangeNotifierProvider(create: (_) => UvOrderController()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => DashboardController())],
       child: MaterialApp(
         title: 'PDV Baaf',
         theme: AppTheme.lightTheme,

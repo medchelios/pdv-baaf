@@ -20,26 +20,7 @@ class _OrderActionsSectionState extends State<OrderActionsSection> {
       future: _canValidateOrder(),
       builder: (context, snapshot) {
         if (snapshot.data != true) {
-          return Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppConstants.paddingM),
-            decoration: BoxDecoration(
-              color: AppConstants.brandBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppConstants.radiusM),
-              border: Border.all(
-                color: AppConstants.brandBlue.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              'Aucune action disponible pour cette commande',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppConstants.brandBlue,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          );
+          return const SizedBox.shrink();
         }
 
         return Column(
