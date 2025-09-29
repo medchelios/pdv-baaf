@@ -17,7 +17,7 @@ class UVOrderService {
 
   Future<List<Map<String, dynamic>>?> getRecentOrders({int limit = 10}) async {
     LoggerService.info(
-      'Récupération des commandes UV récentes (limit: $limit)',
+      'Récupération des commandes UV récentes (en attente de validation)',
     );
     final response = await _apiService.get('uv-orders/recent?limit=$limit');
     if (response?['data'] != null) {
@@ -25,6 +25,36 @@ class UVOrderService {
       return List<Map<String, dynamic>>.from(response['data']);
     }
     LoggerService.warning('Aucune commande UV récente');
+    return null;
+  }
+
+  Future<List<Map<String, dynamic>>?> getHistory({int limit = 20}) async {
+    LoggerService.info('Récupération de l\'historique des commandes UV');
+    final response = await _apiService.get('uv-orders/history?limit=$limit');
+    if (response?['data'] != null) {
+      LoggerService.info(
+        '${response!['data'].length} commandes dans l\'historique récupérées',
+      );
+      return List<Map<String, dynamic>>.from(response['data']);
+    }
+    LoggerService.warning('Aucune commande dans l\'historique');
+    return null;
+  }
+
+  Future<List<Map<String, dynamic>>?> getRechargeRequests({
+    int limit = 20,
+  }) async {
+    LoggerService.info('Récupération des demandes de rechargement');
+    final response = await _apiService.get(
+      'uv-orders/recharge-requests?limit=$limit',
+    );
+    if (response?['data'] != null) {
+      LoggerService.info(
+        '${response!['data'].length} demandes de rechargement récupérées',
+      );
+      return List<Map<String, dynamic>>.from(response['data']);
+    }
+    LoggerService.warning('Aucune demande de rechargement');
     return null;
   }
 

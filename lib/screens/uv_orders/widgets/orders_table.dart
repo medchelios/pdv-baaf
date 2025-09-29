@@ -52,6 +52,16 @@ class OrdersTable extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
+              'Type',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppConstants.brandBlue,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
               'Montant',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppConstants.brandBlue,
@@ -112,7 +122,18 @@ class OrdersTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  order['formatted_total_amount'] ?? '0 GNF',
+                  order['type_label'] ?? 'Inconnu',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: _getTypeColor(order['type'] as String),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  order['formatted_total_amount']?.replaceAll(' GNF', '') ??
+                      '0',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppConstants.textPrimary,
                     fontWeight: FontWeight.w500,
@@ -131,30 +152,11 @@ class OrdersTable extends StatelessWidget {
               ),
               Expanded(
                 flex: 2,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(
-                      order['status'] as String,
-                    ).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _getStatusColor(
-                        order['status'] as String,
-                      ).withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    order['status_label'] ?? 'Inconnu',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: _getStatusColor(order['status'] as String),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 10,
-                    ),
+                child: Text(
+                  order['status_label'] ?? 'Inconnu',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: _getStatusColor(order['status'] as String),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -163,6 +165,17 @@ class OrdersTable extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getTypeColor(String type) {
+    switch (type) {
+      case 'order':
+        return AppConstants.brandBlue;
+      case 'credit_request':
+        return AppConstants.brandOrange;
+      default:
+        return AppConstants.textSecondary;
+    }
   }
 
   Color _getStatusColor(String status) {

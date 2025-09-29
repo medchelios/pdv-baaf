@@ -54,47 +54,51 @@ class _OrderActionsSectionState extends State<OrderActionsSection> {
             const SizedBox(height: AppConstants.paddingM),
             Row(
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _isLoading ? null : _validateOrder,
-                    icon: _isLoading
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.check_rounded),
-                    label: const Text('Valider'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppConstants.successColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppConstants.paddingM,
+                if (widget.order['can_validate'] == true) ...[
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _validateOrder,
+                      icon: _isLoading
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.check_rounded),
+                      label: const Text('Valider'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppConstants.successColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppConstants.paddingM,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: AppConstants.paddingM),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _isLoading ? null : _rejectOrder,
-                    icon: _isLoading
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.close_rounded),
-                    label: const Text('Rejeter'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppConstants.errorColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppConstants.paddingM,
+                  if (widget.order['can_reject'] == true)
+                    const SizedBox(width: AppConstants.paddingM),
+                ],
+                if (widget.order['can_reject'] == true)
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _rejectOrder,
+                      icon: _isLoading
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.close_rounded),
+                      label: const Text('Rejeter'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppConstants.errorColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppConstants.paddingM,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ],
@@ -104,7 +108,14 @@ class _OrderActionsSectionState extends State<OrderActionsSection> {
   }
 
   Future<bool> _canValidateOrder() async {
-    return widget.order['status'] == 'pending_validation';
+    if (widget.order['status'] != 'pending_validation') {
+      return false;
+    }
+
+    final canValidate = widget.order['can_validate'] as bool?;
+    final canReject = widget.order['can_reject'] as bool?;
+
+    return (canValidate == true) || (canReject == true);
   }
 
   Future<void> _validateOrder() async {

@@ -3,6 +3,7 @@ import '../../constants/app_constants.dart';
 import '../../services/uv_order_service.dart';
 import '../../services/logger_service.dart';
 import 'create_order_dialog.dart';
+import 'recharge_account_dialog.dart';
 import 'stats_section.dart';
 import 'account_balance_section.dart';
 import 'recent_orders_section.dart';
@@ -35,7 +36,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
 
     try {
       final stats = await _uvOrderService.getStats();
-      final recent = await _uvOrderService.getRecentOrders(limit: 10);
+      final recent = await _uvOrderService.getRecentOrders(limit: 20);
       final balance = await _uvOrderService.getAccountBalance();
       final permissions = await _uvOrderService.getPermissions();
 
@@ -230,29 +231,12 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   void _showRechargeAccountDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Recharge de compte',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        content: Text(
-          'Fonctionnalité de recharge de compte en cours de développement.',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Fermer',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ],
-      ),
+      builder: (context) =>
+          RechargeAccountDialog(onRechargeRequested: _loadData),
     );
   }
 
-  void _showHistoryDialog() {
+  void _showHistoryDialog() async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -260,9 +244,43 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
           'Historique des commandes',
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        content: Text(
-          'Fonctionnalité d\'historique en cours de développement.',
-          style: Theme.of(context).textTheme.bodyMedium,
+        content: FutureBuilder<List<Map<String, dynamic>>?>(
+          future: _uvOrderService.getHistory(limit: 50),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Text('Erreur: ${snapshot.error}');
+            }
+
+            final orders = snapshot.data ?? [];
+            if (orders.isEmpty) {
+              return const Text('Aucune commande dans l\'historique');
+            }
+
+            return SizedBox(
+              height: 400,
+              width: double.maxFinite,
+              child: ListView.builder(
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  return ListTile(
+                    title: Text(order['type_label'] ?? 'Inconnu'),
+                    subtitle: Text(
+                      '${order['formatted_total_amount']?.replaceAll(' GNF', '') ?? '0'} - ${order['status_label'] ?? 'Inconnu'}',
+                    ),
+                    trailing: Text(order['requested_at'] ?? ''),
+                  );
+                },
+              ),
+            );
+          },
         ),
         actions: [
           TextButton(
