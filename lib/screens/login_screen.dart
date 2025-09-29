@@ -41,7 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (result['success'] == true) {
         if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/home', (route) => false);
         }
       } else {
         if (mounted) {

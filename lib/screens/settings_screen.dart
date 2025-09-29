@@ -105,176 +105,34 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
-              // Options
-              _buildSettingsSection(context, 'Compte', [
-                _buildSettingsItem(
-                  context: context,
-                  icon: Icons.person_outline_rounded,
-                  title: 'Profil',
-                  subtitle: 'Informations personnelles',
-                  onTap: () {
-                    // TODO: Implémenter la page de profil
-                  },
-                ),
-                _buildSettingsItem(
-                  context: context,
-                  icon: Icons.security_outlined,
-                  title: 'Sécurité',
-                  subtitle: 'Mot de passe et sécurité',
-                  onTap: () {
-                    // TODO: Implémenter la page de sécurité
-                  },
-                ),
-              ]),
-
-              const SizedBox(height: 24),
-
-              _buildSettingsSection(context, 'Application', [
-                _buildSettingsItem(
-                  context: context,
-                  icon: Icons.notifications_outlined,
-                  title: 'Notifications',
-                  subtitle: 'Gérer les notifications',
-                  onTap: () {
-                    // TODO: Implémenter la page de notifications
-                  },
-                ),
-                _buildSettingsItem(
-                  context: context,
-                  icon: Icons.language_outlined,
-                  title: 'Langue',
-                  subtitle: 'Français',
-                  onTap: () {
-                    // TODO: Implémenter le changement de langue
-                  },
-                ),
-                _buildSettingsItem(
-                  context: context,
-                  icon: Icons.help_outline_rounded,
-                  title: 'Aide',
-                  subtitle: 'Support et FAQ',
-                  onTap: () {
-                    // TODO: Implémenter la page d'aide
-                  },
-                ),
-              ]),
-
-              const SizedBox(height: 24),
-
-              _buildSettingsSection(context, 'Système', [
-                _buildSettingsItem(
-                  context: context,
-                  icon: Icons.info_outline_rounded,
-                  title: 'À propos',
-                  subtitle: 'Version 1.0.0',
-                  onTap: () {
-                    // TODO: Implémenter la page à propos
-                  },
-                ),
-                _buildSettingsItem(
-                  context: context,
-                  icon: Icons.logout_rounded,
-                  title: 'Déconnexion',
-                  subtitle: 'Se déconnecter de l\'application',
-                  onTap: () async {
+              // Bouton de déconnexion
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
                     await _showLogoutDialog(context);
                   },
-                  isDestructive: true,
+                  icon: const Icon(Icons.logout_rounded),
+                  label: const Text('Déconnexion'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEF4444),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
                 ),
-              ]),
+              ),
 
               const SizedBox(height: 40),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSettingsSection(
-    BuildContext context,
-    String title,
-    List<Widget> children,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(color: const Color(0xFF1F2937)),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(children: children),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSettingsItem({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: isDestructive
-              ? const Color(0xFFEF4444).withValues(alpha: 0.1)
-              : const Color(0xFFe94d29).withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(
-          icon,
-          color: isDestructive
-              ? const Color(0xFFEF4444)
-              : const Color(0xFFe94d29),
-          size: 20,
-        ),
-      ),
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          color: isDestructive
-              ? const Color(0xFFEF4444)
-              : const Color(0xFF1F2937),
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF6B7280)),
-      ),
-      trailing: Icon(
-        Icons.arrow_forward_ios_rounded,
-        color: const Color(0xFF9CA3AF),
-        size: 16,
-      ),
-      onTap: onTap,
     );
   }
 
@@ -324,7 +182,9 @@ class SettingsScreen extends StatelessWidget {
                 Navigator.of(context).pop();
                 await AuthService().logout();
                 if (context.mounted) {
-                  Navigator.of(context).pushReplacementNamed('/auth-type');
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil('/auth-type', (route) => false);
                 }
               },
             ),

@@ -44,7 +44,9 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
       if (result['success'] == true) {
         if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/home', (route) => false);
         }
       } else {
         setState(() {
