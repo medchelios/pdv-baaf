@@ -26,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-
     setState(() {
       _isLoading = true;
     });
@@ -54,10 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -74,11 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFf8f9fa),
       appBar: AppBar(
-        title: const Text('Connexion'),
+        title: const SizedBox.shrink(),
         backgroundColor: const Color(0xFF0e4b5b),
         foregroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: SafeArea(
         child: Center(
@@ -120,15 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 32),
 
-                      // Titre
-                      Text(
-                        'Connexion Agent',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0e4b5b),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
+                      // Sous-titre descriptif uniquement (le titre est dans l'AppBar)
                       Text(
                         'Entrez vos identifiants de connexion',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -155,7 +143,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFF0e4b5b), width: 2),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF0e4b5b),
+                              width: 2,
+                            ),
                           ),
                           filled: true,
                           fillColor: Colors.white,
@@ -181,7 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                              _obscurePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() {
@@ -199,7 +192,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFF0e4b5b), width: 2),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF0e4b5b),
+                              width: 2,
+                            ),
                           ),
                           filled: true,
                           fillColor: Colors.white,
@@ -233,7 +229,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
                                   ),
                                 )
                               : const Text(

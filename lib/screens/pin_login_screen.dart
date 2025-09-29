@@ -22,16 +22,15 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
   }
 
   Future<void> _login() async {
-    if (_pinController.text.length != 4) {
+    if (_pinController.text.length != 8) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Veuillez entrer un code PIN de 4 chiffres'),
+          content: Text('Veuillez entrer votre code PDV de 8 chiffres'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
-
 
     setState(() {
       _isLoading = true;
@@ -48,11 +47,11 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
         setState(() {
           _attemptsCount++;
         });
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message'] ?? 'Code PIN invalide'),
+              content: Text(result['message'] ?? 'Code PDV invalide'),
               backgroundColor: Colors.red,
             ),
           );
@@ -61,10 +60,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -81,11 +77,11 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFf8f9fa),
       appBar: AppBar(
-        title: const Text('Connexion PDV'),
+        title: const SizedBox.shrink(),
         backgroundColor: const Color(0xFFe94d29),
         foregroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: SafeArea(
         child: Center(
@@ -118,17 +114,9 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // Titre
+                // Sous-titre descriptif uniquement (le titre est dans l'AppBar)
                 Text(
-                  'Connexion PDV',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0e4b5b),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Entrez votre code PIN à 4 chiffres',
+                  'Entrez votre code PDV à 8 chiffres',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: const Color(0xFF6B7280),
                   ),
@@ -145,20 +133,20 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                     obscureText: true,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(4),
+                      LengthLimitingTextInputFormatter(8),
                     ],
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 32,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 8,
+                      letterSpacing: 6,
                     ),
                     decoration: InputDecoration(
-                      hintText: '••••',
+                      hintText: '••••••••',
                       hintStyle: TextStyle(
-                        fontSize: 32,
+                        fontSize: 28,
                         color: Colors.grey[400],
-                        letterSpacing: 8,
+                        letterSpacing: 6,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -170,7 +158,10 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Color(0xFFe94d29), width: 3),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFe94d29),
+                          width: 3,
+                        ),
                       ),
                       filled: true,
                       fillColor: Colors.white,
@@ -180,7 +171,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                       ),
                     ),
                     onChanged: (value) {
-                      if (value.length == 4) {
+                      if (value.length == 8) {
                         _login();
                       }
                     },
@@ -209,7 +200,9 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Text(
@@ -245,9 +238,8 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                         Expanded(
                           child: Text(
                             'Contactez votre superviseur pour obtenir votre code PIN',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFF0e4b5b),
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: const Color(0xFF0e4b5b)),
                           ),
                         ),
                       ],
@@ -258,7 +250,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
 
                 // Message d'aide
                 Text(
-                  'Utilisez votre code PIN personnel de 4 chiffres',
+                  'Utilisez votre Code PDV personnel (8 chiffres)',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: const Color(0xFF9CA3AF),
                   ),
