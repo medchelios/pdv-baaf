@@ -6,7 +6,7 @@ import 'create_order_dialog.dart';
 import 'recharge_account_dialog.dart';
 import 'stats_section.dart';
 import 'account_balance_section.dart';
-import 'recent_orders_section.dart';
+import 'widgets/orders_tabs_section.dart';
 
 class UVOrdersScreen extends StatefulWidget {
   const UVOrdersScreen({super.key});
@@ -19,7 +19,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   final UVOrderService _uvOrderService = UVOrderService();
   Map<String, dynamic>? _stats;
   Map<String, dynamic>? _accountBalance;
-  List<Map<String, dynamic>>? _recentOrders;
   Map<String, dynamic>? _permissions;
   bool _isLoading = true;
 
@@ -36,14 +35,12 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
 
     try {
       final stats = await _uvOrderService.getStats();
-      final recent = await _uvOrderService.getRecentOrders(limit: 20);
       final balance = await _uvOrderService.getAccountBalance();
       final permissions = await _uvOrderService.getPermissions();
 
       setState(() {
         _stats = Map<String, dynamic>.from(stats ?? {});
         _accountBalance = balance;
-        _recentOrders = List<Map<String, dynamic>>.from(recent ?? []);
         _permissions = permissions;
         _isLoading = false;
       });
@@ -99,10 +96,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                       AccountBalanceSection(accountBalance: _accountBalance!),
                       const SizedBox(height: AppConstants.paddingS),
                     ],
-                    RecentOrdersSection(
-                      recentOrders: _recentOrders,
-                      onRefresh: _loadData,
-                    ),
+                    OrdersTabsSection(onRefresh: _loadData),
                   ],
                 ),
               ),
