@@ -84,10 +84,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
                       hintText: 'Rechercher par référence, nom client...',
-                      hintStyle: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
+                      hintStyle: TextStyle(color: Colors.white70, fontSize: 14),
                       prefixIcon: Icon(
                         Icons.search,
                         color: Colors.white70,
@@ -104,7 +101,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
               ),
               const SizedBox(width: 12),
               // Bouton filtre
-              Container(
+              SizedBox(
                 height: 40,
                 child: OutlinedButton.icon(
                   onPressed: () {
@@ -124,10 +121,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                      color: Colors.white,
-                      width: 1,
-                    ),
+                    side: const BorderSide(color: Colors.white, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -258,10 +252,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
           decoration: BoxDecoration(
             color: const Color(0xFFF8F9FA),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color(0xFFE9ECEF),
-              width: 1,
-            ),
+            border: Border.all(color: const Color(0xFFE9ECEF), width: 1),
           ),
           child: Row(
             children: [
@@ -271,11 +262,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                   color: AppConstants.brandBlue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  icon,
-                  color: AppConstants.brandBlue,
-                  size: 24,
-                ),
+                child: Icon(icon, color: AppConstants.brandBlue, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(

@@ -15,7 +15,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
   final _customerNameController = TextEditingController();
   final _customerPhoneController = TextEditingController();
   final _apiService = ApiService();
-  
+
   String _selectedPaymentMethod = 'mobile_money';
   bool _isLoading = false;
   bool _isSearchingInvoices = false;
@@ -23,7 +23,11 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
   Map<String, dynamic>? _selectedInvoice;
 
   final List<Map<String, dynamic>> _paymentMethods = [
-    {'value': 'mobile_money', 'label': 'Mobile Money', 'icon': Icons.phone_android},
+    {
+      'value': 'mobile_money',
+      'label': 'Mobile Money',
+      'icon': Icons.phone_android,
+    },
     {'value': 'card', 'label': 'Carte Bancaire', 'icon': Icons.credit_card},
     {'value': 'cash', 'label': 'Espèces', 'icon': Icons.money},
   ];
@@ -52,11 +56,15 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
     });
 
     try {
-      final result = await _apiService.get('invoices/search?q=${_customerReferenceController.text.trim()}');
+      final result = await _apiService.get(
+        'invoices/search?q=${_customerReferenceController.text.trim()}',
+      );
 
       if (result?['success'] == true) {
         setState(() {
-          _invoices = List<Map<String, dynamic>>.from(result?['data']['invoices'] ?? []);
+          _invoices = List<Map<String, dynamic>>.from(
+            result?['data']['invoices'] ?? [],
+          );
           _selectedInvoice = null;
         });
 
@@ -74,7 +82,9 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result?['message'] ?? 'Erreur lors de la recherche'),
+              content: Text(
+                result?['message'] ?? 'Erreur lors de la recherche',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -83,10 +93,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -114,11 +121,12 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
     });
 
     try {
-      final result = await _apiService.post('invoices/${_selectedInvoice!['id']}/pay-for-customer', {
-        'customerPhone': _customerPhoneController.text.trim(),
-        'customerName': _customerNameController.text.trim(),
-        'paymentMethod': _selectedPaymentMethod,
-      });
+      final result = await _apiService
+          .post('invoices/${_selectedInvoice!['id']}/pay-for-customer', {
+            'customerPhone': _customerPhoneController.text.trim(),
+            'customerName': _customerNameController.text.trim(),
+            'paymentMethod': _selectedPaymentMethod,
+          });
 
       if (result?['success'] == true) {
         if (mounted) {
@@ -172,7 +180,9 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                   Text('Facture: ${_selectedInvoice!['reference'] ?? 'N/A'}'),
                   Text('Montant: ${_selectedInvoice!['amount']} GNF'),
                   Text('Période: ${_selectedInvoice!['period'] ?? 'N/A'}'),
-                  Text('Méthode: ${_paymentMethods.firstWhere((m) => m['value'] == _selectedPaymentMethod)['label']}'),
+                  Text(
+                    'Méthode: ${_paymentMethods.firstWhere((m) => m['value'] == _selectedPaymentMethod)['label']}',
+                  ),
                 ],
               ),
             ),
@@ -289,16 +299,16 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                             children: [
                               Text(
                                 'Paiement Postpayé',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF0e4b5b),
-                                ),
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF0e4b5b),
+                                    ),
                               ),
                               Text(
                                 'Payez les factures d\'électricité de vos clients',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: const Color(0xFF6B7280),
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: const Color(0xFF6B7280)),
                               ),
                             ],
                           ),
@@ -353,7 +363,11 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.search),
-                    label: Text(_isSearchingInvoices ? 'Recherche...' : 'Rechercher les Factures'),
+                    label: Text(
+                      _isSearchingInvoices
+                          ? 'Recherche...'
+                          : 'Rechercher les Factures',
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFe94d29),
                       foregroundColor: Colors.white,
@@ -375,47 +389,47 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ..._invoices.map((invoice) => Card(
-                    elevation: _selectedInvoice?['id'] == invoice['id'] ? 4 : 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: _selectedInvoice?['id'] == invoice['id']
-                            ? const Color(0xFFe94d29)
-                            : Colors.grey[300]!,
-                        width: _selectedInvoice?['id'] == invoice['id'] ? 2 : 1,
+                  ..._invoices.map(
+                    (invoice) => Card(
+                      elevation: _selectedInvoice?['id'] == invoice['id']
+                          ? 4
+                          : 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: _selectedInvoice?['id'] == invoice['id']
+                              ? const Color(0xFFe94d29)
+                              : Colors.grey[300]!,
+                          width: _selectedInvoice?['id'] == invoice['id']
+                              ? 2
+                              : 1,
+                        ),
                       ),
-                    ),
-                    child: ListTile(
-                      leading: Radio<Map<String, dynamic>>(
-                        value: invoice,
-                        groupValue: _selectedInvoice,
-                        onChanged: (value) {
+                      child: ListTile(
+                        leading: Icon(
+                          _selectedInvoice?['id'] == invoice['id']
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_off,
+                          color: const Color(0xFFe94d29),
+                        ),
+                        title: Text('Facture ${invoice['reference'] ?? 'N/A'}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Montant: ${invoice['amount']} GNF'),
+                            Text('Période: ${invoice['period'] ?? 'N/A'}'),
+                          ],
+                        ),
+                        onTap: () {
                           if (mounted) {
                             setState(() {
-                              _selectedInvoice = value;
+                              _selectedInvoice = invoice;
                             });
                           }
                         },
-                        activeColor: const Color(0xFFe94d29),
                       ),
-                      title: Text('Facture ${invoice['reference'] ?? 'N/A'}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Montant: ${invoice['amount']} GNF'),
-                          Text('Période: ${invoice['period'] ?? 'N/A'}'),
-                        ],
-                      ),
-                      onTap: () {
-                        if (mounted) {
-                          setState(() {
-                            _selectedInvoice = invoice;
-                          });
-                        }
-                      },
                     ),
-                  )),
+                  ),
                   const SizedBox(height: 24),
                 ],
 
@@ -495,41 +509,41 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  ..._paymentMethods.map((method) => Card(
-                    elevation: _selectedPaymentMethod == method['value'] ? 4 : 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: _selectedPaymentMethod == method['value']
-                            ? const Color(0xFFe94d29)
-                            : Colors.grey[300]!,
-                        width: _selectedPaymentMethod == method['value'] ? 2 : 1,
+                  ..._paymentMethods.map(
+                    (method) => Card(
+                      elevation: _selectedPaymentMethod == method['value']
+                          ? 4
+                          : 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: _selectedPaymentMethod == method['value']
+                              ? const Color(0xFFe94d29)
+                              : Colors.grey[300]!,
+                          width: _selectedPaymentMethod == method['value']
+                              ? 2
+                              : 1,
+                        ),
                       ),
-                    ),
-                    child: ListTile(
-                      leading: Radio<String>(
-                        value: method['value'],
-                        groupValue: _selectedPaymentMethod,
-                        onChanged: (value) {
+                      child: ListTile(
+                        leading: Icon(
+                          _selectedPaymentMethod == method['value']
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_off,
+                          color: const Color(0xFFe94d29),
+                        ),
+                        title: Text(method['label']),
+                        trailing: Icon(method['icon']),
+                        onTap: () {
                           if (mounted) {
                             setState(() {
-                              _selectedPaymentMethod = value!;
+                              _selectedPaymentMethod = method['value'];
                             });
                           }
                         },
-                        activeColor: const Color(0xFFe94d29),
                       ),
-                      title: Text(method['label']),
-                      trailing: Icon(method['icon']),
-                      onTap: () {
-                        if (mounted) {
-                          setState(() {
-                            _selectedPaymentMethod = method['value'];
-                          });
-                        }
-                      },
                     ),
-                  )),
+                  ),
                   const SizedBox(height: 32),
 
                   // Bouton de paiement
@@ -551,7 +565,9 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : const Text(

@@ -279,7 +279,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                             ),
                             const SizedBox(width: 12),
                             // Bouton filtre
-                            Container(
+                            SizedBox(
                               height: 40,
                               child: OutlinedButton.icon(
                                 onPressed: () {
