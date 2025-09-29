@@ -14,62 +14,71 @@ class AccountBalanceSection extends StatelessWidget {
       children: [
         Text(
           'Mes comptes',
-          style: AppConstants.heading2.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             color: AppConstants.brandBlue,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: AppConstants.paddingM),
+        const SizedBox(height: AppConstants.paddingS),
         CustomCard(
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildBalanceItem(
-                  'Principal',
-                  accountBalance['formatted_principal_balance'] ?? '0 GNF',
-                  Icons.account_balance_wallet,
-                  AppConstants.brandBlue,
-                  CrossAxisAlignment.start,
+          child: Padding(
+            padding: const EdgeInsets.all(AppConstants.paddingM),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildBalanceItem(
+                    context,
+                    'Principal',
+                    accountBalance['formatted_principal_balance'] ?? '0 GNF',
+                    Icons.account_balance_wallet,
+                    AppConstants.brandBlue,
+                    CrossAxisAlignment.start,
+                  ),
                 ),
-              ),
-              _buildVerticalDivider(),
-              Expanded(
-                child: _buildBalanceItem(
-                  'Commission',
-                  accountBalance['formatted_commission_balance'] ?? '0 GNF',
-                  Icons.trending_up,
-                  AppConstants.brandOrange,
-                  CrossAxisAlignment.end,
+                _buildVerticalDivider(),
+                Expanded(
+                  child: _buildBalanceItem(
+                    context,
+                    'Commission',
+                    accountBalance['formatted_commission_balance'] ?? '0 GNF',
+                    Icons.trending_up,
+                    AppConstants.brandOrange,
+                    CrossAxisAlignment.end,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBalanceItem(String label, String amount, IconData icon, Color color, CrossAxisAlignment alignment) {
+  Widget _buildBalanceItem(
+    BuildContext context,
+    String label,
+    String amount,
+    IconData icon,
+    Color color,
+    CrossAxisAlignment alignment,
+  ) {
     return Column(
       crossAxisAlignment: alignment,
       children: [
-        Icon(
-          icon,
-          color: color,
-          size: 24,
-        ),
-        const SizedBox(height: 8),
+        Icon(icon, color: color, size: 20),
+        const SizedBox(height: 6),
         Text(
           amount,
-          style: AppConstants.heading3.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             color: color,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           label,
-          style: AppConstants.bodySmall.copyWith(
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppConstants.textSecondary,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -78,7 +87,7 @@ class AccountBalanceSection extends StatelessWidget {
 
   Widget _buildVerticalDivider() {
     return Container(
-      height: 35,
+      height: 30,
       width: 1,
       decoration: BoxDecoration(
         color: AppConstants.textSecondary.withValues(alpha: 0.3),

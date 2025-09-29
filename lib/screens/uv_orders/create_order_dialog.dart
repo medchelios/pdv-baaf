@@ -28,9 +28,9 @@ class _CreateOrderDialogState extends State<CreateOrderDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.white,
-      title: const Text(
+      title: Text(
         'Nouvelle Commande UV',
-        style: TextStyle(fontSize: 18),
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       contentPadding: const EdgeInsets.all(24),
       content: SizedBox(
@@ -59,9 +59,9 @@ class _CreateOrderDialogState extends State<CreateOrderDialog> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: AppConstants.paddingM),
-              
+
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
@@ -83,7 +83,7 @@ class _CreateOrderDialogState extends State<CreateOrderDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
+          child: Text('Annuler', style: Theme.of(context).textTheme.bodyMedium),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _createOrder,
@@ -93,7 +93,12 @@ class _CreateOrderDialogState extends State<CreateOrderDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Créer'),
+              : Text(
+                  'Créer',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(color: Colors.white),
+                ),
         ),
       ],
     );

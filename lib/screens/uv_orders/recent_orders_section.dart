@@ -6,11 +6,13 @@ import '../../utils/format_utils.dart';
 class RecentOrdersSection extends StatefulWidget {
   final List<Map<String, dynamic>>? recentOrders;
   final VoidCallback onRefresh;
+  final int currentUserId;
 
   const RecentOrdersSection({
     super.key,
     required this.recentOrders,
     required this.onRefresh,
+    required this.currentUserId,
   });
 
   @override
@@ -37,23 +39,20 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
           children: [
             Text(
               'Commandes Récentes',
-              style: AppConstants.heading2.copyWith(
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: AppConstants.brandBlue,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
               ),
             ),
             IconButton(
               onPressed: widget.onRefresh,
-              icon: Icon(
-                Icons.refresh,
-                color: AppConstants.brandBlue,
-              ),
+              icon: Icon(Icons.refresh, color: AppConstants.brandBlue),
               tooltip: 'Actualiser',
             ),
           ],
         ),
-        const SizedBox(height: AppConstants.paddingM),
-        
+        const SizedBox(height: AppConstants.paddingS),
+
         CustomCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +78,10 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
     );
   }
 
-  Widget _buildOrdersTable(BuildContext context, List<Map<String, dynamic>> orders) {
+  Widget _buildOrdersTable(
+    BuildContext context,
+    List<Map<String, dynamic>> orders,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: AppConstants.brandWhite,
@@ -107,9 +109,9 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
                   flex: 3,
                   child: Text(
                     'Montant',
-                    style: AppConstants.bodyMedium.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppConstants.brandBlue,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -117,9 +119,9 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
                   flex: 2,
                   child: Text(
                     'Date',
-                    style: AppConstants.bodyMedium.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppConstants.brandBlue,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -127,30 +129,32 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
                   flex: 2,
                   child: Text(
                     'Statut',
-                    style: AppConstants.bodyMedium.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppConstants.brandBlue,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Lignes du tableau
           ...orders.asMap().entries.map((entry) {
             final index = entry.key;
             final order = entry.value;
             final isLast = index == orders.length - 1;
-            
+
             return Container(
               decoration: BoxDecoration(
-                border: isLast ? null : Border(
-                  bottom: BorderSide(
-                    color: AppConstants.brandBlue.withValues(alpha: 0.1),
-                    width: 1,
-                  ),
-                ),
+                border: isLast
+                    ? null
+                    : Border(
+                        bottom: BorderSide(
+                          color: AppConstants.brandBlue.withValues(alpha: 0.1),
+                          width: 1,
+                        ),
+                      ),
               ),
               child: _buildTableRow(context, order, isLast),
             );
@@ -160,20 +164,27 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
     );
   }
 
-  Widget _buildTableRow(BuildContext context, Map<String, dynamic> order, bool isLast) {
+  Widget _buildTableRow(
+    BuildContext context,
+    Map<String, dynamic> order,
+    bool isLast,
+  ) {
     return InkWell(
       onTap: () => _showOrderDetails(context, order),
       child: Padding(
-        padding: const EdgeInsets.all(AppConstants.paddingM),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.paddingM,
+          vertical: AppConstants.paddingS,
+        ),
         child: Row(
           children: [
             Expanded(
               flex: 3,
               child: Text(
                 order['formatted_total_amount'] ?? '0 GNF',
-                style: AppConstants.bodyMedium.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppConstants.textPrimary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -181,19 +192,47 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
               flex: 2,
               child: Text(
                 FormatUtils.formatDate(order['requested_at'] ?? ''),
-                style: AppConstants.bodySmall.copyWith(
-                  color: AppConstants.textPrimary,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppConstants.textSecondary,
+                  fontSize: 11,
                 ),
               ),
             ),
             Expanded(
               flex: 2,
-              child: Text(
-                order['status_label'] ?? 'Inconnu',
-                style: AppConstants.bodySmall.copyWith(
-                  color: _getStatusColor(order['status'] as String),
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(
+                          order['status'] as String,
+                        ).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _getStatusColor(
+                            order['status'] as String,
+                          ).withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        order['status_label'] ?? 'Inconnu',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: _getStatusColor(order['status'] as String),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Un PDV ne valide rien - il ne voit que SES commandes
+                  // La validation se fait par d'autres rôles (distributor, semi_grossiste, etc.)
+                ],
               ),
             ),
           ],
@@ -207,26 +246,30 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
-          onPressed: _currentPage > 0 ? () {
-            setState(() {
-              _currentPage--;
-            });
-          } : null,
+          onPressed: _currentPage > 0
+              ? () {
+                  setState(() {
+                    _currentPage--;
+                  });
+                }
+              : null,
           icon: const Icon(Icons.chevron_left),
         ),
         Text(
           '${_currentPage + 1} / $totalPages',
-          style: AppConstants.bodyMedium.copyWith(
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppConstants.brandBlue,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
         IconButton(
-          onPressed: _currentPage < totalPages - 1 ? () {
-            setState(() {
-              _currentPage++;
-            });
-          } : null,
+          onPressed: _currentPage < totalPages - 1
+              ? () {
+                  setState(() {
+                    _currentPage++;
+                  });
+                }
+              : null,
           icon: const Icon(Icons.chevron_right),
         ),
       ],
@@ -240,9 +283,9 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
         backgroundColor: AppConstants.brandWhite,
         title: Text(
           'Détails de la commande',
-          style: AppConstants.heading2.copyWith(
-            color: AppConstants.brandBlue,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: AppConstants.brandBlue),
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -251,17 +294,31 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
             children: [
               _buildDetailRow('Type', order['type_label'] ?? 'Commande UV'),
               _buildDetailRow('Montant', order['formatted_amount'] ?? '0 GNF'),
-              _buildDetailRow('Commission', order['bonus_amount'] != null ? '${order['bonus_amount']} GNF' : '0 GNF'),
-              _buildDetailRow('Total avec commission', order['formatted_total_amount'] ?? '0 GNF'),
+              _buildDetailRow(
+                'Commission',
+                order['bonus_amount'] != null
+                    ? '${order['bonus_amount']} GNF'
+                    : '0 GNF',
+              ),
+              _buildDetailRow(
+                'Total avec commission',
+                order['formatted_total_amount'] ?? '0 GNF',
+              ),
               _buildDetailRow('Statut', order['status_label'] ?? 'Inconnu'),
-              _buildDetailRow('Description', order['description'] ?? 'Aucune description'),
+              _buildDetailRow(
+                'Description',
+                order['description'] ?? 'Aucune description',
+              ),
               _buildDetailRow('Demandé par', order['requester_name'] ?? 'N/A'),
               _buildDetailRow('Date de demande', order['requested_at'] ?? ''),
               if (order['validated_at'] != null)
                 _buildDetailRow('Date de validation', order['validated_at']),
               if (order['rejected_at'] != null)
                 _buildDetailRow('Date de rejet', order['rejected_at']),
-              _buildDetailRow('Validateur', order['validator_name'] ?? 'Non assigné'),
+              _buildDetailRow(
+                'Validateur',
+                order['validator_name'] ?? 'Non assigné',
+              ),
             ],
           ),
         ),
@@ -270,9 +327,9 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               'Fermer',
-              style: AppConstants.bodyMedium.copyWith(
-                color: AppConstants.brandBlue,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppConstants.brandBlue),
             ),
           ),
         ],
@@ -290,16 +347,15 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
             width: 120,
             child: Text(
               '$label:',
-              style: AppConstants.bodyMedium.copyWith(
-                color: AppConstants.brandBlue,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: AppConstants.brandBlue),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: AppConstants.bodyMedium.copyWith(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppConstants.textSecondary,
               ),
             ),
@@ -312,10 +368,12 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'validated':
-        return AppConstants.brandOrange;
+        return AppConstants.successColor;
       case 'pending_validation':
+        return AppConstants.warningColor;
       case 'rejected_by_validator':
       case 'rejected_by_admin':
+        return AppConstants.errorColor;
       default:
         return AppConstants.brandBlue;
     }

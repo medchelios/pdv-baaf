@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../services/uv_order_service.dart';
 import '../../services/logger_service.dart';
+import '../../services/auth_service.dart';
 import 'create_order_dialog.dart';
 import 'stats_section.dart';
 import 'account_balance_section.dart';
@@ -33,7 +34,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     });
 
     try {
-      final stats = await _uvOrderService.getStats();      
+      final stats = await _uvOrderService.getStats();
       final balance = await _uvOrderService.getAccountBalance();
       final orders = await _uvOrderService.getRecentOrders();
 
@@ -56,7 +57,12 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     return Scaffold(
       backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
-        title: const Text('Commandes UV'),
+        title: Text(
+          'Commandes UV',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: AppConstants.brandWhite),
+        ),
         backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
@@ -72,17 +78,18 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                   children: [
                     if (_stats != null) ...[
                       StatsSection(stats: _stats!),
-                      const SizedBox(height: AppConstants.paddingXL),
+                      const SizedBox(height: AppConstants.paddingM),
                     ],
-                    
+
                     if (_accountBalance != null) ...[
                       AccountBalanceSection(accountBalance: _accountBalance!),
-                      const SizedBox(height: AppConstants.paddingXL),
+                      const SizedBox(height: AppConstants.paddingM),
                     ],
-                    
+
                     RecentOrdersSection(
                       recentOrders: _recentOrders,
                       onRefresh: _loadData,
+                      currentUserId: AuthService().user?['id'] ?? 0,
                     ),
                   ],
                 ),
@@ -100,9 +107,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   void _showCreateOrderDialog() {
     showDialog(
       context: context,
-      builder: (context) => CreateOrderDialog(
-        onOrderCreated: _loadData,
-      ),
+      builder: (context) => CreateOrderDialog(onOrderCreated: _loadData),
     );
   }
 }
