@@ -36,19 +36,13 @@ class PaymentsHeader extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFF8F9FA),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: const Color(0xFFE9ECEF),
-                  width: 1,
-                ),
+                border: Border.all(color: const Color(0xFFE9ECEF), width: 1),
               ),
               child: TextField(
                 onChanged: onSearchChanged,
                 decoration: const InputDecoration(
                   hintText: 'Rechercher par référence, nom client...',
-                  hintStyle: TextStyle(
-                    color: Color(0xFF6C757D),
-                    fontSize: 14,
-                  ),
+                  hintStyle: TextStyle(color: Color(0xFF6C757D), fontSize: 14),
                   prefixIcon: Icon(
                     Icons.search,
                     color: Color(0xFF6C757D),
@@ -65,7 +59,7 @@ class PaymentsHeader extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           // Bouton filtre
-          Container(
+          SizedBox(
             height: 40,
             child: OutlinedButton.icon(
               onPressed: onFilterPressed,
@@ -83,10 +77,7 @@ class PaymentsHeader extends StatelessWidget {
                 ),
               ),
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(
-                  color: AppConstants.brandBlue,
-                  width: 1,
-                ),
+                side: const BorderSide(color: AppConstants.brandBlue, width: 1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

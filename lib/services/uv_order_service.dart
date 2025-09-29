@@ -16,7 +16,9 @@ class UVOrderService {
   }
 
   Future<List<Map<String, dynamic>>?> getRecentOrders({int limit = 10}) async {
-    LoggerService.info('Récupération des commandes UV récentes (limit: $limit)');
+    LoggerService.info(
+      'Récupération des commandes UV récentes (limit: $limit)',
+    );
     final response = await _apiService.get('uv-orders/recent?limit=$limit');
     if (response?['data'] != null) {
       LoggerService.info('${response!['data'].length} commandes UV récupérées');
@@ -26,13 +28,25 @@ class UVOrderService {
     return null;
   }
 
+  Future<List<Map<String, dynamic>>?> getAvailableActions() async {
+    LoggerService.info('Récupération des actions disponibles UV');
+    final response = await _apiService.get('uv-orders/actions');
+    if (response?['data'] != null) {
+      LoggerService.info('${response!['data'].length} actions UV récupérées');
+      return List<Map<String, dynamic>>.from(response['data']);
+    }
+    LoggerService.warning('Aucune action UV disponible');
+    return null;
+  }
 
   Future<Map<String, dynamic>?> createOrder({
     required double amount,
     required String description,
     required String type, // 'order', 'transfer', 'credit_request'
   }) async {
-    LoggerService.info('Création d\'une nouvelle commande UV: $amount GNF - $type');
+    LoggerService.info(
+      'Création d\'une nouvelle commande UV: $amount GNF - $type',
+    );
     final response = await _apiService.post('uv-orders/create', {
       'amount': amount,
       'description': description,
@@ -46,16 +60,12 @@ class UVOrderService {
     return response?['data'];
   }
 
-  Future<bool> validateOrder({
-    required int orderId,
-    String? comment,
-  }) async {
+  Future<bool> validateOrder({required int orderId, String? comment}) async {
     final response = await _apiService.post('uv-orders/$orderId/validate', {
       'validator_comment': comment,
     });
     return response != null;
   }
-
 
   static const Map<String, String> orderTypes = {
     'order': 'Commande UV',
@@ -77,7 +87,9 @@ class UVOrderService {
     if (response?['data'] != null) {
       LoggerService.info('Solde des comptes récupéré avec succès');
     } else {
-      LoggerService.warning('Aucune donnée de solde disponible - Response: $response');
+      LoggerService.warning(
+        'Aucune donnée de solde disponible - Response: $response',
+      );
     }
     return response?['data'];
   }
@@ -88,7 +100,9 @@ class UVOrderService {
     required String toType,
     String? description,
   }) async {
-    LoggerService.info('Transfert entre comptes: $amount de $fromType vers $toType');
+    LoggerService.info(
+      'Transfert entre comptes: $amount de $fromType vers $toType',
+    );
     final response = await _apiService.post('accounts/transfer', {
       'amount': amount,
       'from_type': fromType,

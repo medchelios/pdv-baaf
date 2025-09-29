@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../widgets/common/custom_card.dart';
 import '../../utils/format_utils.dart';
+import '../../services/uv_order_data_service.dart';
+import '../../services/uv_order_service.dart';
+import '../../services/auth_service.dart';
 
 class RecentOrdersSection extends StatefulWidget {
   final List<Map<String, dynamic>>? recentOrders;
@@ -230,8 +233,42 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
                       ),
                     ),
                   ),
-                  // Un PDV ne valide rien - il ne voit que SES commandes
-                  // La validation se fait par d'autres rôles (distributor, semi_grossiste, etc.)
+                  FutureBuilder<bool>(
+                    future: _canValidateOrder(order),
+                    builder: (context, snapshot) {
+                      if (snapshot.data == true) {
+                        return Row(
+                          children: [
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () => _validateOrder(context, order),
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: AppConstants.successColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppConstants.successColor
+                                          .withValues(alpha: 0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ],
               ),
             ),
@@ -376,6 +413,103 @@ class _RecentOrdersSectionState extends State<RecentOrdersSection> {
         return AppConstants.errorColor;
       default:
         return AppConstants.brandBlue;
+    }
+  }
+
+  Future<bool> _canValidateOrder(Map<String, dynamic> order) async {
+    final dataService = UVOrderDataService();
+
+    // Vérifier si l'utilisateur peut valider des commandes
+    if (!await dataService.canValidateOrders()) return false;
+
+    // Vérifier si c'est une commande en attente de validation
+    if (order['status'] != 'pending_validation') return false;
+
+    // Vérifier que ce n'est pas sa propre commande
+    final currentUserId = AuthService().user?['id'] as int?;
+    if (currentUserId == null) return false;
+    if (order['requester_id'] == currentUserId) return false;
+
+    return true;
+  }
+
+  Future<void> _validateOrder(
+    BuildContext context,
+    Map<String, dynamic> order,
+  ) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Valider la commande',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Text(
+          'Voulez-vous valider cette commande de ${order['formatted_total_amount'] ?? '0 GNF'} ?',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Annuler',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppConstants.successColor,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(
+              'Valider',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      try {
+        final success = await UVOrderService().validateOrder(
+          orderId: order['id'] as int,
+          comment: 'Validé par mobile',
+        );
+
+        if (success) {
+          widget.onRefresh();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Commande validée avec succès'),
+                backgroundColor: AppConstants.successColor,
+              ),
+            );
+          }
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Erreur lors de la validation'),
+                backgroundColor: AppConstants.errorColor,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Erreur lors de la validation'),
+              backgroundColor: AppConstants.errorColor,
+            ),
+          );
+        }
+      }
     }
   }
 }

@@ -118,17 +118,15 @@ class _CreateOrderDialogState extends State<CreateOrderDialog> {
         type: 'order',
       );
 
-      if (result != null) {
+      if (result != null && mounted) {
         Navigator.of(context).pop();
         widget.onOrderCreated();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Commande créée avec succès'),
-              backgroundColor: AppConstants.successColor,
-            ),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Commande créée avec succès'),
+            backgroundColor: AppConstants.successColor,
+          ),
+        );
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

@@ -20,6 +20,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   Map<String, dynamic>? _stats;
   Map<String, dynamic>? _accountBalance;
   List<Map<String, dynamic>>? _recentOrders;
+  List<Map<String, dynamic>>? _availableActions;
   bool _isLoading = true;
 
   @override
@@ -35,13 +36,15 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
 
     try {
       final stats = await _uvOrderService.getStats();
+      final recent = await _uvOrderService.getRecentOrders(limit: 10);
       final balance = await _uvOrderService.getAccountBalance();
-      final orders = await _uvOrderService.getRecentOrders();
+      final actions = await _uvOrderService.getAvailableActions();
 
       setState(() {
-        _stats = stats;
+        _stats = Map<String, dynamic>.from(stats ?? {});
         _accountBalance = balance;
-        _recentOrders = orders;
+        _recentOrders = List<Map<String, dynamic>>.from(recent ?? []);
+        _availableActions = List<Map<String, dynamic>>.from(actions ?? []);
         _isLoading = false;
       });
     } catch (e) {
@@ -66,6 +69,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
+        actions: _buildAppBarActions(),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -78,12 +82,12 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                   children: [
                     if (_stats != null) ...[
                       StatsSection(stats: _stats!),
-                      const SizedBox(height: AppConstants.paddingM),
+                      const SizedBox(height: AppConstants.paddingS),
                     ],
 
                     if (_accountBalance != null) ...[
                       AccountBalanceSection(accountBalance: _accountBalance!),
-                      const SizedBox(height: AppConstants.paddingM),
+                      const SizedBox(height: AppConstants.paddingS),
                     ],
 
                     RecentOrdersSection(
@@ -95,11 +99,103 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                 ),
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateOrderDialog,
-        backgroundColor: AppConstants.brandOrange,
-        foregroundColor: AppConstants.brandWhite,
-        child: const Icon(Icons.add_rounded),
+      floatingActionButton: _buildFloatingActionButton(),
+    );
+  }
+
+  List<Widget> _buildAppBarActions() {
+    return [
+      IconButton(
+        onPressed: _loadData,
+        icon: const Icon(Icons.refresh),
+        tooltip: 'Actualiser',
+      ),
+    ];
+  }
+
+  Widget? _buildFloatingActionButton() {
+    if (_availableActions == null) return null;
+    
+    // Chercher l'action "create_order" en priorité
+    final createOrderAction = _availableActions!.firstWhere(
+      (action) => action['type'] == 'create_order',
+      orElse: () => _availableActions!.firstWhere(
+        (action) => action['type'] != 'refresh',
+        orElse: () => {},
+      ),
+    );
+
+    if (createOrderAction.isEmpty) return null;
+
+    return FloatingActionButton(
+      onPressed: () => _handleAction(createOrderAction['type']),
+      child: Icon(_getIcon(createOrderAction['icon'])),
+      backgroundColor: _getActionColor(createOrderAction['color']),
+      foregroundColor: Colors.white,
+    );
+  }
+
+  IconData _getIcon(String iconName) {
+    switch (iconName) {
+      case 'add_rounded':
+        return Icons.add_rounded;
+      case 'account_balance_wallet':
+        return Icons.account_balance_wallet;
+      case 'refresh':
+        return Icons.refresh;
+      default:
+        return Icons.help;
+    }
+  }
+
+  Color _getActionColor(String colorName) {
+    switch (colorName) {
+      case 'orange':
+        return AppConstants.brandOrange;
+      case 'blue':
+        return AppConstants.brandBlue;
+      case 'gray':
+        return Colors.grey;
+      default:
+        return AppConstants.brandBlue;
+    }
+  }
+
+  void _handleAction(String actionType) {
+    switch (actionType) {
+      case 'create_order':
+        _showCreateOrderDialog();
+        break;
+      case 'recharge_account':
+        _showRechargeAccountDialog();
+        break;
+      case 'refresh':
+        _loadData();
+        break;
+    }
+  }
+
+  void _showRechargeAccountDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Recharge de compte',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Text(
+          'Fonctionnalité de recharge de compte en cours de développement.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Fermer',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
       ),
     );
   }
