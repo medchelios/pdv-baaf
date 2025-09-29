@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../services/payment_service.dart';
-import 'widgets/payments_header.dart';
 import 'widgets/payments_table.dart';
 
 class PaymentsPage extends StatefulWidget {
@@ -55,53 +54,117 @@ class _PaymentsPageState extends State<PaymentsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Paiements'),
         backgroundColor: AppConstants.brandBlue,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _loadPayments,
-              child: Column(
-                children: [
-                  // Header avec titre, recherche et filtre
-                  PaymentsHeader(
-                    onSearchChanged: (query) {
+        flexibleSpace: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Row(
+            children: [
+              // Barre de recherche
+              Expanded(
+                child: Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: TextField(
+                    onChanged: (query) {
                       setState(() {
                         _searchQuery = query;
                         _currentPage = 1;
                       });
                       _loadPayments();
                     },
-                    onFilterPressed: () {
-                      // TODO: Implémenter les filtres
-                    },
-                  ),
-                  // Tableau des paiements
-                  Expanded(
-                    child: PaymentsTable(
-                      payments: _payments,
-                      currentPage: _currentPage,
-                      itemsPerPage: _itemsPerPage,
-                      onPageChanged: (page) {
-                        setState(() {
-                          _currentPage = page;
-                        });
-                        _loadPayments();
-                      },
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      hintText: 'Rechercher par référence, nom client...',
+                      hintStyle: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                     ),
                   ),
-                ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Bouton filtre
+              Container(
+                height: 40,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    // TODO: Implémenter les filtres
+                  },
+                  icon: const Icon(
+                    Icons.filter_list,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Filtrer',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(
+                      color: Colors.white,
+                      width: 1,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadPayments,
+              child: PaymentsTable(
+                payments: _payments,
+                currentPage: _currentPage,
+                itemsPerPage: _itemsPerPage,
+                onPageChanged: (page) {
+                  setState(() {
+                    _currentPage = page;
+                  });
+                  _loadPayments();
+                },
               ),
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showPaymentOptions(context);
         },
-        backgroundColor: AppConstants.brandBlue,
-        child: const Icon(Icons.payment),
+        backgroundColor: AppConstants.brandOrange,
+        foregroundColor: AppConstants.brandWhite,
+        child: const Icon(Icons.add),
       ),
     );
   }
