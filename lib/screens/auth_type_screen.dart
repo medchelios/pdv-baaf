@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'pin_login_screen.dart';
+import '../widgets/auth/auth_logo.dart';
+import '../widgets/auth/auth_subtitle.dart';
 
 class AuthTypeScreen extends StatelessWidget {
   const AuthTypeScreen({super.key});
@@ -16,28 +18,7 @@ class AuthTypeScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 60),
 
-              // Logo BAAF
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    'assets/images/logo.jpeg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+              const AuthLogo(),
 
               const SizedBox(height: 28),
 
@@ -52,11 +33,7 @@ class AuthTypeScreen extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              const Text(
-                'Choisissez une méthode de connexion',
-                style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
-                textAlign: TextAlign.center,
-              ),
+              const AuthSubtitle(text: 'Choisissez une méthode de connexion'),
 
               const SizedBox(height: 36),
 

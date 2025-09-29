@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
+import '../widgets/auth/auth_logo.dart';
+import '../widgets/auth/auth_subtitle.dart';
+import '../widgets/auth/auth_pin_field.dart';
 
 class PinLoginScreen extends StatefulWidget {
   const PinLoginScreen({super.key});
@@ -91,104 +93,24 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo BAAF
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      'assets/images/logo.jpeg',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
+                const AuthLogo(),
 
                 // Sous-titre descriptif uniquement (le titre est dans l'AppBar)
-                Text(
-                  'Entrez votre code PDV à 8 caractères.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF6B7280),
-                    fontSize: 13,
-                  ),
-                  textAlign: TextAlign.center,
+                const AuthSubtitle(
+                  text: 'Entrez votre code PDV à 8 caractères.',
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
 
                 // Champ PIN
-                SizedBox(
-                  width: double.infinity,
-                  child: TextFormField(
-                    controller: _pinController,
-                    keyboardType: TextInputType.text,
-                    obscureText: _obscurePin,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
-                      LengthLimitingTextInputFormatter(8),
-                    ],
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    textAlign: TextAlign.start,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: '••••••••',
-                      hintStyle: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[400],
-                      ),
-                      prefixIcon: const Icon(Icons.vpn_key),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePin ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePin = !_obscurePin;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFe94d29),
-                          width: 2,
-                        ),
-                      ),
-                      filled: false,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      if (value.length == 8) {
-                        _login();
-                      }
-                    },
-                    onFieldSubmitted: (value) => _login(),
-                  ),
+                AuthPinField(
+                  controller: _pinController,
+                  obscureText: _obscurePin,
+                  onToggleObscure: () =>
+                      setState(() => _obscurePin = !_obscurePin),
+                  onChanged: (v) {
+                    if (v.length == 8) _login();
+                  },
+                  onSubmitted: (_) => _login(),
                 ),
                 const SizedBox(height: 24),
 
@@ -202,9 +124,9 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                       backgroundColor: const Color(0xFFe94d29),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      elevation: 2,
+                      elevation: 1,
                     ),
                     child: _isLoading
                         ? const SizedBox(
@@ -226,7 +148,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                           ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 // Indice après plusieurs tentatives
                 if (_attemptsCount > 2) ...[
