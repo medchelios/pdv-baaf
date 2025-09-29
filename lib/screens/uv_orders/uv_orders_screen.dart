@@ -19,6 +19,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
   Map<String, dynamic>? _stats;
   Map<String, dynamic>? _accountBalance;
   List<Map<String, dynamic>>? _recentOrders;
+  Map<String, dynamic>? _permissions;
   bool _isLoading = true;
 
   @override
@@ -36,11 +37,13 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
       final stats = await _uvOrderService.getStats();
       final recent = await _uvOrderService.getRecentOrders(limit: 10);
       final balance = await _uvOrderService.getAccountBalance();
+      final permissions = await _uvOrderService.getPermissions();
 
       setState(() {
         _stats = Map<String, dynamic>.from(stats ?? {});
         _accountBalance = balance;
         _recentOrders = List<Map<String, dynamic>>.from(recent ?? []);
+        _permissions = permissions;
         _isLoading = false;
       });
     } catch (e) {
@@ -57,7 +60,7 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
       backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
         title: Text(
-          'Commandes UV',
+          _isLoading ? 'Chargement...' : _getTitle(),
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(color: AppConstants.brandWhite),
@@ -65,7 +68,18 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
         backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
-        actions: _buildAppBarActions(),
+        actions: [
+          IconButton(
+            onPressed: _showHistoryDialog,
+            icon: const Icon(Icons.history),
+            tooltip: 'Historique',
+          ),
+          IconButton(
+            onPressed: _loadData,
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Actualiser',
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -80,12 +94,10 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
                       StatsSection(stats: _stats!),
                       const SizedBox(height: AppConstants.paddingS),
                     ],
-
                     if (_accountBalance != null) ...[
                       AccountBalanceSection(accountBalance: _accountBalance!),
                       const SizedBox(height: AppConstants.paddingS),
                     ],
-
                     RecentOrdersSection(
                       recentOrders: _recentOrders,
                       onRefresh: _loadData,
@@ -98,17 +110,11 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     );
   }
 
-  List<Widget> _buildAppBarActions() {
-    return [
-      IconButton(
-        onPressed: _loadData,
-        icon: const Icon(Icons.refresh),
-        tooltip: 'Actualiser',
-      ),
-    ];
-  }
-
   Widget? _buildFloatingActionButton() {
+    if (!_canCreateOrder() && !_canCreateRechargeRequest()) {
+      return null;
+    }
+
     return FloatingActionButton.small(
       onPressed: _showActionMenu,
       backgroundColor: AppConstants.brandOrange,
@@ -142,7 +148,6 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            // Title
             const Text(
               'Actions UV',
               style: TextStyle(
@@ -154,35 +159,71 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  _buildActionOption(
-                    context,
-                    icon: Icons.add_rounded,
-                    title: 'Créer une commande',
-                    subtitle: 'Nouvelle commande UV',
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showCreateOrderDialog();
-                    },
-                  ),
-                  _buildActionOption(
-                    context,
-                    icon: Icons.account_balance_wallet,
-                    title: 'Recharger le compte',
-                    subtitle: 'Demande de recharge',
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showRechargeAccountDialog();
-                    },
-                  ),
-                ],
-              ),
+              child: Column(children: _buildAvailableActions(context)),
             ),
             const SizedBox(height: 20),
           ],
         ),
       ),
+    );
+  }
+
+  List<Widget> _buildAvailableActions(BuildContext context) {
+    List<Widget> actions = [];
+
+    if (_canCreateOrder()) {
+      actions.add(
+        _buildActionOption(
+          context,
+          icon: Icons.add_rounded,
+          title: _getCreateOrderTitle(),
+          subtitle: 'Nouvelle commande UV',
+          onTap: () {
+            Navigator.pop(context);
+            _showCreateOrderDialog();
+          },
+        ),
+      );
+    }
+
+    if (_canCreateRechargeRequest()) {
+      actions.add(
+        _buildActionOption(
+          context,
+          icon: Icons.account_balance_wallet,
+          title: 'Recharger le compte',
+          subtitle: 'Demande de recharge',
+          onTap: () {
+            Navigator.pop(context);
+            _showRechargeAccountDialog();
+          },
+        ),
+      );
+    }
+
+    return actions;
+  }
+
+  bool _canCreateOrder() {
+    return _permissions?['can_create_order'] == true;
+  }
+
+  bool _canCreateRechargeRequest() {
+    return _permissions?['can_create_recharge'] == true;
+  }
+
+  String _getTitle() {
+    return _permissions?['title'] ?? 'Commandes UV';
+  }
+
+  String _getCreateOrderTitle() {
+    return _permissions?['create_order_title'] ?? 'Créer une commande';
+  }
+
+  void _showCreateOrderDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => CreateOrderDialog(onOrderCreated: _loadData),
     );
   }
 
@@ -211,10 +252,28 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     );
   }
 
-  void _showCreateOrderDialog() {
+  void _showHistoryDialog() {
     showDialog(
       context: context,
-      builder: (context) => CreateOrderDialog(onOrderCreated: _loadData),
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Historique des commandes',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Text(
+          'Fonctionnalité d\'historique en cours de développement.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Fermer',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

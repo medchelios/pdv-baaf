@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../services/uv_order_service.dart';
-import '../../../services/auth_service.dart';
 
 class OrderActionsSection extends StatefulWidget {
   final Map<String, dynamic> order;

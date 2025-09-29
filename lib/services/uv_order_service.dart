@@ -90,6 +90,17 @@ class UVOrderService {
     return response?['data'];
   }
 
+  Future<Map<String, dynamic>?> getPermissions() async {
+    LoggerService.info('Récupération des permissions UV');
+    final response = await _apiService.get('uv-orders/permissions');
+    if (response?['data'] != null) {
+      LoggerService.info('Permissions UV récupérées avec succès');
+    } else {
+      LoggerService.warning('Aucune permission UV disponible');
+    }
+    return response?['data'];
+  }
+
   Future<Map<String, dynamic>?> createOrder({
     required double amount,
     required String description,
