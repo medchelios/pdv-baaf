@@ -24,13 +24,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Dashboard',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
         backgroundColor: AppConstants.brandBlue,
         foregroundColor: Colors.white,
@@ -56,12 +54,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: AppConstants.paddingL),
                   Text(
                     'Erreur de chargement',
-                    style: AppConstants.heading3,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: AppConstants.paddingS),
                   Text(
                     controller.error!,
-                    style: AppConstants.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppConstants.paddingL),
@@ -80,31 +78,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Stats UV
-                _buildSection(
-                  'Commandes UV',
-                  [
-                    _buildStatItem('Total', '25', AppConstants.brandBlue),
-                    _buildStatItem('En attente', '5', AppConstants.warningColor),
-                    _buildStatItem('Validées', '18', AppConstants.successColor),
-                    _buildStatItem('Rejetées', '2', AppConstants.errorColor),
-                  ],
-                ),
-                
+                _buildSection('Commandes UV', [
+                  _buildStatItem('Total', '25', AppConstants.brandBlue),
+                  _buildStatItem('En attente', '5', AppConstants.warningColor),
+                  _buildStatItem('Validées', '18', AppConstants.successColor),
+                  _buildStatItem('Rejetées', '2', AppConstants.errorColor),
+                ]),
+
                 const SizedBox(height: AppConstants.paddingXL),
-                
+
                 // Stats Paiements
-                _buildSection(
-                  'Paiements',
-                  [
-                    _buildStatItem('Total', '4', AppConstants.brandBlue),
-                    _buildStatItem('Réussis', '4', AppConstants.successColor),
-                    _buildStatItem('Échoués', '0', AppConstants.errorColor),
-                    _buildStatItem('Montant', '425K GNF', AppConstants.brandOrange),
-                  ],
-                ),
-                
+                _buildSection('Paiements', [
+                  _buildStatItem('Total', '4', AppConstants.brandBlue),
+                  _buildStatItem('Réussis', '4', AppConstants.successColor),
+                  _buildStatItem('Échoués', '0', AppConstants.errorColor),
+                  _buildStatItem(
+                    'Montant',
+                    '425K GNF',
+                    AppConstants.brandOrange,
+                  ),
+                ]),
+
                 const SizedBox(height: AppConstants.paddingXL),
-                
+
                 // Paiements récents
                 _buildRecentPayments(controller),
               ],
@@ -119,7 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppConstants.heading2),
+        Text(title, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: AppConstants.paddingM),
         Container(
           padding: const EdgeInsets.all(AppConstants.paddingM),
@@ -128,9 +124,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             borderRadius: BorderRadius.circular(AppConstants.radiusM),
             boxShadow: AppConstants.cardShadow,
           ),
-          child: Column(
-            children: stats,
-          ),
+          child: Column(children: stats),
         ),
       ],
     );
@@ -142,11 +136,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: AppConstants.bodyMedium),
+          Text(label, style: Theme.of(context).textTheme.bodyMedium),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 16,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -163,7 +156,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Paiements Récents', style: AppConstants.heading2),
+        Text(
+          'Paiements Récents',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: AppConstants.paddingM),
         Container(
           decoration: BoxDecoration(
@@ -181,18 +177,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildPaymentItem(DashboardController controller, Map<String, dynamic> payment) {
+  Widget _buildPaymentItem(
+    DashboardController controller,
+    Map<String, dynamic> payment,
+  ) {
     final isLast = payment == controller.recentPayments.last;
-    
+
     return Container(
       padding: const EdgeInsets.all(AppConstants.paddingM),
       decoration: BoxDecoration(
-        border: isLast ? null : Border(
-          bottom: BorderSide(
-            color: AppConstants.textLight.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
+        border: isLast
+            ? null
+            : Border(
+                bottom: BorderSide(
+                  color: AppConstants.textLight.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
       ),
       child: Row(
         children: [
@@ -216,12 +217,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Text(
                   payment['customer_name'],
-                  style: AppConstants.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${payment['reference']} • ${controller.getPaymentMethodLabel(payment['method'])}',
-                  style: AppConstants.bodySmall,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -231,12 +232,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Text(
                 controller.formatAmount(payment['amount'].toDouble()),
-                style: AppConstants.bodyLarge,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 2),
               Text(
                 controller.getStatusLabel(payment['status']),
-                style: AppConstants.bodySmall,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),

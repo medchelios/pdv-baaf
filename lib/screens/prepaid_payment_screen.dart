@@ -13,7 +13,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
   final _phoneController = TextEditingController();
   final _amountController = TextEditingController();
   final _referenceController = TextEditingController();
-  
+
   String _selectedMethod = 'mobile_money';
 
   @override
@@ -29,13 +29,11 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Paiement Prépayé',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
         backgroundColor: AppConstants.brandBlue,
         foregroundColor: Colors.white,
@@ -51,14 +49,14 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
             children: [
               // Carte d'information
               _buildInfoCard(),
-              
+
               const SizedBox(height: 24),
-              
+
               // Formulaire
               _buildForm(),
-              
+
               const SizedBox(height: 32),
-              
+
               // Bouton de paiement
               _buildPaymentButton(),
             ],
@@ -86,21 +84,18 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Paiement Prépayé',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Achetez du crédit électrique pour vos clients',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 16),
           Row(
@@ -111,12 +106,11 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                 size: 16,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Montant minimum: 1,000 GNF',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.white),
               ),
             ],
           ),
@@ -142,16 +136,14 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Informations du paiement',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppConstants.textPrimary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: AppConstants.textPrimary),
           ),
           const SizedBox(height: 20),
-          
+
           // Numéro de téléphone
           _buildTextField(
             controller: _phoneController,
@@ -169,9 +161,9 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Référence client
           _buildTextField(
             controller: _referenceController,
@@ -186,9 +178,9 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Montant
           _buildTextField(
             controller: _amountController,
@@ -207,38 +199,36 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Méthode de paiement
-          const Text(
+          Text(
             'Méthode de paiement',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppConstants.textPrimary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: AppConstants.textPrimary),
           ),
           const SizedBox(height: 12),
-          
+
           _buildPaymentMethodOption(
             value: 'mobile_money',
             title: 'Mobile Money',
             subtitle: 'Orange Money, MTN Money',
             icon: Icons.phone_android_rounded,
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           _buildPaymentMethodOption(
             value: 'card',
             title: 'Carte bancaire',
             subtitle: 'Visa, Mastercard',
             icon: Icons.credit_card_rounded,
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           _buildPaymentMethodOption(
             value: 'cash',
             title: 'Espèces',
@@ -263,11 +253,9 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppConstants.textPrimary,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(color: AppConstants.textPrimary),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -312,12 +300,12 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: _selectedMethod == value 
+          color: _selectedMethod == value
               ? AppConstants.brandBlue.withValues(alpha: 0.1)
               : Colors.grey.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _selectedMethod == value 
+            color: _selectedMethod == value
                 ? AppConstants.brandBlue
                 : Colors.grey.withValues(alpha: 0.3),
           ),
@@ -326,7 +314,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
           children: [
             Icon(
               icon,
-              color: _selectedMethod == value 
+              color: _selectedMethod == value
                   ? AppConstants.brandBlue
                   : AppConstants.textSecondary,
               size: 20,
@@ -338,10 +326,8 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _selectedMethod == value 
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: _selectedMethod == value
                           ? AppConstants.brandBlue
                           : AppConstants.textPrimary,
                     ),
@@ -349,8 +335,7 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppConstants.textSecondary,
                     ),
                   ),
@@ -387,12 +372,11 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
           ),
           elevation: 0,
         ),
-        child: const Text(
+        child: Text(
           'Traiter le paiement',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(color: Colors.white),
         ),
       ),
     );
@@ -403,8 +387,14 @@ class _PrepaidPaymentScreenState extends State<PrepaidPaymentScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Paiement traité'),
-        content: const Text('Le paiement prépayé a été traité avec succès.'),
+        title: Text(
+          'Paiement traité',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Text(
+          'Le paiement prépayé a été traité avec succès.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         actions: [
           TextButton(
             onPressed: () {

@@ -11,13 +11,11 @@ class PaymentTypeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Paiements',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
         backgroundColor: AppConstants.brandBlue,
         foregroundColor: Colors.white,
@@ -44,9 +42,9 @@ class PaymentTypeScreen extends StatelessWidget {
                 );
               },
             ),
-            
+
             const SizedBox(height: AppConstants.paddingL),
-            
+
             // Postpayé
             _buildPaymentCard(
               context: context,
@@ -103,15 +101,9 @@ class PaymentTypeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: AppConstants.heading2,
-                  ),
+                  Text(title, style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: AppConstants.bodyMedium,
-                  ),
+                  Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
                 ],
               ),
             ),

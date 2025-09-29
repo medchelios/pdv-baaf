@@ -9,13 +9,11 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Paramètres',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
         backgroundColor: const Color(0xFF0e4b5b),
         foregroundColor: Colors.white,
@@ -57,47 +55,47 @@ class SettingsScreen extends StatelessWidget {
                         size: 28,
                       ),
                     ),
-                    
+
                     const SizedBox(width: 16),
-                    
+
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             AuthService().user?['name'] ?? 'Utilisateur',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F2937),
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(color: const Color(0xFF1F2937)),
                           ),
-                          
+
                           const SizedBox(height: 4),
-                          
+
                           Text(
                             AuthService().user?['email'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF6B7280),
-                            ),
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(color: const Color(0xFF6B7280)),
                           ),
-                          
+
                           const SizedBox(height: 8),
-                          
+
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               AuthService().user?['role'] ?? 'Agent',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF10B981),
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: const Color(0xFF10B981),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ),
                         ],
@@ -106,89 +104,87 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Options
-              _buildSettingsSection(
-                'Compte',
-                [
-                  _buildSettingsItem(
-                    icon: Icons.person_outline_rounded,
-                    title: 'Profil',
-                    subtitle: 'Informations personnelles',
-                    onTap: () {
-                      // TODO: Implémenter la page de profil
-                    },
-                  ),
-                  _buildSettingsItem(
-                    icon: Icons.security_outlined,
-                    title: 'Sécurité',
-                    subtitle: 'Mot de passe et sécurité',
-                    onTap: () {
-                      // TODO: Implémenter la page de sécurité
-                    },
-                  ),
-                ],
-              ),
-              
+              _buildSettingsSection(context, 'Compte', [
+                _buildSettingsItem(
+                  context: context,
+                  icon: Icons.person_outline_rounded,
+                  title: 'Profil',
+                  subtitle: 'Informations personnelles',
+                  onTap: () {
+                    // TODO: Implémenter la page de profil
+                  },
+                ),
+                _buildSettingsItem(
+                  context: context,
+                  icon: Icons.security_outlined,
+                  title: 'Sécurité',
+                  subtitle: 'Mot de passe et sécurité',
+                  onTap: () {
+                    // TODO: Implémenter la page de sécurité
+                  },
+                ),
+              ]),
+
               const SizedBox(height: 24),
-              
-              _buildSettingsSection(
-                'Application',
-                [
-                  _buildSettingsItem(
-                    icon: Icons.notifications_outlined,
-                    title: 'Notifications',
-                    subtitle: 'Gérer les notifications',
-                    onTap: () {
-                      // TODO: Implémenter la page de notifications
-                    },
-                  ),
-                  _buildSettingsItem(
-                    icon: Icons.language_outlined,
-                    title: 'Langue',
-                    subtitle: 'Français',
-                    onTap: () {
-                      // TODO: Implémenter le changement de langue
-                    },
-                  ),
-                  _buildSettingsItem(
-                    icon: Icons.help_outline_rounded,
-                    title: 'Aide',
-                    subtitle: 'Support et FAQ',
-                    onTap: () {
-                      // TODO: Implémenter la page d'aide
-                    },
-                  ),
-                ],
-              ),
-              
+
+              _buildSettingsSection(context, 'Application', [
+                _buildSettingsItem(
+                  context: context,
+                  icon: Icons.notifications_outlined,
+                  title: 'Notifications',
+                  subtitle: 'Gérer les notifications',
+                  onTap: () {
+                    // TODO: Implémenter la page de notifications
+                  },
+                ),
+                _buildSettingsItem(
+                  context: context,
+                  icon: Icons.language_outlined,
+                  title: 'Langue',
+                  subtitle: 'Français',
+                  onTap: () {
+                    // TODO: Implémenter le changement de langue
+                  },
+                ),
+                _buildSettingsItem(
+                  context: context,
+                  icon: Icons.help_outline_rounded,
+                  title: 'Aide',
+                  subtitle: 'Support et FAQ',
+                  onTap: () {
+                    // TODO: Implémenter la page d'aide
+                  },
+                ),
+              ]),
+
               const SizedBox(height: 24),
-              
-              _buildSettingsSection(
-                'Système',
-                [
-                  _buildSettingsItem(
-                    icon: Icons.info_outline_rounded,
-                    title: 'À propos',
-                    subtitle: 'Version 1.0.0',
-                    onTap: () {
-                      // TODO: Implémenter la page à propos
-                    },
-                  ),
-                  _buildSettingsItem(
-                    icon: Icons.logout_rounded,
-                    title: 'Déconnexion',
-                    subtitle: 'Se déconnecter de l\'application',
-                    onTap: () async {
-                      await _showLogoutDialog(context);
-                    },
-                    isDestructive: true,
-                  ),
-                ],
-              ),
-              
+
+              _buildSettingsSection(context, 'Système', [
+                _buildSettingsItem(
+                  context: context,
+                  icon: Icons.info_outline_rounded,
+                  title: 'À propos',
+                  subtitle: 'Version 1.0.0',
+                  onTap: () {
+                    // TODO: Implémenter la page à propos
+                  },
+                ),
+                _buildSettingsItem(
+                  context: context,
+                  icon: Icons.logout_rounded,
+                  title: 'Déconnexion',
+                  subtitle: 'Se déconnecter de l\'application',
+                  onTap: () async {
+                    await _showLogoutDialog(context);
+                  },
+                  isDestructive: true,
+                ),
+              ]),
+
               const SizedBox(height: 40),
             ],
           ),
@@ -197,7 +193,11 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsSection(String title, List<Widget> children) {
+  Widget _buildSettingsSection(
+    BuildContext context,
+    String title,
+    List<Widget> children,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -205,11 +205,9 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: const Color(0xFF1F2937)),
           ),
         ),
         Container(
@@ -231,6 +229,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsItem({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
@@ -243,31 +242,32 @@ class SettingsScreen extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: isDestructive 
+          color: isDestructive
               ? const Color(0xFFEF4444).withValues(alpha: 0.1)
               : const Color(0xFFe94d29).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
           icon,
-          color: isDestructive ? const Color(0xFFEF4444) : const Color(0xFFe94d29),
+          color: isDestructive
+              ? const Color(0xFFEF4444)
+              : const Color(0xFFe94d29),
           size: 20,
         ),
       ),
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: isDestructive ? const Color(0xFFEF4444) : const Color(0xFF1F2937),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          color: isDestructive
+              ? const Color(0xFFEF4444)
+              : const Color(0xFF1F2937),
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(
-          fontSize: 13,
-          color: Color(0xFF6B7280),
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF6B7280)),
       ),
       trailing: Icon(
         Icons.arrow_forward_ios_rounded,
@@ -287,20 +287,17 @@ class SettingsScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: const Text(
+          title: Text(
             'Déconnexion',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: const Color(0xFF1F2937)),
           ),
-          content: const Text(
+          content: Text(
             'Êtes-vous sûr de vouloir vous déconnecter ?',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF6B7280),
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: const Color(0xFF6B7280)),
           ),
           actions: <Widget>[
             TextButton(

@@ -74,15 +74,24 @@ class AppTheme {
         ),
       ),
       textTheme: TextTheme(
-        headlineLarge: AppConstants.heading1.copyWith(fontSize: 32),
-        headlineMedium: AppConstants.heading1.copyWith(fontSize: 28),
-        headlineSmall: AppConstants.heading2.copyWith(fontSize: 24),
-        titleLarge: AppConstants.heading2.copyWith(fontSize: 20),
-        titleMedium: AppConstants.heading3.copyWith(fontSize: 18),
-        titleSmall: AppConstants.heading3.copyWith(fontSize: 16),
-        bodyLarge: AppConstants.bodyLarge,
-        bodyMedium: AppConstants.bodyMedium,
-        bodySmall: AppConstants.bodySmall,
+        headlineLarge: AppConstants.heading1.copyWith(fontSize: 28),
+        headlineMedium: AppConstants.heading1.copyWith(fontSize: 24),
+        headlineSmall: AppConstants.heading2.copyWith(fontSize: 22),
+        titleLarge: AppConstants.heading2.copyWith(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+        titleMedium: AppConstants.heading3.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+        titleSmall: AppConstants.heading3.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyLarge: AppConstants.bodyLarge.copyWith(fontSize: 14),
+        bodyMedium: AppConstants.bodyMedium.copyWith(fontSize: 13),
+        bodySmall: AppConstants.bodySmall.copyWith(fontSize: 12),
       ),
     );
   }
@@ -160,34 +169,44 @@ class AppTheme {
       ),
       textTheme: TextTheme(
         headlineLarge: AppConstants.heading1.copyWith(
-          fontSize: 32,
-          color: AppConstants.brandWhite,
-        ),
-        headlineMedium: AppConstants.heading1.copyWith(
           fontSize: 28,
           color: AppConstants.brandWhite,
         ),
-        headlineSmall: AppConstants.heading2.copyWith(
+        headlineMedium: AppConstants.heading1.copyWith(
           fontSize: 24,
+          color: AppConstants.brandWhite,
+        ),
+        headlineSmall: AppConstants.heading2.copyWith(
+          fontSize: 22,
           color: AppConstants.brandWhite,
         ),
         titleLarge: AppConstants.heading2.copyWith(
           fontSize: 20,
+          fontWeight: FontWeight.w700,
           color: AppConstants.brandWhite,
         ),
         titleMedium: AppConstants.heading3.copyWith(
-          fontSize: 18,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
           color: AppConstants.brandWhite,
         ),
         titleSmall: AppConstants.heading3.copyWith(
-          fontSize: 16,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
           color: AppConstants.brandWhite,
         ),
         bodyLarge: AppConstants.bodyLarge.copyWith(
+          fontSize: 14,
           color: AppConstants.brandWhite,
         ),
-        bodyMedium: AppConstants.bodyMedium.copyWith(color: Colors.grey[300]),
-        bodySmall: AppConstants.bodySmall.copyWith(color: Colors.grey[500]),
+        bodyMedium: AppConstants.bodyMedium.copyWith(
+          fontSize: 13,
+          color: Colors.grey[300],
+        ),
+        bodySmall: AppConstants.bodySmall.copyWith(
+          fontSize: 12,
+          color: Colors.grey[500],
+        ),
       ),
     );
   }

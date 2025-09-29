@@ -158,14 +158,20 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
           children: [
             Icon(Icons.check_circle, color: Colors.orange[600], size: 28),
             const SizedBox(width: 8),
-            const Text('Paiement Réussi'),
+            Text(
+              'Paiement Réussi',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('La facture a été payée avec succès.'),
+            Text(
+              'La facture a été payée avec succès.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
@@ -194,14 +200,20 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
               Navigator.of(context).pop();
               _clearForm();
             },
-            child: const Text('Nouveau Paiement'),
+            child: Text(
+              'Nouveau Paiement',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Retour'),
+            child: Text(
+              'Retour',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
         ],
       ),
@@ -216,14 +228,14 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
           children: [
             Icon(Icons.error, color: Colors.red[600], size: 28),
             const SizedBox(width: 8),
-            const Text('Erreur'),
+            Text('Erreur', style: Theme.of(context).textTheme.titleLarge),
           ],
         ),
-        content: Text(message),
+        content: Text(message, style: Theme.of(context).textTheme.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text('OK', style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),
@@ -246,7 +258,12 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFf8f9fa),
       appBar: AppBar(
-        title: const Text('Paiement Postpayé'),
+        title: Text(
+          'Paiement Postpayé',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: Colors.white),
+        ),
         backgroundColor: const Color(0xFFe94d29),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -300,10 +317,7 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                               Text(
                                 'Paiement Postpayé',
                                 style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF0e4b5b),
-                                    ),
+                                    ?.copyWith(color: const Color(0xFF0e4b5b)),
                               ),
                               Text(
                                 'Payez les factures d\'électricité de vos clients',
@@ -323,7 +337,6 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                 Text(
                   'Informations Client',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
                     color: const Color(0xFF0e4b5b),
                   ),
                 ),
@@ -384,7 +397,6 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                   Text(
                     'Factures Disponibles',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: const Color(0xFF0e4b5b),
                     ),
                   ),
@@ -438,7 +450,6 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                   Text(
                     'Informations de Paiement',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: const Color(0xFF0e4b5b),
                     ),
                   ),
@@ -503,7 +514,6 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                   Text(
                     'Méthode de Paiement',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: const Color(0xFF0e4b5b),
                     ),
                   ),
@@ -570,12 +580,10 @@ class _PostpaidPaymentScreenState extends State<PostpaidPaymentScreen> {
                                 ),
                               ),
                             )
-                          : const Text(
+                          : Text(
                               'Payer la Facture',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(color: Colors.white),
                             ),
                     ),
                   ),
