@@ -1,0 +1,54 @@
+name: Flutter CI (light)
+
+on:
+  push:
+    branches: [ "**" ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/.gitignore'
+      - '**/.github/ISSUE_TEMPLATE/**'
+  pull_request:
+    branches: [ "**" ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/.gitignore'
+
+jobs:
+  analyze_and_test:
+    name: Analyze and Test (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter (cached)
+        uses: subosito/flutter-action@v2
+        with:
+          # Pin to a specific version for better cache hit ratio
+          flutter-version: '3.24.3'
+          channel: 'stable'
+          cache: true
+
+      - name: Show Flutter/Dart versions
+        run: |
+          flutter --version
+          dart --version
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Fetch dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+

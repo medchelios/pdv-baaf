@@ -15,7 +15,7 @@ void main() {
     await tester.pumpWidget(const PdvBaafApp());
 
     // Verify that our app shows the auth type selection screen
-    expect(find.text('PDV Baaf'), findsOneWidget);
-    expect(find.text('Choisissez votre type de connexion'), findsOneWidget);
+    expect(find.text('Se connecter'), findsOneWidget);
+    expect(find.text('Choisissez une méthode de connexion'), findsOneWidget);
   });
 }
