@@ -9,6 +9,7 @@ import 'screens/prepaid_payment_screen.dart';
 import 'screens/postpaid_payment_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/uv_orders/uv_orders_screen.dart';
+import 'screens/uv_orders/orders_history_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/user_data_service.dart';
@@ -41,6 +42,7 @@ class PdvBaafApp extends StatelessWidget {
           '/home': (context) => const HomeScreen(),
           '/dashboard': (context) => const DashboardScreen(),
           '/uv-orders': (context) => const UVOrdersScreen(),
+          '/uv-orders/history': (context) => const OrdersHistoryScreen(),
           '/payment-type': (context) => const PaymentTypeScreen(),
           '/prepaid-payment': (context) => const PrepaidPaymentScreen(),
           '/postpaid-payment': (context) => const PostpaidPaymentScreen(),

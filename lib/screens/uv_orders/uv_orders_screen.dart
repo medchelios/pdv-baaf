@@ -230,63 +230,8 @@ class _UVOrdersScreenState extends State<UVOrdersScreen> {
     );
   }
 
-  void _showHistoryDialog() async {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Historique des commandes',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        content: FutureBuilder<List<Map<String, dynamic>>?>(
-          future: _uvOrderService.getHistory(limit: 50),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Text('Erreur: ${snapshot.error}');
-            }
-
-            final orders = snapshot.data ?? [];
-            if (orders.isEmpty) {
-              return const Text('Aucune commande dans l\'historique');
-            }
-
-            return SizedBox(
-              height: 400,
-              width: double.maxFinite,
-              child: ListView.builder(
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return ListTile(
-                    title: Text(order['type_label'] ?? 'Inconnu'),
-                    subtitle: Text(
-                      '${order['formatted_total_amount']?.replaceAll(' GNF', '') ?? '0'} - ${order['status_label'] ?? 'Inconnu'}',
-                    ),
-                    trailing: Text(order['requested_at'] ?? ''),
-                  );
-                },
-              ),
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Fermer',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ],
-      ),
-    );
+  void _showHistoryDialog() {
+    Navigator.pushNamed(context, '/uv-orders/history');
   }
 
   Widget _buildActionOption(
