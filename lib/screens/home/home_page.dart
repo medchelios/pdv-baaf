@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../constants/app_constants.dart';
 import '../../services/home_data_loader.dart';
-import 'widgets/header_section.dart';
 import 'widgets/balance_card.dart';
 import 'widgets/quick_actions.dart';
 import 'widgets/recent_transactions.dart';
@@ -30,19 +30,25 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _loadData,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            const HeaderSection(),
-            const BalanceCard(),
-            const QuickActions(),
-            const RecentTransactions(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Accueil'),
+        backgroundColor: AppConstants.brandOrange,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: RefreshIndicator(
+        onRefresh: _loadData,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            BalanceCard(),
+            QuickActions(),
+            RecentTransactions(),
           ],
         ),
       ),
     );
   }
 }
+

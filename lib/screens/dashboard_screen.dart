@@ -30,7 +30,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             context,
           ).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
-        backgroundColor: AppConstants.brandBlue,
+        backgroundColor: AppConstants.brandOrange,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
