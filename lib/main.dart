@@ -9,6 +9,7 @@ import 'screens/uv_orders/uv_orders_screen.dart';
 import 'screens/uv_orders/orders_history_screen.dart';
 import 'screens/accounts/account_transfer_screen.dart';
 import 'screens/payments/recent_payments_screen.dart';
+import 'screens/payments/edg_process_payment_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/user_data_service.dart';
@@ -48,6 +49,7 @@ class PdvBaafApp extends StatelessWidget {
           '/uv-orders/history': (context) => const OrdersHistoryScreen(),
           '/payments': (context) => const HomeScreen(initialIndex: 1),
           '/uv': (context) => const HomeScreen(initialIndex: 2),
+          '/payments/edg': (context) => const EdgProcessPaymentScreen(),
           '/accounts/transfer': (context) => const AccountTransferScreen(),
           '/payments/recent': (context) => const RecentPaymentsScreen(),
         },

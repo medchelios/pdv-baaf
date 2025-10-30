@@ -75,10 +75,9 @@ class _PaymentsOrdersScreenState extends State<PaymentsOrdersScreen> {
       appBar: AppBar(
         title: Text(
           'Paiements',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: AppConstants.brandWhite),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: AppConstants.brandWhite),
         ),
         backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
@@ -199,7 +198,7 @@ class _PaymentsOrdersScreenState extends State<PaymentsOrdersScreen> {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Actions Paiements',
+              'Types de paiement',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -213,23 +212,31 @@ class _PaymentsOrdersScreenState extends State<PaymentsOrdersScreen> {
                 children: [
                   _buildActionOption(
                     context,
-                    icon: Icons.electrical_services,
-                    title: 'Paiement Électricité',
-                    subtitle: 'Payer une facture d\'électricité',
+                    icon: Icons.bolt,
+                    title: 'Prépayé',
+                    subtitle: 'Facture électricité (prépayé)',
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate
+                      Navigator.pushNamed(
+                        context,
+                        '/payments/edg',
+                        arguments: {'type': 'prepaid'},
+                      );
                     },
                   ),
                   const SizedBox(height: 12),
                   _buildActionOption(
                     context,
-                    icon: Icons.phone,
-                    title: 'Paiement Mobile',
-                    subtitle: 'Recharger un téléphone',
+                    icon: Icons.receipt_long,
+                    title: 'Postpayé',
+                    subtitle: 'Facture électricité (postpayé)',
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate
+                      Navigator.pushNamed(
+                        context,
+                        '/payments/edg',
+                        arguments: {'type': 'postpaid'},
+                      );
                     },
                   ),
                 ],
