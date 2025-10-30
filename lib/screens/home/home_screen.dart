@@ -53,11 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
             _currentIndex = index;
           });
         },
-        children: [
-          HomePage(),
-          PaymentsPage(),
-          UvPage(),
-          SettingsPage(),
+        children: const [
+          HomePage(key: PageStorageKey('home_page')),
+          PaymentsPage(key: PageStorageKey('payments_page')),
+          UvPage(key: PageStorageKey('uv_page')),
+          SettingsPage(key: PageStorageKey('settings_page')),
         ],
       ),
       bottomNavigationBar: BottomNavigation(
