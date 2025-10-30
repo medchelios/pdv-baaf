@@ -33,54 +33,85 @@ class ConfirmWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          const Text(
-            'Confirmer le paiement',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
+          ListTile(
+            title: const Text('Client'),
+            trailing: Text(
+              customerData?['name'] ?? '-',
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 32),
-          _buildSummaryRow('Client', customerData?['name'] ?? '-'),
           const Divider(),
-          _buildSummaryRow('Référence', customerReference),
+          ListTile(
+            title: const Text('Référence'),
+            trailing: Text(
+              customerReference,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           if (phoneNumber != null && phoneNumber!.isNotEmpty) ...[
             const Divider(),
-            _buildSummaryRow('Téléphone', phoneNumber!),
+            ListTile(
+              title: const Text('Téléphone'),
+              trailing: Text(
+                phoneNumber!,
+                style: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ],
           if (customerType == 'postpaid' && selectedBillCode != null) ...[
             const Divider(),
-            _buildSummaryRow('Facture', selectedBillCode!),
+            ListTile(
+              title: const Text('Facture'),
+              trailing: Text(
+                selectedBillCode!,
+                style: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
             if (selectedBillPeriod != null) ...[
               const Divider(),
-              _buildSummaryRow('Période', selectedBillPeriod!),
+              ListTile(
+                title: const Text('Période'),
+                trailing: Text(
+                  selectedBillPeriod!,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ),
             ],
           ] else ...[
             const Divider(),
-            _buildSummaryRow('Service', 'Recharge électricité'),
+            ListTile(
+              title: const Text('Service'),
+              trailing: const Text(
+                'Recharge électricité',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
           ],
-          const SizedBox(height: 16),
           const Divider(thickness: 2),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Montant',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+          ListTile(
+            title: const Text(
+              'Montant',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-              Text(
-                '${FormatUtils.formatAmount((amount ?? 0).toString())} GNF',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            trailing: Text(
+              '${FormatUtils.formatAmount((amount ?? 0).toString())} GNF',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 32),
           Row(
@@ -88,10 +119,10 @@ class ConfirmWidget extends StatelessWidget {
               Expanded(
                 child: OutlinedButton(
                   onPressed: onBack,
-                  child: const Text('Retour'),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
+                  child: const Text('Retour'),
                 ),
               ),
               const SizedBox(width: 16),
@@ -106,34 +137,6 @@ class ConfirmWidget extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-          Flexible(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.end,
-            ),
           ),
         ],
       ),

@@ -34,29 +34,19 @@ class EnterReferenceWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          Text(
-            labelText,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
           TextField(
             decoration: InputDecoration(
+              labelText: labelText,
               hintText: hintText,
               border: const OutlineInputBorder(),
               errorText: validationError != null && customerReference.isNotEmpty
                   ? validationError
                   : null,
-              counterText: '${customerReference.length}/$maxLength',
             ),
             maxLength: maxLength,
             keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               fontFamily: 'monospace',
               letterSpacing: 1,
             ),

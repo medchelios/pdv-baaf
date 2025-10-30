@@ -60,24 +60,17 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
           if (widget.customerData != null) ...[
-            Text(
-              'Client: ${widget.customerData!['name'] ?? '-'}',
-              style: const TextStyle(fontSize: 14),
-              textAlign: TextAlign.center,
+            ListTile(
+              title: const Text('Client'),
+              trailing: Text(
+                widget.customerData!['name'] ?? '-',
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ),
-            const SizedBox(height: 32),
+            const Divider(),
           ],
-          Text(
-            widget.customerType == 'prepaid' ? 'Montant de recharge' : 'Montant',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
           if (billAmt != null) ...[
             SizedBox(
               width: double.infinity,
@@ -120,14 +113,6 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
                 ),
               ],
             ),
-            if (widget.amount != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                'Montant sélectionné: ${FormatUtils.formatAmount(widget.amount.toString())} GNF',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-                textAlign: TextAlign.center,
-              ),
-            ],
           ] else ...[
             TextField(
               decoration: InputDecoration(
@@ -139,40 +124,13 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
               style: const TextStyle(
                 fontSize: 18,
               ),
-              textAlign: TextAlign.center,
               onChanged: (v) => widget.onAmountChanged(int.tryParse(v)),
             ),
-            if (widget.amount != null && widget.amount! > 0) ...[
-              const SizedBox(height: 12),
-              Text(
-                '${FormatUtils.formatAmount(widget.amount.toString())} GNF',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-            const SizedBox(height: 8),
-            const Text(
-              'Minimum: 1,000 GNF',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
           ],
-          const SizedBox(height: 32),
-          const Text(
-            'Numéro de téléphone *',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           TextField(
             decoration: InputDecoration(
-              hintText: 'Veuillez saisir le numéro',
+              labelText: 'Numéro de téléphone *',
               border: const OutlineInputBorder(),
               errorText: phoneError,
             ),
@@ -182,30 +140,8 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
               fontFamily: 'monospace',
               letterSpacing: 1,
             ),
-            textAlign: TextAlign.center,
             onChanged: widget.onPhoneChanged,
           ),
-          if (widget.phoneNumber != null && widget.phoneNumber!.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              isValidPhone
-                  ? 'Format valide'
-                  : 'Format invalide. 9 chiffres commençant par 6, 7, ou 8',
-              style: TextStyle(
-                fontSize: 12,
-                color: isValidPhone ? Colors.green : Colors.red,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ] else
-            const Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: Text(
-                'Pour recevoir un SMS de confirmation (obligatoire)',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ),
           const SizedBox(height: 32),
           if (canConfirm)
             SizedBox(
@@ -219,13 +155,6 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
                   'Confirmer ${FormatUtils.formatAmount((widget.amount ?? 0).toString())} GNF',
                 ),
               ),
-            )
-          else if ((billAmt != null || (widget.amount != null && widget.amount! >= 1000)) &&
-              (widget.phoneNumber == null || widget.phoneNumber!.isEmpty || !isValidPhone))
-            Text(
-              phoneError ?? 'Veuillez remplir tous les champs correctement',
-              style: const TextStyle(color: Colors.red, fontSize: 12),
-              textAlign: TextAlign.center,
             ),
           const SizedBox(height: 16),
           SizedBox(

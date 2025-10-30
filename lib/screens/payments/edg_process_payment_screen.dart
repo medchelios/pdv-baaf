@@ -70,8 +70,19 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     setState(() => searching = true);
     try {
       if (customerType == 'postpaid') {
+        // Appeler l'API pour récupérer les factures
         final resp = await EdgService().getCustomerBills(customerReference);
-        if (resp != null && resp['success'] == true) {
+        if (resp == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Erreur: Impossible de contacter le serveur'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+        
+        if (resp['success'] == true) {
           final data = resp['data'] as Map<String, dynamic>;
           final fetchedBills = (data['bills'] as List)
               .cast<Map>()
@@ -83,19 +94,30 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
             step = 'select_bill';
           });
         } else {
+          // API a retourné une erreur - NE PAS PASSER à l'écran suivant
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(resp?['error'] ?? 'Client non trouvé'),
+              content: Text(resp['error'] ?? resp['message'] ?? 'Client non trouvé'),
               backgroundColor: Colors.red,
             ),
           );
+          // Rester sur enter_reference
         }
       } else {
+        // PREPAID: Pas d'API à appeler pour la validation, passer directement
         setState(() {
           customerData = {'name': 'Client Prépayé'};
           step = 'enter_amount';
         });
       }
+    } catch (e) {
+      // Erreur inattendue - NE PAS PASSER à l'écran suivant
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       setState(() => searching = false);
     }
@@ -105,8 +127,28 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     final billCode = bill['code'] as String;
     setState(() => searching = true);
     try {
+      // Appeler l'API pour récupérer les détails de la facture
       final billDetails = await EdgService().getBillDetails(billCode);
-      if (billDetails != null && billDetails['success'] == true) {
+      
+      if (billDetails == null) {
+        // Erreur réseau - utiliser les données de la liste mais afficher l'erreur
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur: Impossible de contacter le serveur. Utilisation des données de base.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        setState(() {
+          selectedBill = bill;
+          amount = null;
+          customAmount = null;
+          // Rester sur select_bill
+        });
+        return;
+      }
+      
+      if (billDetails['success'] == true) {
+        // API réussie - utiliser les données de l'API
         final data = billDetails['data'] as Map<String, dynamic>;
         setState(() {
           selectedBill = {
@@ -117,16 +159,36 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
           };
           amount = null;
           customAmount = null;
-          step = 'enter_amount';
+          // Rester sur select_bill (comme backend PHP)
         });
       } else {
+        // API a retourné une erreur - utiliser les données de la liste mais afficher l'erreur
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(billDetails['error'] ?? billDetails['message'] ?? 'Erreur lors de la récupération des détails. Utilisation des données de base.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
         setState(() {
           selectedBill = bill;
           amount = null;
           customAmount = null;
-          step = 'enter_amount';
+          // Rester sur select_bill
         });
       }
+    } catch (e) {
+      // Erreur inattendue - utiliser les données de la liste mais afficher l'erreur
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: ${e.toString()}'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      setState(() {
+        selectedBill = bill;
+        amount = null;
+        customAmount = null;
+      });
     } finally {
       setState(() => searching = false);
     }
@@ -181,8 +243,10 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     setState(() => step = 'processing');
     final resp = await EdgService().processAgentPayment(
       customerType: customerType ?? 'postpaid',
-      customerReference: customerType == 'prepaid' ? customerReference : null,
+      customerReference: customerReference.isEmpty ? null : customerReference,
+      customerName: customerData?['name'] as String?,
       billCode: customerType == 'postpaid' ? (selectedBill?['code'] as String?) : null,
+      billDate: customerType == 'postpaid' ? (selectedBill?['period'] as String?) : null,
       amount: amount ?? 0,
       phone: phoneNumber ?? '',
     );
@@ -214,7 +278,18 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
         }
         break;
       case 'select_bill':
-        setState(() => step = 'enter_reference');
+        if (selectedBill != null) {
+          // Retour à la liste des factures
+          setState(() {
+            selectedBill = null;
+            phoneNumber = null;
+            amount = null;
+            customAmount = null;
+          });
+        } else {
+          // Retour à enter_reference
+          setState(() => step = 'enter_reference');
+        }
         break;
       case 'enter_amount':
         setState(() {
@@ -224,7 +299,14 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
         });
         break;
       case 'confirm':
-        setState(() => step = 'enter_amount');
+        if (customerType == 'postpaid') {
+          setState(() {
+            step = 'select_bill';
+            amount = null;
+          });
+        } else {
+          setState(() => step = 'enter_amount');
+        }
         break;
       case 'processing':
         setState(() => step = 'confirm');
@@ -289,9 +371,28 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
         );
       case 'select_bill':
         return SelectBillWidget(
-          key: const ValueKey('select_bill'),
+          key: ValueKey('select_bill_${selectedBill?['code'] ?? 'list'}'),
           bills: bills,
-          onBillSelected: selectBill,
+          selectedBill: selectedBill,
+          phoneNumber: phoneNumber,
+          customAmount: customAmount,
+          onBillSelected: (bill) {
+            if (bill.isEmpty) {
+              // Retour à la liste des factures
+              setState(() {
+                selectedBill = null;
+                phoneNumber = null;
+                amount = null;
+                customAmount = null;
+              });
+            } else {
+              selectBill(bill);
+            }
+          },
+          onPhoneChanged: (v) => setState(() => phoneNumber = v),
+          onCustomAmountChanged: (v) => setState(() => customAmount = v),
+          onFullPayment: setFullPayment,
+          onPartialPayment: setPartialPayment,
           onBack: goBack,
         );
       case 'enter_amount':
