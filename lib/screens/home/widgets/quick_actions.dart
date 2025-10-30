@@ -32,7 +32,7 @@ class QuickActions extends StatelessWidget {
               icon: Icons.swap_horiz_rounded,
               label: 'Transfert',
               onTap: () {
-                // TODO: Aller au transfert
+                Navigator.pushNamed(context, '/accounts/transfer');
               },
             ),
           ),
@@ -85,11 +85,7 @@ class QuickActions extends StatelessWidget {
                 color: AppConstants.brandBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(
-                icon,
-                color: AppConstants.brandBlue,
-                size: 20,
-              ),
+              child: Icon(icon, color: AppConstants.brandBlue, size: 20),
             ),
             const SizedBox(height: 6),
             Text(

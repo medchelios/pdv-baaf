@@ -86,22 +86,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ]),
 
                 const SizedBox(height: AppConstants.paddingXL),
-
-                // Stats Paiements
-                _buildSection('Paiements', [
-                  _buildStatItem('Total', '4', AppConstants.brandBlue),
-                  _buildStatItem('Réussis', '4', AppConstants.successColor),
-                  _buildStatItem('Échoués', '0', AppConstants.errorColor),
-                  _buildStatItem(
-                    'Montant',
-                    '425K GNF',
-                    AppConstants.brandOrange,
-                  ),
-                ]),
-
-                const SizedBox(height: AppConstants.paddingXL),
-
-                // Paiements récents
                 _buildRecentPayments(controller),
               ],
             ),

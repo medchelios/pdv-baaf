@@ -10,6 +10,8 @@ import 'screens/postpaid_payment_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/uv_orders/uv_orders_screen.dart';
 import 'screens/uv_orders/orders_history_screen.dart';
+import 'screens/accounts/account_transfer_screen.dart';
+import 'screens/payments/recent_payments_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/user_data_service.dart';
@@ -30,7 +32,7 @@ class PdvBaafApp extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => DashboardController())],
       child: MaterialApp(
-        title: 'PDV Baaf',
+        title: 'Baaf',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
@@ -46,6 +48,8 @@ class PdvBaafApp extends StatelessWidget {
           '/payment-type': (context) => const PaymentTypeScreen(),
           '/prepaid-payment': (context) => const PrepaidPaymentScreen(),
           '/postpaid-payment': (context) => const PostpaidPaymentScreen(),
+          '/accounts/transfer': (context) => const AccountTransferScreen(),
+          '/payments/recent': (context) => const RecentPaymentsScreen(),
         },
       ),
     );

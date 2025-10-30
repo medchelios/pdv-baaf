@@ -17,7 +17,7 @@ class EnvironmentConfig {
   static String get baseUrl {
     switch (_current) {
       case Environment.development:
-        return 'http://127.0.0.1:8000';
+        return 'http://127.0.0.1:8001';
       case Environment.staging:
         return 'https://staging.baaf-payment-platform.com';
       case Environment.production:
