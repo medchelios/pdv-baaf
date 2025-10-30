@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
-import '../../uv_orders/uv_orders_screen.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -36,12 +35,7 @@ class QuickActions extends StatelessWidget {
               icon: Icons.shopping_cart_rounded,
               label: 'UV',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const UVOrdersScreen(),
-                  ),
-                );
+                Navigator.pushNamed(context, '/uv');
               },
             ),
           ),

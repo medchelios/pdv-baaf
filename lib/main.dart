@@ -47,6 +47,7 @@ class PdvBaafApp extends StatelessWidget {
           '/uv-orders': (context) => const UVOrdersScreen(),
           '/uv-orders/history': (context) => const OrdersHistoryScreen(),
           '/payments': (context) => const HomeScreen(initialIndex: 1),
+          '/uv': (context) => const HomeScreen(initialIndex: 2),
           '/accounts/transfer': (context) => const AccountTransferScreen(),
           '/payments/recent': (context) => const RecentPaymentsScreen(),
         },
