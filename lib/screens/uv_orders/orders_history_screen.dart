@@ -25,21 +25,25 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
   }
 
   Future<void> _loadOrders() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
     });
 
     try {
       final result = await _uvOrderService.getHistory(limit: 50);
+      if (!mounted) return;
       setState(() {
-        _orders = result;
+        _orders = result ?? <Map<String, dynamic>>[];
         _isLoading = false;
       });
     } catch (e) {
       LoggerService.error('Erreur lors du chargement de l\'historique', e);
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

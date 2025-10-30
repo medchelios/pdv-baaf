@@ -122,9 +122,9 @@ class OrdersTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  order['type_label'] ?? 'Inconnu',
+                  (order['type_label'] as String?) ?? 'Inconnu',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: _getTypeColor(order['type'] as String),
+                    color: _getTypeColor((order['type'] as String?) ?? ''),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -132,8 +132,8 @@ class OrdersTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  order['formatted_total_amount']?.replaceAll(' GNF', '') ??
-                      '0',
+                  ((order['formatted_total_amount'] as String?) ?? '0')
+                      .replaceAll(' GNF', ''),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppConstants.textPrimary,
                     fontWeight: FontWeight.w500,
@@ -143,7 +143,9 @@ class OrdersTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  FormatUtils.formatDate(order['requested_at'] ?? ''),
+                  FormatUtils.formatDate(
+                    (order['requested_at'] as String?) ?? '',
+                  ),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppConstants.textSecondary,
                     fontSize: 11,
@@ -153,9 +155,9 @@ class OrdersTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  order['status_label'] ?? 'Inconnu',
+                  (order['status_label'] as String?) ?? 'Inconnu',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: _getStatusColor(order['status'] as String),
+                    color: _getStatusColor((order['status'] as String?) ?? ''),
                     fontWeight: FontWeight.w500,
                   ),
                 ),

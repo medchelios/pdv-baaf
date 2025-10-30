@@ -31,14 +31,60 @@ class UVOrderService {
   Future<List<Map<String, dynamic>>?> getHistory({int limit = 20}) async {
     LoggerService.info('Récupération de l\'historique des commandes UV');
     final response = await _apiService.get('uv-orders/history?limit=$limit');
-    if (response?['data'] != null) {
-      LoggerService.info(
-        '${response!['data'].length} commandes dans l\'historique récupérées',
-      );
-      return List<Map<String, dynamic>>.from(response['data']);
+    // Rendre l'analyse plus robuste aux différentes formes de réponse
+    if (response == null) {
+      LoggerService.warning('Aucune réponse reçue pour l\'historique');
+      return <Map<String, dynamic>>[];
     }
-    LoggerService.warning('Aucune commande dans l\'historique');
-    return null;
+
+    List<dynamic>? items;
+
+    // Cas 1: { data: [...] }
+    final data = response['data'];
+    if (data is List) {
+      items = data;
+    }
+
+    // Cas 2: Pagination Laravel: { data: { data: [...] } }
+    if (items == null && data is Map && data['data'] is List) {
+      items = data['data'] as List<dynamic>;
+    }
+
+    // Cas 3: { items: [...] }
+    if (items == null && response['items'] is List) {
+      items = response['items'] as List<dynamic>;
+    }
+
+    // Cas 4: { history: [...] }
+    if (items == null && response['history'] is List) {
+      items = response['history'] as List<dynamic>;
+    }
+
+    // Cas 5: Réponse racine est directement une liste
+    if (items == null && response is List) {
+      items = response as List<dynamic>;
+    }
+
+    if (items == null) {
+      LoggerService.warning(
+        'Aucune commande dans l\'historique (format inconnu): $response',
+      );
+      return <Map<String, dynamic>>[];
+    }
+
+    try {
+      final list = items
+          .where((e) => e is Map)
+          .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+      LoggerService.info(
+        '${list.length} commandes dans l\'historique récupérées',
+      );
+      return list;
+    } catch (e) {
+      LoggerService.error('Erreur de parsing de l\'historique', e);
+      return <Map<String, dynamic>>[];
+    }
   }
 
   Future<List<Map<String, dynamic>>?> getRechargeRequests({
