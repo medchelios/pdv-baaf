@@ -13,7 +13,8 @@ class PaymentsPage extends StatefulWidget {
 class _PaymentsPageState extends State<PaymentsPage> {
   List<Map<String, dynamic>> _payments = [];
   bool _isLoading = true;
-  String _searchQuery = '';
+  // Unused: search removed per design unification
+  // String _searchQuery = '';
   int _currentPage = 1;
   final int _itemsPerPage = 10;
 
@@ -32,7 +33,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
       final result = await PaymentService().getPayments(
         page: _currentPage,
         limit: _itemsPerPage,
-        search: _searchQuery,
+        search: '',
       );
 
       if (result != null && result['payments'] != null) {
@@ -52,104 +53,86 @@ class _PaymentsPageState extends State<PaymentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppConstants.brandBlue,
+        title: const Text('Paiements'),
+        backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
-        flexibleSpace: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            children: [
-              // Barre de recherche
-              Expanded(
-                child: Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: TextField(
-                    onChanged: (query) {
-                      setState(() {
-                        _searchQuery = query;
-                        _currentPage = 1;
-                      });
-                      _loadPayments();
-                    },
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      hintText: 'Rechercher par référence, nom client...',
-                      hintStyle: TextStyle(color: Colors.white70, fontSize: 14),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.white70,
-                        size: 20,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Bouton filtre
-              SizedBox(
-                height: 40,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    // TODO: Implémenter les filtres
-                  },
-                  icon: const Icon(
-                    Icons.filter_list,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Filtrer',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white, width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/payments/recent'),
+            icon: const Icon(Icons.history),
+            tooltip: 'Historique',
           ),
-        ),
+          IconButton(
+            onPressed: _loadPayments,
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Actualiser',
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: _loadPayments,
-              child: PaymentsTable(
-                payments: _payments,
-                currentPage: _currentPage,
-                itemsPerPage: _itemsPerPage,
-                onPageChanged: (page) {
-                  setState(() {
-                    _currentPage = page;
-                  });
-                  _loadPayments();
-                },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'Paiements',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppConstants.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: const [
+                          Expanded(child: _StatTile(title: 'Total', value: '—')),
+                          SizedBox(width: 12),
+                          Expanded(child: _StatTile(title: 'Aujourd\'hui', value: '—')),
+                          SizedBox(width: 12),
+                          Expanded(child: _StatTile(title: 'Réussis', value: '—')),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: PaymentsTable(
+                      payments: _payments,
+                      currentPage: _currentPage,
+                      itemsPerPage: _itemsPerPage,
+                      onPageChanged: (page) {
+                        setState(() {
+                          _currentPage = page;
+                        });
+                        _loadPayments();
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
       floatingActionButton: FloatingActionButton(
@@ -297,6 +280,39 @@ class _PaymentsPageState extends State<PaymentsPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const _StatTile({required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppConstants.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            color: AppConstants.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
     );
   }
 }

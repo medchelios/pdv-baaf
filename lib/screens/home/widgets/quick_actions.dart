@@ -16,7 +16,7 @@ class QuickActions extends StatelessWidget {
               icon: Icons.payment_rounded,
               label: 'Payer',
               onTap: () {
-                Navigator.pushNamed(context, '/payments/manage');
+                Navigator.pushNamed(context, '/payments');
               },
             ),
           ),
