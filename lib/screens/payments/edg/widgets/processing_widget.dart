@@ -1,34 +1,29 @@
 import 'package:flutter/material.dart';
-import '../../../../constants/app_constants.dart';
 
 class ProcessingWidget extends StatelessWidget {
   const ProcessingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppConstants.brandOrange),
-            strokeWidth: 4,
-          ),
-          const SizedBox(height: 32),
-          const Text(
+          CircularProgressIndicator(),
+          SizedBox(height: 24),
+          Text(
             'Traitement en cours...',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppConstants.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Veuillez patienter',
             style: TextStyle(
               fontSize: 14,
-              color: AppConstants.textSecondary,
+              color: Colors.grey,
             ),
           ),
         ],
@@ -36,4 +31,3 @@ class ProcessingWidget extends StatelessWidget {
     );
   }
 }
-
