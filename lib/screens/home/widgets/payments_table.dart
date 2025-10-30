@@ -199,7 +199,10 @@ class PaymentsTable extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    payment['formatted_amount'] ?? '0 GNF',
+                    (payment['formatted_amount'] ?? '0')
+                        .toString()
+                        .replaceAll(RegExp(r'\s?gnf', caseSensitive: false), '')
+                        .trim(),
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

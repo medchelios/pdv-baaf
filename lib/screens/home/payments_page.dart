@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../services/payment_service.dart';
+import '../../utils/format_utils.dart';
 import 'widgets/payments_table.dart';
 
 class PaymentsPage extends StatefulWidget {
@@ -50,6 +51,34 @@ class _PaymentsPageState extends State<PaymentsPage> {
     }
   }
 
+  int _totalPayments() => _payments.length;
+
+  int _failedPayments() {
+    return _payments.where((p) {
+      final status = (p['status'] ?? p['payment_status'] ?? '')
+          .toString()
+          .toLowerCase();
+      return status == 'failed' ||
+          status == 'failure' ||
+          status == 'canceled' ||
+          status == 'cancelled';
+    }).length;
+  }
+
+  String _totalAmountFormatted() {
+    final total = _payments.fold<int>(0, (sum, p) {
+      final amount = p['amount'] ?? p['total_amount'] ?? p['paid_amount'] ?? 0;
+      if (amount is num) return sum + amount.toInt();
+      if (amount is String) {
+        final normalized = amount.replaceAll(RegExp(r'[^0-9-]'), '');
+        final parsed = int.tryParse(normalized) ?? 0;
+        return sum + parsed;
+      }
+      return sum;
+    });
+    return FormatUtils.formatAmount(total.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,18 +108,6 @@ class _PaymentsPageState extends State<PaymentsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      'Paiements',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppConstants.textPrimary,
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -108,12 +125,30 @@ class _PaymentsPageState extends State<PaymentsPage> {
                         ],
                       ),
                       child: Row(
-                        children: const [
-                          Expanded(child: _StatTile(title: 'Total', value: '—')),
-                          SizedBox(width: 12),
-                          Expanded(child: _StatTile(title: 'Aujourd\'hui', value: '—')),
-                          SizedBox(width: 12),
-                          Expanded(child: _StatTile(title: 'Réussis', value: '—')),
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: _StatTile(
+                              title: 'Paiements',
+                              value: _totalPayments().toString(),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: _StatTile(
+                              title: 'Montant total',
+                              value: _totalAmountFormatted(),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 1,
+                            child: _StatTile(
+                              title: 'Échecs',
+                              value: _failedPayments().toString(),
+                            ),
+                          ),
                         ],
                       ),
                     ),
