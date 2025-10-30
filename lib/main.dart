@@ -4,14 +4,12 @@ import 'screens/auth_type_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/pin_login_screen.dart';
 import 'screens/home/home_screen.dart';
-import 'screens/payment_type_screen.dart';
-import 'screens/prepaid_payment_screen.dart';
-import 'screens/postpaid_payment_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/uv_orders/uv_orders_screen.dart';
 import 'screens/uv_orders/orders_history_screen.dart';
 import 'screens/accounts/account_transfer_screen.dart';
 import 'screens/payments/recent_payments_screen.dart';
+import 'screens/payments/payments_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/user_data_service.dart';
@@ -41,13 +39,16 @@ class PdvBaafApp extends StatelessWidget {
           '/auth-type': (context) => const AuthTypeScreen(),
           '/login': (context) => const LoginScreen(),
           '/pin-login': (context) => const PinLoginScreen(),
-          '/home': (context) => const HomeScreen(),
+          '/home': (context) {
+            final args = ModalRoute.of(context)?.settings.arguments;
+            final initialIndex = args is int ? args : 0;
+            return HomeScreen(initialIndex: initialIndex);
+          },
           '/dashboard': (context) => const DashboardScreen(),
           '/uv-orders': (context) => const UVOrdersScreen(),
           '/uv-orders/history': (context) => const OrdersHistoryScreen(),
-          '/payment-type': (context) => const PaymentTypeScreen(),
-          '/prepaid-payment': (context) => const PrepaidPaymentScreen(),
-          '/postpaid-payment': (context) => const PostpaidPaymentScreen(),
+          '/payments': (context) => const HomeScreen(initialIndex: 1),
+          '/payments/manage': (context) => const PaymentsScreen(),
           '/accounts/transfer': (context) => const AccountTransferScreen(),
           '/payments/recent': (context) => const RecentPaymentsScreen(),
         },

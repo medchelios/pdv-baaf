@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../services/payment_service.dart';
 import 'widgets/payments_list.dart';
+import '../home/widgets/payments_header.dart';
 
 class PaymentsScreen extends StatefulWidget {
   const PaymentsScreen({super.key});
@@ -193,12 +194,24 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
         title: const Text('Paiements'),
-        backgroundColor: AppConstants.brandBlue,
+        backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/payments/recent'),
+            icon: const Icon(Icons.history),
+            tooltip: 'Historique',
+          ),
+          IconButton(
+            onPressed: _loadPayments,
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Actualiser',
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -206,117 +219,17 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               onRefresh: _loadPayments,
               child: Column(
                 children: [
-                  // Header avec titre, recherche et filtre
-                  Container(
-                    margin: const EdgeInsets.all(20),
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Titre
-                        const Text(
-                          'Paiements',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppConstants.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Barre de recherche et filtre
-                        Row(
-                          children: [
-                            // Barre de recherche
-                            Expanded(
-                              child: Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF8F9FA),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: const Color(0xFFE9ECEF),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: TextField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchQuery = value;
-                                    });
-                                    _loadPayments();
-                                  },
-                                  decoration: const InputDecoration(
-                                    hintText:
-                                        'Rechercher par référence, nom client...',
-                                    hintStyle: TextStyle(
-                                      color: Color(0xFF6C757D),
-                                      fontSize: 14,
-                                    ),
-                                    prefixIcon: Icon(
-                                      Icons.search,
-                                      color: Color(0xFF6C757D),
-                                      size: 20,
-                                    ),
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Bouton filtre
-                            SizedBox(
-                              height: 40,
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  // TODO: Implémenter les filtres
-                                },
-                                icon: const Icon(
-                                  Icons.filter_list,
-                                  size: 18,
-                                  color: AppConstants.brandBlue,
-                                ),
-                                label: const Text(
-                                  'Filtrer',
-                                  style: TextStyle(
-                                    color: AppConstants.brandBlue,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(
-                                    color: AppConstants.brandBlue,
-                                    width: 1,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 20),
+                  PaymentsHeader(
+                    onSearchChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                      _loadPayments();
+                    },
+                    onFilterPressed: () {
+                      // TODO: Implémenter les filtres
+                    },
                   ),
                   // Tableau des paiements
                   Expanded(
@@ -342,11 +255,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                 ],
               ),
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.small(
         onPressed: _showPaymentOptions,
-        backgroundColor: AppConstants.brandBlue,
+        backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
-        child: const Icon(Icons.payment),
+        child: const Icon(Icons.add),
       ),
     );
   }

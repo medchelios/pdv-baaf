@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
-import '../../payment_type_screen.dart';
 import '../../uv_orders/uv_orders_screen.dart';
 
 class QuickActions extends StatelessWidget {
@@ -17,12 +16,7 @@ class QuickActions extends StatelessWidget {
               icon: Icons.payment_rounded,
               label: 'Payer',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PaymentTypeScreen(),
-                  ),
-                );
+                Navigator.pushNamed(context, '/payments/manage');
               },
             ),
           ),
