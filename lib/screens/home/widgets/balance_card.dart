@@ -8,8 +8,14 @@ class BalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final balanceData = UserDataService().accountBalance;
-    final principalBalance = balanceData?['formatted_principal_balance'] ?? '0 GNF';
-    final commissionBalance = balanceData?['formatted_commission_balance'] ?? '0 GNF';
+    final principalBalance = (balanceData?['formatted_principal_balance'] ?? '0')
+        .toString()
+        .replaceAll(RegExp(r'\s?gnf', caseSensitive: false), '')
+        .trim();
+    final commissionBalance = (balanceData?['formatted_commission_balance'] ?? '0')
+        .toString()
+        .replaceAll(RegExp(r'\s?gnf', caseSensitive: false), '')
+        .trim();
     
     return Container(
       margin: const EdgeInsets.all(20),
@@ -70,24 +76,6 @@ class BalanceCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Container(
-            height: 1,
-            color: Colors.white.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildStatItem(Icons.shopping_cart_rounded, '2'),
-              _buildVerticalDivider(),
-              _buildStatItem(Icons.payment_rounded, '4'),
-              _buildVerticalDivider(),
-              _buildStatItem(Icons.check_circle_rounded, '3'),
-              _buildVerticalDivider(),
-              _buildStatItem(Icons.cancel_rounded, '0'),
-            ],
-          ),
         ],
       ),
     );
@@ -111,28 +99,6 @@ class BalanceCard extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             color: Colors.white70,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatItem(IconData icon, String value) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: Colors.white,
-          size: 16,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
           ),
         ),
       ],
