@@ -44,10 +44,13 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     }
   }
 
-  void selectCustomerType(String type) {
+  Future<void> selectCustomerType(String type) async {
+    final resp = await EdgService().selectType(customerType: type);
+    if (resp == null || resp['success'] != true) return;
+    final data = resp['data'] as Map<String, dynamic>?;
     setState(() {
-      customerType = type;
-      step = 'enter_reference';
+      customerType = data?['customer_type']?.toString() ?? type;
+      step = data?['step']?.toString() ?? 'enter_reference';
       customerReference = '';
       phoneNumber = null;
       customerData = null;
@@ -69,55 +72,29 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
 
     setState(() => searching = true);
     try {
-      if (customerType == 'postpaid') {
-        // Appeler l'API pour récupérer les factures
-        final resp = await EdgService().getCustomerBills(customerReference);
-        if (resp == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Erreur: Impossible de contacter le serveur'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-        
-        if (resp['success'] == true) {
-          final data = resp['data'] as Map<String, dynamic>;
-          final fetchedBills = (data['bills'] as List)
-              .cast<Map>()
-              .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
-              .toList();
-          setState(() {
-            customerData = {'name': data['customer_name'] ?? '-'};
-            bills = fetchedBills.cast<Map<String, dynamic>>();
-            step = 'select_bill';
-          });
-        } else {
-          // API a retourné une erreur - NE PAS PASSER à l'écran suivant
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(resp['error'] ?? resp['message'] ?? 'Client non trouvé'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          // Rester sur enter_reference
-        }
-      } else {
-        // PREPAID: Pas d'API à appeler pour la validation, passer directement
-        setState(() {
-          customerData = {'name': 'Client Prépayé'};
-          step = 'enter_amount';
-        });
-      }
-    } catch (e) {
-      // Erreur inattendue - NE PAS PASSER à l'écran suivant
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+      final resp = await EdgService().validateCustomer(
+        customerType: customerType ?? 'postpaid',
+        customerReference: customerReference,
       );
+      if (resp == null) return;
+      if (resp['success'] == true) {
+        final data = resp['data'] as Map<String, dynamic>?;
+        final list = (resp['bills'] as List?)?.cast<Map>()
+            .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
+            .toList();
+        setState(() {
+          customerData = data;
+          bills = list?.cast<Map<String, dynamic>>();
+          step = (resp['next_step']?.toString() ?? (customerType == 'prepaid' ? 'enter_amount' : 'select_bill'));
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(resp['error'] ?? resp['message'] ?? 'Client non trouvé'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setState(() => searching = false);
     }
@@ -127,112 +104,92 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     final billCode = bill['code'] as String;
     setState(() => searching = true);
     try {
-      // Appeler l'API pour récupérer les détails de la facture
-      final billDetails = await EdgService().getBillDetails(billCode);
-      
-      if (billDetails == null) {
-        // Erreur réseau - utiliser les données de la liste mais afficher l'erreur
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erreur: Impossible de contacter le serveur. Utilisation des données de base.'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-        setState(() {
-          selectedBill = bill;
-          amount = null;
-          customAmount = null;
-          // Rester sur select_bill
-        });
-        return;
-      }
-      
-      if (billDetails['success'] == true) {
-        // API réussie - utiliser les données de l'API
-        final data = billDetails['data'] as Map<String, dynamic>;
+      final resp = await EdgService().selectBill(
+        bills: (bills ?? []).cast<Map<String, dynamic>>(),
+        billCode: billCode,
+      );
+      if (resp == null) return;
+      if (resp['success'] == true) {
+        final data = resp['data'] as Map<String, dynamic>;
         setState(() {
           selectedBill = {
-            'code': billCode,
-            'amount': data['amount'],
-            'amt': data['amount'],
-            'period': bill['period'] ?? data['period'],
+            'code': data['selected_bill'] ?? billCode,
+            'period': data['selected_bill_period'] ?? bill['period'],
+            'amount': bill['amount'] ?? bill['amt'],
+            'amt': bill['amount'] ?? bill['amt'],
           };
           amount = null;
           customAmount = null;
-          // Rester sur select_bill (comme backend PHP)
+          step = data['next_step']?.toString() ?? 'enter_amount';
         });
       } else {
-        // API a retourné une erreur - utiliser les données de la liste mais afficher l'erreur
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(billDetails['error'] ?? billDetails['message'] ?? 'Erreur lors de la récupération des détails. Utilisation des données de base.'),
-            backgroundColor: Colors.orange,
+            content: Text(resp['message'] ?? 'Facture introuvable'),
+            backgroundColor: Colors.red,
           ),
         );
-        setState(() {
-          selectedBill = bill;
-          amount = null;
-          customAmount = null;
-          // Rester sur select_bill
-        });
       }
-    } catch (e) {
-      // Erreur inattendue - utiliser les données de la liste mais afficher l'erreur
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: ${e.toString()}'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      setState(() {
-        selectedBill = bill;
-        amount = null;
-        customAmount = null;
-      });
     } finally {
       setState(() => searching = false);
     }
   }
 
-  void setFullPayment() {
+  Future<void> setFullPayment() async {
     if (selectedBill == null) return;
-    final billAmt = selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0;
-    setPaymentAmount(billAmt as int);
+    final billAmt = (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) as int;
+    final resp = await EdgService().setFullPayment(billAmount: billAmt, phoneNumber: phoneNumber ?? '');
+    if (resp != null && resp['success'] == true) {
+      final data = resp['data'] as Map<String, dynamic>;
+      setState(() {
+        amount = (data['amount'] as num?)?.toInt();
+        step = data['next_step']?.toString() ?? 'confirm';
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(resp?['message'] ?? 'Montant invalide'), backgroundColor: Colors.red),
+      );
+    }
   }
 
-  void setPartialPayment() {
+  Future<void> setPartialPayment() async {
     if (selectedBill == null || customAmount == null) return;
-    final billAmt = selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0;
-    final error = EdgValidator.validateAmount(customAmount, maxAmount: billAmt as int);
-    if (error != null) {
+    final billAmt = (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) as int;
+    final resp = await EdgService().setPartialPayment(
+      customAmount: customAmount!,
+      billAmount: billAmt,
+      phoneNumber: phoneNumber ?? '',
+    );
+    if (resp != null && resp['success'] == true) {
+      final data = resp['data'] as Map<String, dynamic>;
+      setState(() {
+        amount = (data['amount'] as num?)?.toInt();
+        step = data['next_step']?.toString() ?? 'confirm';
+      });
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: Colors.red),
+        SnackBar(content: Text(resp?['message'] ?? 'Montant invalide'), backgroundColor: Colors.red),
       );
-      return;
     }
-    setPaymentAmount(customAmount!);
   }
 
-  void setAmount() {
-    final error = EdgValidator.validateAmount(amount, minAmount: 1000);
-    if (error != null) {
+  Future<void> setAmount() async {
+    if (amount == null) return;
+    final resp = await EdgService().setAmount(amount: amount!, phoneNumber: phoneNumber ?? '');
+    if (resp != null && resp['success'] == true) {
+      final data = resp['data'] as Map<String, dynamic>;
+      setState(() {
+        amount = (data['amount'] as num?)?.toInt();
+        step = data['next_step']?.toString() ?? 'confirm';
+      });
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: Colors.red),
+        SnackBar(content: Text(resp?['message'] ?? 'Montant invalide'), backgroundColor: Colors.red),
       );
-      return;
     }
-    setPaymentAmount(amount!);
   }
 
   void setPaymentAmount(int amt) {
-    final phoneError = EdgValidator.validatePhone(phoneNumber);
-    if (phoneError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(phoneError), backgroundColor: Colors.red),
-      );
-      return;
-    }
-
     setState(() {
       amount = amt;
       step = 'confirm';
@@ -270,61 +227,45 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     }
   }
 
-  void goBack() {
-    switch (step) {
-      case 'enter_reference':
-        if (typeLocked) {
-          Navigator.of(context).maybePop();
-        }
-        break;
-      case 'select_bill':
-        if (selectedBill != null) {
-          // Retour à la liste des factures
-          setState(() {
-            selectedBill = null;
-            phoneNumber = null;
-            amount = null;
-            customAmount = null;
-          });
-        } else {
-          // Retour à enter_reference
-          setState(() => step = 'enter_reference');
-        }
-        break;
-      case 'enter_amount':
-        setState(() {
-          step = customerType == 'prepaid' ? 'enter_reference' : 'select_bill';
+  Future<void> goBack() async {
+    final resp = await EdgService().goBack(
+      currentStep: step,
+      customerType: customerType,
+      selectedBill: selectedBill?['code'] as String?,
+    );
+    if (resp != null && resp['success'] == true) {
+      final data = resp['data'] as Map<String, dynamic>;
+      setState(() {
+        step = data['next_step']?.toString() ?? step;
+        if (step == 'select_bill') {
           amount = null;
           customAmount = null;
-        });
-        break;
-      case 'confirm':
-        if (customerType == 'postpaid') {
-          setState(() {
-            step = 'select_bill';
-            amount = null;
-          });
-        } else {
-          setState(() => step = 'enter_amount');
         }
-        break;
-      case 'processing':
-        setState(() => step = 'confirm');
-        break;
+        if (step == 'enter_reference' && selectedBill != null) {
+          selectedBill = null;
+          phoneNumber = null;
+          amount = null;
+          customAmount = null;
+        }
+      });
     }
   }
 
-  void resetForm() {
+  Future<void> resetForm() async {
+    final resp = await EdgService().resetForm();
+    final data = (resp != null && resp['success'] == true)
+        ? (resp['data'] as Map<String, dynamic>?)
+        : null;
     setState(() {
-      step = 'enter_reference';
-      customerType = null;
-      customerReference = '';
-      phoneNumber = null;
-      customerData = null;
-      bills = null;
-      selectedBill = null;
-      amount = null;
-      customAmount = null;
+      step = data?['step']?.toString() ?? 'enter_reference';
+      customerType = data?['customerType']?.toString();
+      customerReference = (data?['customerReference']?.toString() ?? '');
+      phoneNumber = data?['phoneNumber']?.toString();
+      customerData = data?['customerData'] as Map<String, dynamic>?;
+      bills = (data?['bills'] as List?)?.cast<Map<String, dynamic>>();
+      selectedBill = data?['selectedBill'] as Map<String, dynamic>?;
+      amount = (data?['amount'] as num?)?.toInt();
+      customAmount = (data?['customAmount'] as num?)?.toInt();
       typeLocked = false;
     });
   }
