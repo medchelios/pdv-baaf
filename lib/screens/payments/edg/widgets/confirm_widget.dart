@@ -28,29 +28,57 @@ class ConfirmWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          ListTile(
-            title: const Text('Client'),
-            trailing: Text(
-              customerData?['name'] ?? '-',
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            title: const Text('Référence'),
-            trailing: Text(
-              customerReference,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontWeight: FontWeight.w500,
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 0.5,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Client'),
+                      Text(
+                        customerData?['name'] ?? '-',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Référence'),
+                      Text(
+                        customerReference,
+                        style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  if (phoneNumber != null && phoneNumber!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Téléphone'),
+                        Text(
+                          phoneNumber!,
+                          style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
             ),
           ),
+          // Référence déjà affichée dans la carte ci-dessus
           if (phoneNumber != null && phoneNumber!.isNotEmpty) ...[
             const Divider(),
             ListTile(

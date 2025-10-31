@@ -39,11 +39,17 @@ class EnterAmountWidget extends StatefulWidget {
 }
 
 class _EnterAmountWidgetState extends State<EnterAmountWidget> {
+  bool amountTouched = false;
+  bool phoneTouched = false;
   @override
   Widget build(BuildContext context) {
-    final billAmt = widget.bill != null ? (widget.bill!['amount'] ?? widget.bill!['amt'] ?? 0) : null;
+    final billAmt = widget.bill != null
+        ? (widget.bill!['amount'] ?? widget.bill!['amt'] ?? 0)
+        : null;
     final phoneError = EdgValidator.validatePhone(widget.phoneNumber);
-    final isValidPhone = EdgValidator.isValidPhoneNumber(widget.phoneNumber ?? '');
+    final isValidPhone = EdgValidator.isValidPhoneNumber(
+      widget.phoneNumber ?? '',
+    );
     final amountError = billAmt != null
         ? null
         : EdgValidator.validateAmount(widget.amount, minAmount: 1000);
@@ -51,12 +57,12 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
     final canConfirm = billAmt != null
         ? widget.amount != null && isValidPhone
         : widget.amount != null &&
-            widget.amount! >= 1000 &&
-            isValidPhone &&
-            amountError == null;
+              widget.amount! >= 1000 &&
+              isValidPhone &&
+              amountError == null;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -93,22 +99,31 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
                     decoration: InputDecoration(
                       labelText: 'Montant partiel',
                       border: const OutlineInputBorder(),
-                      errorText: widget.customAmount != null &&
+                      errorText:
+                          amountTouched &&
+                              widget.customAmount != null &&
                               (widget.customAmount! <= 0 ||
                                   widget.customAmount! > billAmt)
                           ? 'Montant invalide'
                           : null,
                     ),
                     keyboardType: TextInputType.number,
-                    onChanged: (v) =>
-                        widget.onCustomAmountChanged(int.tryParse(v)),
+                    onChanged: (v) {
+                      if (!amountTouched) setState(() => amountTouched = true);
+                      widget.onCustomAmountChanged(int.tryParse(v));
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: widget.amount != null ? widget.onPartialPayment : null,
-                    child: const Text('OK'),
+                    onPressed:
+                        (widget.customAmount != null &&
+                            widget.customAmount! > 0 &&
+                            widget.customAmount! <= billAmt)
+                        ? widget.onPartialPayment
+                        : null,
+                    child: const Text('Valider'),
                   ),
                 ),
               ],
@@ -118,13 +133,14 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
               decoration: InputDecoration(
                 labelText: 'Montant en GNF',
                 border: const OutlineInputBorder(),
-                errorText: amountError,
+                errorText: amountTouched ? amountError : null,
               ),
               keyboardType: TextInputType.number,
-              style: const TextStyle(
-                fontSize: 18,
-              ),
-              onChanged: (v) => widget.onAmountChanged(int.tryParse(v)),
+              style: const TextStyle(fontSize: 18),
+              onChanged: (v) {
+                if (!amountTouched) setState(() => amountTouched = true);
+                widget.onAmountChanged(int.tryParse(v));
+              },
             ),
           ],
           const SizedBox(height: 24),
@@ -132,15 +148,15 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
             decoration: InputDecoration(
               labelText: 'Numéro de téléphone *',
               border: const OutlineInputBorder(),
-              errorText: phoneError,
+              errorText: phoneTouched ? phoneError : null,
             ),
             keyboardType: TextInputType.phone,
             maxLength: 20,
-            style: const TextStyle(
-              fontFamily: 'monospace',
-              letterSpacing: 1,
-            ),
-            onChanged: widget.onPhoneChanged,
+            style: const TextStyle(fontFamily: 'monospace', letterSpacing: 1),
+            onChanged: (v) {
+              if (!phoneTouched) setState(() => phoneTouched = true);
+              widget.onPhoneChanged(v);
+            },
           ),
           const SizedBox(height: 32),
           if (canConfirm)

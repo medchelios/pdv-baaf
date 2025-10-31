@@ -100,7 +100,8 @@ class EdgProcessPaymentController extends ChangeNotifier {
     if (resp != null && resp['success'] == true) {
       final data = resp['data'] as Map<String, dynamic>;
       amount = (data['amount'] as num?)?.toInt();
-      step = data['next_step']?.toString() ?? 'confirm';
+      // Rester sur enter_amount pour éviter la soumission automatique
+      if (step != 'enter_amount') step = 'enter_amount';
       notifyListeners();
     }
     return resp;
@@ -117,7 +118,7 @@ class EdgProcessPaymentController extends ChangeNotifier {
     if (resp != null && resp['success'] == true) {
       final data = resp['data'] as Map<String, dynamic>;
       amount = (data['amount'] as num?)?.toInt();
-      step = data['next_step']?.toString() ?? 'confirm';
+      if (step != 'enter_amount') step = 'enter_amount';
       notifyListeners();
     }
     return resp;
@@ -129,10 +130,15 @@ class EdgProcessPaymentController extends ChangeNotifier {
     if (resp != null && resp['success'] == true) {
       final data = resp['data'] as Map<String, dynamic>;
       amount = (data['amount'] as num?)?.toInt();
-      step = data['next_step']?.toString() ?? 'confirm';
+      if (step != 'enter_amount') step = 'enter_amount';
       notifyListeners();
     }
     return resp;
+  }
+
+  void moveToConfirm() {
+    step = 'confirm';
+    notifyListeners();
   }
 
   Future<Map<String, dynamic>?> goBack() async {

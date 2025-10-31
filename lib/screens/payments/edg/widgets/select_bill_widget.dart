@@ -5,6 +5,7 @@ import '../../../../utils/format_utils.dart';
 class SelectBillWidget extends StatelessWidget {
   final List<Map<String, dynamic>>? bills;
   final Map<String, dynamic>? selectedBill;
+  final Map<String, dynamic>? customerData;
   final String? phoneNumber;
   final int? customAmount;
   final Function(Map<String, dynamic>) onBillSelected;
@@ -18,6 +19,7 @@ class SelectBillWidget extends StatelessWidget {
     super.key,
     required this.bills,
     required this.selectedBill,
+    required this.customerData,
     required this.phoneNumber,
     required this.customAmount,
     required this.onBillSelected,
@@ -31,10 +33,60 @@ class SelectBillWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (customerData != null) ...[
+            Card(
+              elevation: 0.5,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Client'),
+                        Text(
+                          customerData?['name']?.toString() ?? '-',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    if ((customerData?['customer_code']?.toString() ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Code client'),
+                          Text(
+                            customerData?['customer_code']?.toString() ?? '-',
+                            style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (customerData?['arrear'] != null) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Arriéré'),
+                          Text(
+                            '${FormatUtils.formatAmount((customerData?['arrear'] ?? 0).toString())} GNF',
+                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
           if (selectedBill == null) ...[
             // Liste des factures
             const SizedBox(height: 32),
@@ -59,12 +111,10 @@ class SelectBillWidget extends StatelessWidget {
                 final period = bill['period'] ?? '';
                 final code = bill['code'] ?? '';
 
-                return Container(
+                return Card(
+                  elevation: 0.5,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                   child: ListTile(
                     title: Text('Facture $code'),
                     subtitle: period.isNotEmpty ? Text('Période: $period') : null,
@@ -107,11 +157,11 @@ class SelectBillWidget extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             // Téléphone
-            TextField(
+            _PhoneField(
               decoration: InputDecoration(
                 labelText: 'Numéro de téléphone *',
                 border: const OutlineInputBorder(),
-                errorText: EdgValidator.validatePhone(phoneNumber),
+                // L'erreur s'affiche seulement après interaction dans _PhoneField
               ),
               keyboardType: TextInputType.phone,
               maxLength: 20,
@@ -120,6 +170,7 @@ class SelectBillWidget extends StatelessWidget {
                 letterSpacing: 1,
               ),
               onChanged: onPhoneChanged,
+              value: phoneNumber ?? '',
             ),
             const SizedBox(height: 32),
             // Paiement complet
@@ -145,21 +196,15 @@ class SelectBillWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
+            _AmountField(
               decoration: InputDecoration(
                 labelText: 'Montant en GNF',
                 border: const OutlineInputBorder(),
-                errorText: customAmount != null &&
-                        (customAmount! <= 0 ||
-                            customAmount! >
-                                (selectedBill!['amount'] ??
-                                    selectedBill!['amt'] ??
-                                    0))
-                    ? 'Montant invalide'
-                    : null,
+                // L'erreur s'affiche seulement après interaction dans _AmountField
               ),
-              keyboardType: TextInputType.number,
               onChanged: (v) => onCustomAmountChanged(int.tryParse(v)),
+              value: customAmount?.toString() ?? '',
+              max: (selectedBill?['amount'] ?? selectedBill?['amt'] ?? 0) as int,
             ),
             if (customAmount != null &&
                 customAmount! >= 1000 &&
@@ -192,6 +237,85 @@ class SelectBillWidget extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _PhoneField extends StatefulWidget {
+  final InputDecoration decoration;
+  final String value;
+  final Function(String) onChanged;
+  final TextInputType keyboardType;
+  final int maxLength;
+  final TextStyle style;
+
+  const _PhoneField({
+    required this.decoration,
+    required this.value,
+    required this.onChanged,
+    this.keyboardType = TextInputType.phone,
+    this.maxLength = 20,
+    this.style = const TextStyle(),
+  });
+
+  @override
+  State<_PhoneField> createState() => _PhoneFieldState();
+}
+
+class _PhoneFieldState extends State<_PhoneField> {
+  bool touched = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final error = EdgValidator.validatePhone(widget.value);
+    return TextField(
+      decoration: widget.decoration.copyWith(
+        errorText: touched && widget.value.isNotEmpty ? error : null,
+      ),
+      keyboardType: widget.keyboardType,
+      maxLength: widget.maxLength,
+      style: widget.style.copyWith(fontFamily: 'monospace', letterSpacing: 1),
+      onChanged: (v) {
+        if (!touched) setState(() => touched = true);
+        widget.onChanged(v);
+      },
+    );
+  }
+}
+
+class _AmountField extends StatefulWidget {
+  final InputDecoration decoration;
+  final String value;
+  final int max;
+  final Function(String) onChanged;
+
+  const _AmountField({
+    required this.decoration,
+    required this.value,
+    required this.max,
+    required this.onChanged,
+  });
+
+  @override
+  State<_AmountField> createState() => _AmountFieldState();
+}
+
+class _AmountFieldState extends State<_AmountField> {
+  bool touched = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final parsed = int.tryParse(widget.value);
+    final invalid = parsed != null && (parsed <= 0 || parsed > widget.max);
+    return TextField(
+      decoration: widget.decoration.copyWith(
+        errorText: touched && invalid ? 'Montant invalide' : null,
+      ),
+      keyboardType: TextInputType.number,
+      onChanged: (v) {
+        if (!touched) setState(() => touched = true);
+        widget.onChanged(v);
+      },
     );
   }
 }

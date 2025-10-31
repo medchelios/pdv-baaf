@@ -141,6 +141,21 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     }
   }
 
+  Future<void> moveToConfirm() async {
+    // Validation simple côté client avant de passer à la confirmation
+    final phoneError = EdgValidator.validatePhone(c.phoneNumber);
+    if (phoneError != null || (c.amount == null || c.amount! < 1000)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(phoneError ?? 'Montant invalide'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() => c.moveToConfirm());
+  }
+
   void setPaymentAmount(int amt) {
     setState(() {
       c.amount = amt;
@@ -171,7 +186,11 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
           backgroundColor: Colors.green,
         ),
       );
-      resetForm();
+      // Retour à la liste des paiements et actualisation
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/payments',
+        (route) => route.isFirst,
+      );
     } else {
       setState(() => c.step = 'confirm');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -240,6 +259,7 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
       case 'select_bill':
         return SelectBillWidget(
           key: ValueKey('select_bill_${c.selectedBill?['code'] ?? 'list'}'),
+          customerData: c.customerData,
           bills: c.bills,
           selectedBill: c.selectedBill,
           phoneNumber: c.phoneNumber,
@@ -277,7 +297,7 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
           onCustomAmountChanged: (v) => setState(() => c.customAmount = v),
           onFullPayment: setFullPayment,
           onPartialPayment: setPartialPayment,
-          onConfirm: setAmount,
+          onConfirm: moveToConfirm,
           onBack: goBack,
         );
       case 'confirm':
