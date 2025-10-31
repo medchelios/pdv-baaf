@@ -271,19 +271,20 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
             context,
           ).textTheme.titleLarge?.copyWith(color: AppConstants.brandWhite),
         ),
+        leading: BackButton(onPressed: goBack),
         backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
       ),
-      backgroundColor: AppConstants.backgroundColor,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFDFCFB), Color(0xFFF7F7FA)],
-          ),
-        ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: WillPopScope(
+        onWillPop: () async {
+          if (c.step == 'enter_reference') {
+            return true;
+          }
+          await goBack();
+          return false;
+        },
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           switchInCurve: Curves.easeOut,

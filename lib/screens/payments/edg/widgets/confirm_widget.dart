@@ -159,12 +159,9 @@ class ConfirmWidget extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 flex: 2,
-                child: ElevatedButton(
+                child: FilledButton(
                   onPressed: onProcess,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: const StadiumBorder(),
-                  ),
+                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: const StadiumBorder()),
                   child: const Text('Confirmer le paiement'),
                 ),
               ),

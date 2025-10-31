@@ -80,12 +80,9 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
           if (billAmt != null) ...[
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: FilledButton(
                 onPressed: widget.onFullPayment,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: const StadiumBorder(),
-                ),
+                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: const StadiumBorder()),
                 child: Text(
                   'Total: ${FormatUtils.formatAmount(billAmt.toString())} GNF',
                 ),
@@ -163,12 +160,9 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
           if (canConfirm)
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: FilledButton(
                 onPressed: widget.onConfirm,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: const StadiumBorder(),
-                ),
+                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: const StadiumBorder()),
                 child: Text(
                   'Confirmer ${FormatUtils.formatAmount((widget.amount ?? 0).toString())} GNF',
                 ),

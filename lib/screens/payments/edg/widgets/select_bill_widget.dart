@@ -40,7 +40,9 @@ class SelectBillWidget extends StatelessWidget {
           if (customerData != null) ...[
             Card(
               elevation: 1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(
@@ -55,7 +57,8 @@ class SelectBillWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if ((customerData?['customer_code']?.toString() ?? '').isNotEmpty) ...[
+                    if ((customerData?['customer_code']?.toString() ?? '')
+                        .isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,7 +66,10 @@ class SelectBillWidget extends StatelessWidget {
                           const Text('Code client'),
                           Text(
                             customerData?['customer_code']?.toString() ?? '-',
-                            style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              fontFamily: 'monospace',
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -76,7 +82,10 @@ class SelectBillWidget extends StatelessWidget {
                           const Text('Arriéré'),
                           Text(
                             '${FormatUtils.formatAmount((customerData?['arrear'] ?? 0).toString())} GNF',
-                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -92,10 +101,7 @@ class SelectBillWidget extends StatelessWidget {
             const SizedBox(height: 32),
             const Text(
               'Sélectionner la facture',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -113,11 +119,15 @@ class SelectBillWidget extends StatelessWidget {
 
                 return Card(
                   elevation: 1,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   margin: const EdgeInsets.only(bottom: 14),
                   child: ListTile(
                     title: Text('Facture $code'),
-                    subtitle: period.isNotEmpty ? Text('Période: $period') : null,
+                    subtitle: period.isNotEmpty
+                        ? Text('Période: $period')
+                        : null,
                     trailing: Text(
                       '${FormatUtils.formatAmount(amount.toString())} GNF',
                       style: const TextStyle(fontWeight: FontWeight.w600),
@@ -139,10 +149,7 @@ class SelectBillWidget extends StatelessWidget {
             const SizedBox(height: 32),
             Text(
               'Facture ${selectedBill!['code']}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -173,9 +180,11 @@ class SelectBillWidget extends StatelessWidget {
             // Paiement complet
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onFullPayment,
-                style: ElevatedButton.styleFrom(
+              child: FilledButton(
+                onPressed: EdgValidator.isValidPhoneNumber(phoneNumber ?? '')
+                    ? onFullPayment
+                    : null,
+                style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: const StadiumBorder(),
                 ),
@@ -188,10 +197,7 @@ class SelectBillWidget extends StatelessWidget {
             // Paiement partiel
             const Text(
               'Paiement partiel',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             _AmountField(
@@ -202,20 +208,20 @@ class SelectBillWidget extends StatelessWidget {
               ),
               onChanged: (v) => onCustomAmountChanged(int.tryParse(v)),
               value: customAmount?.toString() ?? '',
-              max: (selectedBill?['amount'] ?? selectedBill?['amt'] ?? 0) as int,
+              max:
+                  (selectedBill?['amount'] ?? selectedBill?['amt'] ?? 0) as int,
             ),
             if (customAmount != null &&
                 customAmount! >= 1000 &&
                 customAmount! <=
-                    (selectedBill!['amount'] ??
-                        selectedBill!['amt'] ??
-                        0)) ...[
+                    (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) &&
+                EdgValidator.isValidPhoneNumber(phoneNumber ?? '')) ...[
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: FilledButton(
                   onPressed: onPartialPayment,
-                  style: ElevatedButton.styleFrom(
+                  style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: const StadiumBorder(),
                   ),
@@ -230,7 +236,10 @@ class SelectBillWidget extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: onBack,
-                style: OutlinedButton.styleFrom(shape: const StadiumBorder(), padding: const EdgeInsets.symmetric(vertical: 16)),
+                style: OutlinedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
                 child: const Text('Retour'),
               ),
             ),
@@ -264,11 +273,33 @@ class _PhoneField extends StatefulWidget {
 
 class _PhoneFieldState extends State<_PhoneField> {
   bool touched = false;
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant _PhoneField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value && _controller.text != widget.value) {
+      _controller.text = widget.value;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final error = EdgValidator.validatePhone(widget.value);
     return TextField(
+      controller: _controller,
       decoration: widget.decoration.copyWith(
         errorText: touched && widget.value.isNotEmpty ? error : null,
       ),
