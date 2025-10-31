@@ -231,17 +231,6 @@ class SelectBillWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: onBack,
-                style: OutlinedButton.styleFrom(
-                  shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text('Retour'),
-              ),
-            ),
           ],
         ],
       ),

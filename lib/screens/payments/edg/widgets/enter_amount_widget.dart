@@ -149,14 +149,6 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
               ),
             ),
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: widget.onBack,
-              style: OutlinedButton.styleFrom(shape: const StadiumBorder(), padding: const EdgeInsets.symmetric(vertical: 16)),
-              child: const Text('Retour'),
-            ),
-          ),
         ],
       ),
     );

@@ -217,9 +217,6 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
 
     switch (c.step) {
       case 'enter_reference':
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).maybePop();
-        }
         return;
       case 'enter_amount':
       case 'select_bill':
@@ -233,9 +230,6 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
         );
         return;
       default:
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).maybePop();
-        }
         return;
     }
   }
@@ -256,12 +250,26 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          typeLabel.isNotEmpty ? 'Facture EDG · $typeLabel' : 'Facture EDG',
+          typeLabel,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(color: AppConstants.brandWhite),
         ),
-        leading: BackButton(onPressed: goBack),
+        leading: BackButton(
+          onPressed: () {
+            if (c.step == 'enter_reference') {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil('/payments', (r) => r.isFirst);
+              }
+            } else {
+              goBack();
+            }
+          },
+        ),
         backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
         elevation: 0,
