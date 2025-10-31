@@ -206,46 +206,36 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
   }
 
   Future<void> goBack() async {
-    // Client-side back navigation to ensure predictable UX
+    // Réplique de PaymentWorkflow::getNextStep + cas spécial select_bill
+    if (c.step == 'select_bill' && c.selectedBill != null) {
+      setState(() {
+        c.selectedBill = null;
+        c.customAmount = null;
+      });
+      return;
+    }
+
     switch (c.step) {
       case 'enter_reference':
         if (Navigator.of(context).canPop()) {
           Navigator.of(context).maybePop();
         }
         return;
+      case 'enter_amount':
       case 'select_bill':
-        if (c.selectedBill != null) {
-          setState(() {
-            c.selectedBill = null;
-            c.phoneNumber = null;
-            c.amount = null;
-            c.customAmount = null;
-          });
-          return;
-        }
         setState(() => c.step = 'enter_reference');
         return;
-      case 'enter_amount':
-        setState(() {
-          c.step = c.customerType == 'prepaid'
-              ? 'enter_reference'
-              : 'select_bill';
-          c.amount = null;
-          c.customAmount = null;
-        });
-        return;
       case 'confirm':
-        setState(() {
-          if (c.customerType == 'postpaid') {
-            c.step = 'select_bill';
-            c.amount = null;
-          } else {
-            c.step = 'enter_amount';
-          }
-        });
+        setState(
+          () => c.step = c.customerType == 'prepaid'
+              ? 'enter_amount'
+              : 'select_bill',
+        );
         return;
-      case 'processing':
-        setState(() => c.step = 'confirm');
+      default:
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).maybePop();
+        }
         return;
     }
   }

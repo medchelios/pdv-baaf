@@ -211,26 +211,25 @@ class SelectBillWidget extends StatelessWidget {
               max:
                   (selectedBill?['amount'] ?? selectedBill?['amt'] ?? 0) as int,
             ),
-            if (customAmount != null &&
-                customAmount! >= 1000 &&
-                customAmount! <=
-                    (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) &&
-                EdgValidator.isValidPhoneNumber(phoneNumber ?? '')) ...[
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: onPartialPayment,
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: const StadiumBorder(),
-                  ),
-                  child: Text(
-                    'Payer ${FormatUtils.formatAmount(customAmount.toString())} GNF',
-                  ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: (customAmount != null &&
+                        customAmount! >= 1000 &&
+                        customAmount! <= (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) &&
+                        EdgValidator.isValidPhoneNumber(phoneNumber ?? ''))
+                    ? onPartialPayment
+                    : null,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const StadiumBorder(),
+                ),
+                child: Text(
+                  'Payer ${FormatUtils.formatAmount((customAmount ?? 0).toString())} GNF',
                 ),
               ),
-            ],
+            ),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,

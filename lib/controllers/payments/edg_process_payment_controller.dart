@@ -49,12 +49,15 @@ class EdgProcessPaymentController extends ChangeNotifier {
       if (resp == null) return null;
       if (resp['success'] == true) {
         final data = resp['data'] as Map<String, dynamic>?;
-        final list = (resp['bills'] as List?)?.cast<Map>()
+        final list = (resp['bills'] as List?)
+            ?.cast<Map>()
             .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
             .toList();
         customerData = data;
         bills = list?.cast<Map<String, dynamic>>();
-        step = (resp['next_step']?.toString() ?? (customerType == 'prepaid' ? 'enter_amount' : 'select_bill'));
+        step =
+            (resp['next_step']?.toString() ??
+            (customerType == 'prepaid' ? 'enter_amount' : 'select_bill'));
         return resp;
       }
       return resp;
@@ -64,7 +67,9 @@ class EdgProcessPaymentController extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>?> selectBillAction(Map<String, dynamic> bill) async {
+  Future<Map<String, dynamic>?> selectBillAction(
+    Map<String, dynamic> bill,
+  ) async {
     final billCode = bill['code'] as String;
     searching = true;
     notifyListeners();
@@ -84,7 +89,8 @@ class EdgProcessPaymentController extends ChangeNotifier {
         };
         amount = null;
         customAmount = null;
-        step = data['next_step']?.toString() ?? 'enter_amount';
+        // Rester sur select_bill comme ProcessPaymentPage
+        step = data['next_step']?.toString() ?? 'select_bill';
       }
       return resp;
     } finally {
@@ -95,13 +101,17 @@ class EdgProcessPaymentController extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> setFullPayment() async {
     if (selectedBill == null) return null;
-    final billAmt = (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) as int;
-    final resp = await EdgService().setFullPayment(billAmount: billAmt, phoneNumber: phoneNumber ?? '');
+    final billAmt =
+        (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) as int;
+    final resp = await EdgService().setFullPayment(
+      billAmount: billAmt,
+      phoneNumber: phoneNumber ?? '',
+    );
     if (resp != null && resp['success'] == true) {
       final data = resp['data'] as Map<String, dynamic>;
       amount = (data['amount'] as num?)?.toInt();
-      // Rester sur enter_amount pour éviter la soumission automatique
-      if (step != 'enter_amount') step = 'enter_amount';
+      // Comportement identique à ProcessPaymentPage: passer à la confirmation
+      step = 'confirm';
       notifyListeners();
     }
     return resp;
@@ -109,7 +119,8 @@ class EdgProcessPaymentController extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> setPartialPayment() async {
     if (selectedBill == null || customAmount == null) return null;
-    final billAmt = (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) as int;
+    final billAmt =
+        (selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0) as int;
     final resp = await EdgService().setPartialPayment(
       customAmount: customAmount!,
       billAmount: billAmt,
@@ -118,7 +129,8 @@ class EdgProcessPaymentController extends ChangeNotifier {
     if (resp != null && resp['success'] == true) {
       final data = resp['data'] as Map<String, dynamic>;
       amount = (data['amount'] as num?)?.toInt();
-      if (step != 'enter_amount') step = 'enter_amount';
+      // ProcessPaymentPage: confirmer après choix du montant
+      step = 'confirm';
       notifyListeners();
     }
     return resp;
@@ -126,7 +138,10 @@ class EdgProcessPaymentController extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> setAmountAction() async {
     if (amount == null) return null;
-    final resp = await EdgService().setAmount(amount: amount!, phoneNumber: phoneNumber ?? '');
+    final resp = await EdgService().setAmount(
+      amount: amount!,
+      phoneNumber: phoneNumber ?? '',
+    );
     if (resp != null && resp['success'] == true) {
       final data = resp['data'] as Map<String, dynamic>;
       amount = (data['amount'] as num?)?.toInt();
@@ -184,5 +199,3 @@ class EdgProcessPaymentController extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

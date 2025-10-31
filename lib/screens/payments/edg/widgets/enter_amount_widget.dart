@@ -89,42 +89,22 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Montant partiel',
-                      border: const OutlineInputBorder(),
-                      errorText:
-                          amountTouched &&
-                              widget.customAmount != null &&
-                              (widget.customAmount! <= 0 ||
-                                  widget.customAmount! > billAmt)
-                          ? 'Montant invalide'
-                          : null,
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) {
-                      if (!amountTouched) setState(() => amountTouched = true);
-                      widget.onCustomAmountChanged(int.tryParse(v));
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed:
-                        (widget.customAmount != null &&
-                            widget.customAmount! > 0 &&
-                            widget.customAmount! <= billAmt)
-                        ? widget.onPartialPayment
-                        : null,
-                    child: const Text('Valider'),
-                  ),
-                ),
-              ],
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Montant partiel',
+                border: const OutlineInputBorder(),
+                errorText: amountTouched &&
+                        widget.customAmount != null &&
+                        (widget.customAmount! <= 0 ||
+                            widget.customAmount! > billAmt)
+                    ? 'Montant invalide'
+                    : null,
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (v) {
+                if (!amountTouched) setState(() => amountTouched = true);
+                widget.onCustomAmountChanged(int.tryParse(v));
+              },
             ),
           ] else ...[
             TextField(
