@@ -16,6 +16,7 @@ class _PaymentsOrdersScreenState extends State<PaymentsOrdersScreen> {
   bool _isLoading = true;
   int _currentPage = 1;
   final int _itemsPerPage = 10;
+  Map<String, dynamic>? _summary;
 
   @override
   void initState() {
@@ -29,11 +30,11 @@ class _PaymentsOrdersScreenState extends State<PaymentsOrdersScreen> {
       final result = await PaymentService().getPayments(
         page: _currentPage,
         limit: _itemsPerPage,
-        search: '',
       );
       if (result != null && result['payments'] != null) {
         setState(() {
           _payments = List<Map<String, dynamic>>.from(result['payments']);
+          _summary = result['summary'] as Map<String, dynamic>?;
         });
       }
     } finally {
@@ -41,9 +42,22 @@ class _PaymentsOrdersScreenState extends State<PaymentsOrdersScreen> {
     }
   }
 
-  int _totalPayments() => _payments.length;
+  int _totalPayments() {
+    if (_summary != null && _summary!['total_payments'] != null) {
+      return (_summary!['total_payments'] as num).toInt();
+    }
+    return _payments.length;
+  }
 
   int _failedPayments() {
+    if (_summary != null) {
+      if (_summary!['failed_like_payments'] != null) {
+        return (_summary!['failed_like_payments'] as num).toInt();
+      }
+      if (_summary!['failed_payments'] != null) {
+        return (_summary!['failed_payments'] as num).toInt();
+      }
+    }
     return _payments.where((p) {
       final status = (p['status'] ?? p['payment_status'] ?? '')
           .toString()
@@ -56,6 +70,15 @@ class _PaymentsOrdersScreenState extends State<PaymentsOrdersScreen> {
   }
 
   String _totalAmountFormatted() {
+    if (_summary != null && _summary!['total_amount'] != null) {
+      final amount = _summary!['total_amount'];
+      if (amount is num) {
+        return FormatUtils.formatAmount(amount.toInt().toString());
+      }
+      if (amount is String) {
+        return FormatUtils.formatAmount(amount);
+      }
+    }
     final total = _payments.fold<int>(0, (sum, p) {
       final amount = p['amount'] ?? p['total_amount'] ?? p['paid_amount'] ?? 0;
       if (amount is num) return sum + amount.toInt();

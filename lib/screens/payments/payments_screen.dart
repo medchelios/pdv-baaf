@@ -14,7 +14,6 @@ class PaymentsScreen extends StatefulWidget {
 class _PaymentsScreenState extends State<PaymentsScreen> {
   List<Map<String, dynamic>> _payments = [];
   bool _isLoading = false;
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -31,10 +30,15 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
       final result = await PaymentService().getPayments(
         page: 1,
         limit: 20,
-        search: _searchQuery,
       );
 
       if (result != null && result['payments'] != null) {
+        final summary = result['summary'];
+        if (summary != null) {
+          // Debug logs visible en console
+          // ignore: avoid_print
+          print('Summary UI -> total: ${summary['total_payments']}, completed: ${summary['completed_payments']}, failed: ${summary['failed_payments']}, amount: ${summary['total_amount']}');
+        }
         setState(() {
           _payments = List<Map<String, dynamic>>.from(result['payments']);
         });
@@ -221,15 +225,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                 children: [
                   const SizedBox(height: 20),
                   PaymentsHeader(
-                    onSearchChanged: (value) {
-                      setState(() {
-                        _searchQuery = value;
-                      });
-                      _loadPayments();
-                    },
-                    onFilterPressed: () {
-                      // TODO: Implémenter les filtres
-                    },
+                    onSearchChanged: (_) {},
+                    onFilterPressed: () {},
                   ),
                   // Tableau des paiements
                   Expanded(

@@ -27,11 +27,7 @@ class _RecentTransactionsState extends State<RecentTransactions> {
     });
 
     try {
-      final result = await PaymentService().getPayments(
-        page: 1,
-        limit: 5,
-        search: '',
-      );
+      final result = await PaymentService().getPayments(page: 1, limit: 5);
 
       if (result != null && result['payments'] != null) {
         setState(() {

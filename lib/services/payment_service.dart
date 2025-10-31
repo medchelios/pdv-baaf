@@ -36,29 +36,53 @@ class PaymentService {
   Future<Map<String, dynamic>?> getPayments({
     int page = 1,
     int limit = 10,
-    String search = '',
   }) async {
     try {
       LoggerService.info(
-        'Récupération des paiements (page: $page, limit: $limit, search: $search)',
+        'Récupération des paiements (page: $page, limit: $limit)',
       );
 
-      String url = 'payments?page=$page&limit=$limit';
-      if (search.isNotEmpty) {
-        url += '&search=${Uri.encodeComponent(search)}';
-      }
+      final String url = 'payments?page=$page&limit=$limit';
 
       final response = await _apiService.get(url);
 
       if (response?['data'] != null) {
         LoggerService.info('Paiements récupérés avec succès');
-        return response!['data'];
+        final data = response!['data'] as Map<String, dynamic>;
+        final summary = data['summary'];
+        if (summary != null) {
+          LoggerService.info(
+            'Summary API -> total_payments: ${summary['total_payments']}, completed: ${summary['completed_payments']}, failed: ${summary['failed_payments']}, total_amount: ${summary['total_amount']}',
+          );
+        }
+        return data;
       } else {
         LoggerService.warning('Aucune donnée de paiements reçue');
         return null;
       }
     } catch (e) {
       LoggerService.error('Erreur lors de la récupération des paiements', e);
+      return null;
+    }
+  }
+
+  Future<Map<String, String>?> getReceipt(String paymentId) async {
+    try {
+      LoggerService.info('Récupération du reçu pour paiement: $paymentId');
+      final response = await _apiService.get('payments/$paymentId/receipt');
+
+      final data = response?['data'];
+      if (data != null && data['receipt_url'] != null && data['download_url'] != null) {
+        return {
+          'receipt_url': data['receipt_url'] as String,
+          'download_url': data['download_url'] as String,
+        };
+      }
+
+      LoggerService.warning('Reçu indisponible pour $paymentId');
+      return null;
+    } catch (e) {
+      LoggerService.error('Erreur lors de la récupération du reçu', e);
       return null;
     }
   }

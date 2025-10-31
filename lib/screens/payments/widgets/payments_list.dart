@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../shared/widgets/payment_details_dialog.dart';
+import '../../../services/payment_service.dart';
 
 class PaymentsList extends StatelessWidget {
   final List<Map<String, dynamic>> payments;
@@ -224,6 +225,49 @@ class PaymentsList extends StatelessWidget {
                       color: AppConstants.textSecondary,
                     ),
                   ),
+                ),
+                IconButton(
+                  tooltip: 'Reçu',
+                  icon: const Icon(Icons.receipt_long, size: 18, color: AppConstants.brandBlue),
+                  onPressed: () async {
+                    final receipt = await PaymentService().getReceipt(payment['id'].toString());
+                    if (context.mounted) {
+                      if (receipt != null) {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Reçu de paiement'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Lien de consultation:'),
+                                const SizedBox(height: 4),
+                                SelectableText(receipt['receipt_url']!),
+                                const SizedBox(height: 12),
+                                const Text('Lien de téléchargement:'),
+                                const SizedBox(height: 4),
+                                SelectableText(receipt['download_url']!),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(),
+                                child: const Text('Fermer'),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Reçu indisponible pour ce paiement'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
                 ),
               ],
             ),

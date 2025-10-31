@@ -9,8 +9,11 @@ class FormatUtils {
 
   static String formatAmount(String amount) {
     final numberFormat = NumberFormat('#,###', 'fr_FR');
-    final numericValue = int.tryParse(amount) ?? 0;
-    return numberFormat.format(numericValue);
+    final normalized = amount.replaceAll(RegExp(r'[^0-9\.-]'), '');
+    double? value = double.tryParse(normalized);
+    value ??= int.tryParse(normalized)?.toDouble();
+    final int rounded = (value ?? 0).round();
+    return numberFormat.format(rounded);
   }
 
   static String formatDate(String date) {
