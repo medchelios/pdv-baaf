@@ -164,8 +164,7 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
             width: 140,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppConstants.textSecondary,
               ),
@@ -174,10 +173,9 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppConstants.textPrimary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppConstants.textPrimary),
             ),
           ),
         ],
