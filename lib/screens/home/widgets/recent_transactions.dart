@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../services/payment_service.dart';
-import '../../../shared/widgets/payment_details_dialog.dart';
+import '../../payments/payment_detail_screen.dart';
 import '../../payments/payments_screen.dart';
 
 class RecentTransactions extends StatefulWidget {
@@ -148,10 +148,14 @@ class _RecentTransactionsState extends State<RecentTransactions> {
     return GestureDetector(
       onTap: () {
         if (transactionData != null) {
-          showDialog(
-            context: context,
-            builder: (context) =>
-                PaymentDetailsDialog(paymentData: transactionData),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => PaymentDetailScreen(
+                paymentId: (transactionData['id'] ?? '').toString(),
+                initialPayment: transactionData,
+              ),
+            ),
           );
         }
       },

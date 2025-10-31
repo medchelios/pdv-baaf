@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
-import '../../../shared/widgets/payment_details_dialog.dart';
+import '../../../screens/payments/payment_detail_screen.dart';
 import '../../../services/payment_service.dart';
 
 class PaymentsList extends StatelessWidget {
@@ -26,11 +26,7 @@ class PaymentsList extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.payment,
-                        size: 64,
-                        color: Colors.grey[400],
-                      ),
+                      Icon(Icons.payment, size: 64, color: Colors.grey[400]),
                       const SizedBox(height: 16),
                       Text(
                         'Aucun paiement trouvé',
@@ -65,10 +61,7 @@ class PaymentsList extends StatelessWidget {
           topRight: Radius.circular(12),
         ),
         border: Border(
-          bottom: BorderSide(
-            color: const Color(0xFFE9ECEF),
-            width: 1,
-          ),
+          bottom: BorderSide(color: const Color(0xFFE9ECEF), width: 1),
         ),
         boxShadow: [
           BoxShadow(
@@ -129,26 +122,32 @@ class PaymentsList extends StatelessWidget {
     );
   }
 
-  Widget _buildTableRow(BuildContext context, Map<String, dynamic> payment, int index) {
+  Widget _buildTableRow(
+    BuildContext context,
+    Map<String, dynamic> payment,
+    int index,
+  ) {
     final isEven = index % 2 == 0;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: isEven ? Colors.white : const Color(0xFFFAFAFA),
         border: Border(
-          bottom: BorderSide(
-            color: const Color(0xFFE9ECEF),
-            width: 1,
-          ),
+          bottom: BorderSide(color: const Color(0xFFE9ECEF), width: 1),
         ),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => PaymentDetailsDialog(paymentData: payment),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => PaymentDetailScreen(
+                  paymentId: payment['id'].toString(),
+                  initialPayment: payment,
+                ),
+              ),
             );
           },
           child: Padding(
@@ -228,9 +227,15 @@ class PaymentsList extends StatelessWidget {
                 ),
                 IconButton(
                   tooltip: 'Reçu',
-                  icon: const Icon(Icons.receipt_long, size: 18, color: AppConstants.brandBlue),
+                  icon: const Icon(
+                    Icons.receipt_long,
+                    size: 18,
+                    color: AppConstants.brandBlue,
+                  ),
                   onPressed: () async {
-                    final receipt = await PaymentService().getReceipt(payment['id'].toString());
+                    final receipt = await PaymentService().getReceipt(
+                      payment['id'].toString(),
+                    );
                     if (context.mounted) {
                       if (receipt != null) {
                         showDialog(
@@ -276,7 +281,6 @@ class PaymentsList extends StatelessWidget {
       ),
     );
   }
-
 
   Color _getStatusColor(String? status) {
     switch (status) {

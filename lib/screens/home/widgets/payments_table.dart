@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
-import '../../../shared/widgets/payment_details_dialog.dart';
+import '../../payments/payment_detail_screen.dart';
 
 class PaymentsTable extends StatelessWidget {
   final List<Map<String, dynamic>> payments;
@@ -163,9 +163,14 @@ class PaymentsTable extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => PaymentDetailsDialog(paymentData: payment),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => PaymentDetailScreen(
+                  paymentId: payment['id'].toString(),
+                  initialPayment: payment,
+                ),
+              ),
             );
           },
           child: Padding(
