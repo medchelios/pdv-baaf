@@ -54,64 +54,74 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _payment == null
           ? const Center(child: Text('Paiement introuvable'))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppConstants.paddingM),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _section('Informations du paiement', Icons.payment, [
-                    _row('Référence', _payment!['reference'] ?? 'N/A'),
-                    _row('Statut', _payment!['status_label'] ?? 'N/A'),
-                    _row(
-                      'Méthode de paiement',
-                      _payment!['payment_method_label'] ?? 'N/A',
+          : Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppConstants.paddingM),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _section('Informations du paiement', Icons.payment, [
+                          _row('Référence', _payment!['reference'] ?? 'N/A'),
+                          _row('Statut', _payment!['status_label'] ?? 'N/A'),
+                          _row(
+                            'Méthode de paiement',
+                            _payment!['payment_method_label'] ?? 'N/A',
+                          ),
+                          _row(
+                            'Montant',
+                            _payment!['formatted_amount'] ?? '0 GNF',
+                          ),
+                        ]),
+                        const SizedBox(height: AppConstants.paddingS),
+                        _section('Informations client EDG', Icons.person, [
+                          _row(
+                            'Nom du client',
+                            _payment!['subscriber_name'] ?? 'N/A',
+                          ),
+                          _row(
+                            'Référence client',
+                            _payment!['subscriber_reference'] ?? 'N/A',
+                          ),
+                          _row(
+                            'Téléphone',
+                            _payment!['phone_number']?.toString() ?? 'N/A',
+                          ),
+                          _row(
+                            'Type de client',
+                            _payment!['customer_type_label'] ?? 'N/A',
+                          ),
+                        ]),
+                        if (_payment!['customer_type'] == 'prepaid') ...[
+                          const SizedBox(height: AppConstants.paddingS),
+                          _section('Tokens EDG', Icons.qr_code, [
+                            _row(
+                              _payment!['edg_display_label'] ??
+                                  'Tokens d\'électricité',
+                              _payment!['edg_display_value'] ??
+                                  'Aucun token disponible',
+                            ),
+                          ]),
+                        ],
+                        const SizedBox(height: AppConstants.paddingS),
+                        _section('Détails techniques', Icons.settings, [
+                          _row(
+                            'Date de traitement',
+                            _payment!['formatted_processed_at'] ?? 'N/A',
+                          ),
+                          _row(
+                            'Date de création',
+                            _payment!['formatted_created_at'] ?? 'N/A',
+                          ),
+                        ]),
+                        const SizedBox(height: AppConstants.paddingM),
+                      ],
                     ),
-                    _row('Montant', _payment!['formatted_amount'] ?? '0 GNF'),
-                  ]),
-                  const SizedBox(height: AppConstants.paddingS),
-                  _section('Informations client EDG', Icons.person, [
-                    _row(
-                      'Nom du client',
-                      _payment!['subscriber_name'] ?? 'N/A',
-                    ),
-                    _row(
-                      'Référence client',
-                      _payment!['subscriber_reference'] ?? 'N/A',
-                    ),
-                    _row(
-                      'Téléphone',
-                      _payment!['phone_number']?.toString() ?? 'N/A',
-                    ),
-                    _row(
-                      'Type de client',
-                      _payment!['customer_type_label'] ?? 'N/A',
-                    ),
-                  ]),
-                  if (_payment!['customer_type'] == 'prepaid' &&
-                      _payment!['edg_display_value'] != null) ...[
-                    const SizedBox(height: AppConstants.paddingS),
-                    _section('Tokens EDG', Icons.qr_code, [
-                      _row(
-                        _payment!['edg_display_label'] ?? 'Token',
-                        _payment!['edg_display_value'],
-                      ),
-                    ]),
-                  ],
-                  const SizedBox(height: AppConstants.paddingS),
-                  _section('Détails techniques', Icons.settings, [
-                    _row(
-                      'Date de traitement',
-                      _payment!['formatted_processed_at'] ?? 'N/A',
-                    ),
-                    _row(
-                      'Date de création',
-                      _payment!['formatted_created_at'] ?? 'N/A',
-                    ),
-                  ]),
-                  const SizedBox(height: AppConstants.paddingS),
-                  _buildActionsSection(),
-                ],
-              ),
+                  ),
+                ),
+                _buildFixedActionsSection(),
+              ],
             ),
     );
   }
@@ -175,59 +185,50 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
     );
   }
 
-  Widget _buildActionsSection() {
-    return CustomCard(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.share, color: AppConstants.brandBlue, size: 24),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Actions',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppConstants.brandBlue,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppConstants.paddingM),
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionButton(
-                  icon: Icons.chat,
-                  label: 'WhatsApp',
-                  color: const Color(0xFF25D366),
-                  onPressed: _shareViaWhatsApp,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildActionButton(
-                  icon: Icons.email,
-                  label: 'Email',
-                  color: AppConstants.brandOrange,
-                  onPressed: _shareViaEmail,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildActionButton(
-                  icon: Icons.download,
-                  label: 'Télécharger',
-                  color: AppConstants.brandBlue,
-                  onPressed: _downloadReceipt,
-                ),
-              ),
-            ],
+  Widget _buildFixedActionsSection() {
+    return Container(
+      padding: const EdgeInsets.all(AppConstants.paddingM),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, -2),
           ),
         ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                icon: Icons.chat,
+                label: 'WhatsApp',
+                color: const Color(0xFF25D366),
+                onPressed: _shareViaWhatsApp,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionButton(
+                icon: Icons.email,
+                label: 'Email',
+                color: AppConstants.brandOrange,
+                onPressed: _shareViaEmail,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionButton(
+                icon: Icons.download,
+                label: 'Télécharger',
+                color: AppConstants.brandBlue,
+                onPressed: _downloadReceipt,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
