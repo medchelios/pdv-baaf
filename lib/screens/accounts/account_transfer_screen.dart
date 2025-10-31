@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../services/uv_order_service.dart';
+import '../../widgets/common/custom_card.dart';
 
 class AccountTransferScreen extends StatefulWidget {
   const AccountTransferScreen({super.key});
@@ -15,12 +16,31 @@ class _AccountTransferScreenState extends State<AccountTransferScreen> {
   final _descriptionController = TextEditingController();
   final UVOrderService _uvOrderService = UVOrderService();
   bool _isSubmitting = false;
+  List<Map<String, dynamic>> _transfers = [];
+  bool _loadingTransfers = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTransfers();
+  }
 
   @override
   void dispose() {
     _amountController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadTransfers() async {
+    setState(() => _loadingTransfers = true);
+    final transfers = await _uvOrderService.getTransferHistory(limit: 20);
+    if (mounted) {
+      setState(() {
+        _transfers = transfers ?? [];
+        _loadingTransfers = false;
+      });
+    }
   }
 
   Future<void> _submit() async {
@@ -54,7 +74,9 @@ class _AccountTransferScreenState extends State<AccountTransferScreen> {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pop(context);
+      _amountController.clear();
+      _descriptionController.clear();
+      _loadTransfers();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -74,80 +96,165 @@ class _AccountTransferScreenState extends State<AccountTransferScreen> {
         foregroundColor: AppConstants.brandWhite,
       ),
       backgroundColor: AppConstants.backgroundColor,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppConstants.paddingM),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _TransferHeader(),
-              const SizedBox(height: AppConstants.paddingM),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(AppConstants.paddingM),
-                decoration: BoxDecoration(
-                  color: AppConstants.brandWhite,
-                  borderRadius: BorderRadius.circular(AppConstants.radiusM),
-                  border: Border.all(
-                    color: AppConstants.brandBlue.withValues(alpha: 0.1),
-                  ),
-                ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppConstants.paddingM),
+              child: Form(
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Montant', style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        hintText: 'Ex: 500000',
-                        border: OutlineInputBorder(),
+                    _TransferHeader(),
+                    const SizedBox(height: AppConstants.paddingM),
+                    CustomCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.account_balance_wallet, color: AppConstants.brandBlue, size: 24),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Nouveau transfert',
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: AppConstants.brandBlue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppConstants.paddingM),
+                          TextFormField(
+                            controller: _amountController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            decoration: InputDecoration(
+                              labelText: 'Montant',
+                              hintText: 'Ex: 500000',
+                              prefixIcon: const Icon(Icons.currency_exchange),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (v) {
+                              final val = double.tryParse((v ?? '').replaceAll(',', '.')) ?? 0.0;
+                              if (val <= 0) return 'Veuillez saisir un montant valide';
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: AppConstants.paddingM),
+                          TextFormField(
+                            controller: _descriptionController,
+                            maxLines: 2,
+                            decoration: InputDecoration(
+                              labelText: 'Description (optionnelle)',
+                              hintText: 'Motif du transfert',
+                              prefixIcon: const Icon(Icons.description),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppConstants.paddingM),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: _isSubmitting ? null : _submit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppConstants.brandOrange,
+                                foregroundColor: AppConstants.brandWhite,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              icon: _isSubmitting
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    )
+                                  : const Icon(Icons.send),
+                              label: Text(_isSubmitting ? 'Transfert en cours...' : 'Effectuer le transfert'),
+                            ),
+                          ),
+                        ],
                       ),
-                      validator: (v) {
-                        final val = double.tryParse((v ?? '').replaceAll(',', '.')) ?? 0.0;
-                        if (val <= 0) return 'Veuillez saisir un montant valide';
-                        return null;
-                      },
                     ),
+                    const SizedBox(height: AppConstants.paddingM),
+                    _buildTransfersList(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransfersList() {
+    return CustomCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.history, color: AppConstants.brandBlue, size: 24),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Historique des transferts',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppConstants.brandBlue,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: _loadTransfers,
+                tooltip: 'Actualiser',
+              ),
+            ],
+          ),
+          const SizedBox(height: AppConstants.paddingM),
+          if (_loadingTransfers)
+            const Center(child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
+            ))
+          else if (_transfers.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Icon(Icons.history, size: 48, color: AppConstants.textSecondary.withValues(alpha: 0.5)),
                     const SizedBox(height: 12),
-                    Text('Description (optionnelle)', style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _descriptionController,
-                      maxLines: 2,
-                      decoration: const InputDecoration(
-                        hintText: 'Motif du transfert',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: _isSubmitting ? null : _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppConstants.brandOrange,
-                          foregroundColor: AppConstants.brandWhite,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                        icon: _isSubmitting
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                              )
-                            : const Icon(Icons.send),
-                        label: Text(_isSubmitting ? 'Transfert en cours...' : 'Effectuer le transfert'),
-                      ),
+                    Text(
+                      'Aucun transfert effectué',
+                      style: TextStyle(color: AppConstants.textSecondary),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _transfers.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final transfer = _transfers[index];
+                return _TransferItem(transfer: transfer);
+              },
+            ),
+        ],
       ),
     );
   }
@@ -221,6 +328,94 @@ class _AccountChip extends StatelessWidget {
               color: color,
               fontWeight: FontWeight.w600,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TransferItem extends StatelessWidget {
+  final Map<String, dynamic> transfer;
+
+  const _TransferItem({required this.transfer});
+
+  @override
+  Widget build(BuildContext context) {
+    final amount = transfer['formatted_amount'] ?? '0 GNF';
+    final date = transfer['formatted_date'] ?? '';
+    final description = transfer['description'] ?? '';
+    final isDebit = transfer['type'] == 'debit';
+    final accountType = transfer['account_type'] ?? '';
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppConstants.backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppConstants.brandBlue.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isDebit
+                  ? AppConstants.brandOrange.withValues(alpha: 0.1)
+                  : AppConstants.successColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              isDebit ? Icons.arrow_upward : Icons.arrow_downward,
+              color: isDebit ? AppConstants.brandOrange : AppConstants.successColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  description.isNotEmpty ? description : 'Transfert $accountType',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  date,
+                  style: TextStyle(
+                    color: AppConstants.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                amount,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: isDebit ? AppConstants.brandOrange : AppConstants.successColor,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                isDebit ? 'Débit' : 'Crédit',
+                style: TextStyle(
+                  color: AppConstants.textSecondary,
+                  fontSize: 11,
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -233,4 +233,21 @@ class UVOrderService {
     }
     return response?['data'];
   }
+
+  Future<List<Map<String, dynamic>>?> getTransferHistory({int limit = 10}) async {
+    LoggerService.info('Récupération de l\'historique des transferts');
+    final response = await _apiService.get('account-transactions?limit=$limit');
+    if (response?['data'] != null && response?['data']?['transactions'] != null) {
+      final transactions = List<Map<String, dynamic>>.from(
+        response!['data']['transactions'],
+      );
+      final transfers = transactions.where((t) => 
+        t['category'] == 'internal_transfer'
+      ).toList();
+      LoggerService.info('${transfers.length} transferts récupérés');
+      return transfers;
+    }
+    LoggerService.warning('Aucun historique de transferts');
+    return [];
+  }
 }
