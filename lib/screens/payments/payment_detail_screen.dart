@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../constants/app_constants.dart';
 import '../../services/payment_service.dart';
+import '../../widgets/common/custom_card.dart';
 
 class PaymentDetailScreen extends StatefulWidget {
   final String paymentId;
@@ -46,60 +49,13 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
         title: const Text('Détails du paiement'),
         backgroundColor: AppConstants.brandOrange,
         foregroundColor: AppConstants.brandWhite,
-        actions: [
-          if (_payment != null)
-            IconButton(
-              tooltip: 'Reçu',
-              icon: const Icon(Icons.receipt_long),
-              onPressed: () async {
-                final receipt = await PaymentService().getReceipt(
-                  _payment!['id'].toString(),
-                );
-                if (!mounted) return;
-                if (receipt == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Reçu indisponible'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  return;
-                }
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('Reçu de paiement'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Lien de consultation:'),
-                        const SizedBox(height: 4),
-                        SelectableText(receipt['receipt_url']!),
-                        const SizedBox(height: 12),
-                        const Text('Lien de téléchargement:'),
-                        const SizedBox(height: 4),
-                        SelectableText(receipt['download_url']!),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: const Text('Fermer'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _payment == null
           ? const Center(child: Text('Paiement introuvable'))
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppConstants.paddingM),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -112,7 +68,7 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
                     ),
                     _row('Montant', _payment!['formatted_amount'] ?? '0 GNF'),
                   ]),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppConstants.paddingS),
                   _section('Informations client EDG', Icons.person, [
                     _row(
                       'Nom du client',
@@ -131,18 +87,17 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
                       _payment!['customer_type_label'] ?? 'N/A',
                     ),
                   ]),
-                  if (_payment!['edg_display_value'] != null) ...[
-                    const SizedBox(height: 16),
+                  if (_payment!['customer_type'] == 'prepaid' &&
+                      _payment!['edg_display_value'] != null) ...[
+                    const SizedBox(height: AppConstants.paddingS),
                     _section('Tokens EDG', Icons.qr_code, [
                       _row(
                         _payment!['edg_display_label'] ?? 'Token',
                         _payment!['edg_display_value'],
                       ),
-                      if (_payment!['edg_instructions'] != null)
-                        _row('Instructions', _payment!['edg_instructions']),
                     ]),
                   ],
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppConstants.paddingS),
                   _section('Détails techniques', Icons.settings, [
                     _row(
                       'Date de traitement',
@@ -153,13 +108,8 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
                       _payment!['formatted_created_at'] ?? 'N/A',
                     ),
                   ]),
-                  if (_payment!['notes'] != null &&
-                      _payment!['notes'].toString().isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    _section('Notes et commentaires', Icons.note, [
-                      _row('Notes', _payment!['notes']),
-                    ]),
-                  ],
+                  const SizedBox(height: AppConstants.paddingS),
+                  _buildActionsSection(),
                 ],
               ),
             ),
@@ -167,37 +117,27 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
   }
 
   Widget _section(String title, IconData icon, List<Widget> children) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return CustomCard(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: AppConstants.brandBlue),
+              Icon(icon, color: AppConstants.brandBlue, size: 24),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppConstants.textPrimary,
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppConstants.brandBlue,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppConstants.paddingM),
           ...children,
         ],
       ),
@@ -233,5 +173,228 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildActionsSection() {
+    return CustomCard(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.share, color: AppConstants.brandBlue, size: 24),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Actions',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppConstants.brandBlue,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppConstants.paddingM),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  icon: Icons.chat,
+                  label: 'WhatsApp',
+                  color: const Color(0xFF25D366),
+                  onPressed: _shareViaWhatsApp,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  icon: Icons.email,
+                  label: 'Email',
+                  color: AppConstants.brandOrange,
+                  onPressed: _shareViaEmail,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  icon: Icons.download,
+                  label: 'Télécharger',
+                  color: AppConstants.brandBlue,
+                  onPressed: _downloadReceipt,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label, style: const TextStyle(fontSize: 12)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  Future<void> _shareViaWhatsApp() async {
+    if (_payment == null) return;
+
+    if (!mounted) return;
+    final ctx = context;
+
+    try {
+      final receipt = await PaymentService().getReceipt(
+        _payment!['id'].toString(),
+      );
+      if (!mounted) return;
+
+      if (receipt == null) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(
+            content: Text('Reçu indisponible'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final message =
+          'Voici votre reçu de paiement EDG\n'
+          'Référence: ${_payment!['reference']}\n'
+          'Montant: ${_payment!['formatted_amount']}\n'
+          'Consulter: ${receipt['receipt_url']}';
+
+      final whatsappUrl = Uri.parse(
+        'https://wa.me/?text=${Uri.encodeComponent(message)}',
+      );
+
+      if (await canLaunchUrl(whatsappUrl)) {
+        await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(
+            content: Text('Impossible d\'ouvrir WhatsApp'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _shareViaEmail() async {
+    if (_payment == null) return;
+
+    if (!mounted) return;
+    final ctx = context;
+
+    try {
+      final receipt = await PaymentService().getReceipt(
+        _payment!['id'].toString(),
+      );
+      if (!mounted) return;
+
+      if (receipt == null) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(
+            content: Text('Reçu indisponible'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final subject = 'Reçu de paiement EDG - ${_payment!['reference']}';
+      final body =
+          'Bonjour,\n\n'
+          'Voici votre reçu de paiement EDG.\n\n'
+          'Détails du paiement:\n'
+          '- Référence: ${_payment!['reference']}\n'
+          '- Montant: ${_payment!['formatted_amount']}\n'
+          '- Date: ${_payment!['formatted_created_at']}\n\n'
+          'Consulter le reçu: ${receipt['receipt_url']}\n'
+          'Télécharger le reçu: ${receipt['download_url']}\n\n'
+          'Cordialement,\n'
+          'Service BAAF';
+
+      await Share.share(body, subject: subject);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _downloadReceipt() async {
+    if (_payment == null) return;
+
+    if (!mounted) return;
+    final ctx = context;
+
+    try {
+      final receipt = await PaymentService().getReceipt(
+        _payment!['id'].toString(),
+      );
+      if (!mounted) return;
+
+      if (receipt == null) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(
+            content: Text('Reçu indisponible'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final downloadUrl = Uri.parse(receipt['download_url']!);
+
+      if (await canLaunchUrl(downloadUrl)) {
+        await launchUrl(downloadUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(
+            content: Text('Impossible d\'ouvrir le lien de téléchargement'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
