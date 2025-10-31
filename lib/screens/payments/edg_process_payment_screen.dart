@@ -167,7 +167,9 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
     setState(() => c.step = 'processing');
     final resp = await EdgService().processAgentPayment(
       customerType: c.customerType ?? 'postpaid',
-      customerReference: (c.customerReference.isEmpty ? null : c.customerReference),
+      customerReference: (c.customerReference.isEmpty
+          ? null
+          : c.customerReference),
       customerName: c.customerData?['name'] as String?,
       billCode: c.customerType == 'postpaid'
           ? (c.selectedBill?['code'] as String?)
@@ -187,10 +189,9 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
         ),
       );
       // Retour à la liste des paiements et actualisation
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        '/payments',
-        (route) => route.isFirst,
-      );
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil('/payments', (route) => route.isFirst);
     } else {
       setState(() => c.step = 'confirm');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -205,9 +206,47 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
   }
 
   Future<void> goBack() async {
-    final resp = await c.goBack();
-    if (resp != null && resp['success'] == true) {
-      setState(() {});
+    // Client-side back navigation to ensure predictable UX
+    switch (c.step) {
+      case 'enter_reference':
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).maybePop();
+        }
+        return;
+      case 'select_bill':
+        if (c.selectedBill != null) {
+          setState(() {
+            c.selectedBill = null;
+            c.phoneNumber = null;
+            c.amount = null;
+            c.customAmount = null;
+          });
+          return;
+        }
+        setState(() => c.step = 'enter_reference');
+        return;
+      case 'enter_amount':
+        setState(() {
+          c.step = c.customerType == 'prepaid'
+              ? 'enter_reference'
+              : 'select_bill';
+          c.amount = null;
+          c.customAmount = null;
+        });
+        return;
+      case 'confirm':
+        setState(() {
+          if (c.customerType == 'postpaid') {
+            c.step = 'select_bill';
+            c.amount = null;
+          } else {
+            c.step = 'enter_amount';
+          }
+        });
+        return;
+      case 'processing':
+        setState(() => c.step = 'confirm');
+        return;
     }
   }
 
@@ -237,9 +276,20 @@ class _EdgProcessPaymentScreenState extends State<EdgProcessPaymentScreen> {
         elevation: 0,
       ),
       backgroundColor: AppConstants.backgroundColor,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _buildStep(),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFFDFCFB), Color(0xFFF7F7FA)],
+          ),
+        ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          child: _buildStep(),
+        ),
       ),
     );
   }

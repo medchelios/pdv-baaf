@@ -62,7 +62,7 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
               amountError == null;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -84,6 +84,7 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
                 onPressed: widget.onFullPayment,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const StadiumBorder(),
                 ),
                 child: Text(
                   'Total: ${FormatUtils.formatAmount(billAmt.toString())} GNF',
@@ -166,6 +167,7 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
                 onPressed: widget.onConfirm,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const StadiumBorder(),
                 ),
                 child: Text(
                   'Confirmer ${FormatUtils.formatAmount((widget.amount ?? 0).toString())} GNF',
@@ -177,6 +179,7 @@ class _EnterAmountWidgetState extends State<EnterAmountWidget> {
             width: double.infinity,
             child: OutlinedButton(
               onPressed: widget.onBack,
+              style: OutlinedButton.styleFrom(shape: const StadiumBorder(), padding: const EdgeInsets.symmetric(vertical: 16)),
               child: const Text('Retour'),
             ),
           ),

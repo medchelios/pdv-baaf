@@ -33,16 +33,16 @@ class SelectBillWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (customerData != null) ...[
             Card(
-              elevation: 0.5,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
                     Row(
@@ -112,9 +112,9 @@ class SelectBillWidget extends StatelessWidget {
                 final code = bill['code'] ?? '';
 
                 return Card(
-                  elevation: 0.5,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  margin: const EdgeInsets.only(bottom: 12),
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  margin: const EdgeInsets.only(bottom: 14),
                   child: ListTile(
                     title: Text('Facture $code'),
                     subtitle: period.isNotEmpty ? Text('Période: $period') : null,
@@ -165,10 +165,7 @@ class SelectBillWidget extends StatelessWidget {
               ),
               keyboardType: TextInputType.phone,
               maxLength: 20,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                letterSpacing: 1,
-              ),
+              style: const TextStyle(fontFamily: 'monospace', letterSpacing: 1),
               onChanged: onPhoneChanged,
               value: phoneNumber ?? '',
             ),
@@ -180,6 +177,7 @@ class SelectBillWidget extends StatelessWidget {
                 onPressed: onFullPayment,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const StadiumBorder(),
                 ),
                 child: Text(
                   'Paiement complet: ${FormatUtils.formatAmount((selectedBill!['amount'] ?? selectedBill!['amt'] ?? 0).toString())} GNF',
@@ -219,6 +217,7 @@ class SelectBillWidget extends StatelessWidget {
                   onPressed: onPartialPayment,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: const StadiumBorder(),
                   ),
                   child: Text(
                     'Payer ${FormatUtils.formatAmount(customAmount.toString())} GNF',
@@ -231,6 +230,7 @@ class SelectBillWidget extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: onBack,
+                style: OutlinedButton.styleFrom(shape: const StadiumBorder(), padding: const EdgeInsets.symmetric(vertical: 16)),
                 child: const Text('Retour'),
               ),
             ),

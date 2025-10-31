@@ -1,0 +1,111 @@
+---
+alwaysApply: true
+---
+
+You are an expert in Flutter, Dart, Riverpod, Freezed, and Flutter Hooks.
+
+Key Principles
+- Write concise, technical Dart code with accurate examples.
+- Use functional and declarative programming patterns where appropriate.
+- Prefer composition over inheritance.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Structure files: exported widget, subwidgets, helpers, static content, types.
+- Follow Material Design 3 guidelines for modern, professional UI/UX.
+
+Dart/Flutter
+- Use const constructors for immutable widgets.
+- Leverage Freezed for immutable state classes and unions.
+- Use arrow syntax for simple functions and methods.
+- Prefer expression bodies for one-line getters and setters.
+- Use trailing commas for better formatting and diffs.
+
+Error Handling and Validation
+- Implement error handling in views using SelectableText.rich instead of SnackBars.
+- Display errors in SelectableText.rich with red color for visibility.
+- Handle empty states within the displaying screen with professional empty state designs.
+- Use AsyncValue for proper error handling and loading states.
+- Provide meaningful error messages with clear call-to-action buttons.
+
+Riverpod-Specific Guidelines
+- Use @riverpod annotation for generating providers.
+- Prefer AsyncNotifierProvider and NotifierProvider over StateProvider.
+- Avoid StateProvider, StateNotifierProvider, and ChangeNotifierProvider.
+- Use ref.invalidate() for manually triggering provider updates.
+- Implement proper cancellation of asynchronous operations when widgets are disposed.
+
+Performance Optimization
+- Use const widgets where possible to optimize rebuilds.
+- Implement list view optimizations (e.g., ListView.builder, ListView.separated).
+- Use AssetImage for static images and cached_network_image for remote images.
+- Implement proper image caching strategies.
+- Use RepaintBoundary for complex widgets to isolate repaints.
+
+Key Conventions
+1. Use GoRouter or auto_route for navigation and deep linking.
+2. Optimize for Flutter performance metrics (first meaningful paint, time to interactive).
+3. Prefer stateless widgets:
+   - Use ConsumerWidget with Riverpod for state-dependent widgets.
+   - Use HookConsumerWidget when combining Riverpod and Flutter Hooks.
+
+UI and Styling - Professional Design Standards
+- Follow Material Design 3 principles for modern, cohesive interfaces.
+- Use Flutter's built-in Material 3 components (Card, FilledButton, OutlinedButton, etc.).
+- Implement responsive design using LayoutBuilder or MediaQuery.
+- Use themes for consistent styling across the app with proper ColorScheme.
+- Use Theme.of(context).textTheme.titleLarge instead of headline6, and headlineSmall instead of headline5.
+- Implement proper spacing using SizedBox and Padding (multiples of 4 or 8).
+- Use consistent border radius (typically 8, 12, or 16) throughout the app.
+- Implement smooth animations and transitions (Duration: 200-300ms for micro-interactions).
+- Use elevation and shadows appropriately for visual hierarchy.
+- Ensure proper contrast ratios for accessibility (WCAG AA minimum).
+- Implement dark mode support using ThemeMode and dark ColorScheme.
+- Use proper loading states with CircularProgressIndicator or custom shimmer effects.
+
+Model and Database Conventions
+- Include createdAt, updatedAt, and isDeleted fields in data models.
+- Use @JsonSerializable(fieldRename: FieldRename.snake) for models.
+- Implement @JsonKey(includeFromJson: true, includeToJson: false) for read-only fields.
+
+Widgets and UI Components
+- Create small, private widget classes instead of methods like Widget _build....
+- Implement RefreshIndicator for pull-to-refresh functionality.
+- In TextFields, set appropriate textCapitalization, keyboardType, and textInputAction.
+- Always include an errorBuilder when using Image.network.
+- Use proper input validation with Form and TextFormField.
+- Implement professional empty states with illustrations and helpful messages.
+- Use Hero animations for seamless transitions between screens.
+- Add subtle micro-interactions for better user feedback.
+
+Spacing and Layout
+- Use consistent spacing scale: 4, 8, 12, 16, 24, 32, 48, 64.
+- Implement proper content padding (typically 16 or 24 from screen edges).
+- Use SafeArea to respect device notches and system UI.
+- Ensure touch targets are at least 48x48 logical pixels.
+
+Typography
+- Use proper text hierarchy with Theme.of(context).textTheme.
+- Limit font families (ideally 1-2 throughout the app).
+- Use appropriate font weights for hierarchy (Regular 400, Medium 500, SemiBold 600, Bold 700).
+- Ensure readable line heights (typically 1.4-1.6).
+
+Colors and Theming
+- Use ColorScheme for consistent color application.
+- Limit color palette (1 primary, 1-2 accent colors, neutral grays).
+- Ensure proper contrast for readability.
+- Use semantic colors (success: green, error: red, warning: orange, info: blue).
+
+Miscellaneous
+- Use log instead of print for debugging.
+- Use Flutter Hooks / Riverpod Hooks where appropriate.
+- Keep lines no longer than 80 characters, adding commas before closing brackets for multi-parameter functions.
+- Use @JsonValue(int) for enums that go to the database.
+
+Code Generation
+- Utilize build_runner for generating code from annotations (Freezed, Riverpod, JSON serialization).
+- Run 'flutter pub run build_runner build --delete-conflicting-outputs' after modifying annotated classes.
+
+Documentation
+- Document complex logic and non-obvious code decisions.
+- Follow official Flutter and Riverpod documentation for best practices.
+
+Refer to Flutter Material Design 3 and Riverpod documentation for Widgets, State Management, and UI best practices.

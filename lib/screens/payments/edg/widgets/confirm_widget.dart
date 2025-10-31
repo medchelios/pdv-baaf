@@ -28,16 +28,16 @@ class ConfirmWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 0.5,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 1,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               child: Column(
                 children: [
                   Row(
@@ -46,7 +46,7 @@ class ConfirmWidget extends StatelessWidget {
                       const Text('Client'),
                       Text(
                         customerData?['name'] ?? '-',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
@@ -57,7 +57,7 @@ class ConfirmWidget extends StatelessWidget {
                       const Text('Référence'),
                       Text(
                         customerReference,
-                        style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
@@ -69,7 +69,7 @@ class ConfirmWidget extends StatelessWidget {
                         const Text('Téléphone'),
                         Text(
                           phoneNumber!,
-                          style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w600),
+                          style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -125,19 +125,21 @@ class ConfirmWidget extends StatelessWidget {
             ),
           ],
           const Divider(thickness: 2),
-          ListTile(
-            title: const Text(
-              'Montant',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            trailing: Text(
-              '${FormatUtils.formatAmount((amount ?? 0).toString())} GNF',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+          const SizedBox(height: 16),
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 1,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Montant', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text(
+                    '${FormatUtils.formatAmount((amount ?? 0).toString())} GNF',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
+                ],
               ),
             ),
           ),
@@ -149,6 +151,7 @@ class ConfirmWidget extends StatelessWidget {
                   onPressed: onBack,
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: const StadiumBorder(),
                   ),
                   child: const Text('Retour'),
                 ),
@@ -160,6 +163,7 @@ class ConfirmWidget extends StatelessWidget {
                   onPressed: onProcess,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: const StadiumBorder(),
                   ),
                   child: const Text('Confirmer le paiement'),
                 ),
